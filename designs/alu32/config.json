@@ -1,0 +1,12 @@
+{
+  "top": "alu32",
+  "description": "32-bit ALU with registered I/O. Baseline sanity check: meets timing at 2.5 ns on nangate45 (WNS about +0.37). The critical path is the 32-bit ripple-carry adder Yosys infers, ~70 gates deep.",
+  "rtl": ["rtl/alu32.v"],
+  "sdc": "constraints/alu32.sdc",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk",
+    "port": "clk",
+    "period_ns": 2.5
+  }
+}

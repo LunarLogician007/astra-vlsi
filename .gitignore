@@ -1,0 +1,8 @@
+# Flow outputs — regenerate with `astra run <design>`, never commit.
+runs/
+astra-image.tar.gz
+
+*.log
+__pycache__/
+*.pyc
+.DS_Store

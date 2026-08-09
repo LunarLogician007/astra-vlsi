@@ -1,0 +1,16 @@
+# Force LF everywhere. Without this, a clone on Windows (or WSL with
+# core.autocrlf=true) rewrites these files with CRLF, and the container fails
+# with "bad interpreter: /bin/bash^M" or Tcl syntax errors that make no sense.
+* text=auto eol=lf
+
+*.sh      text eol=lf
+*.tcl     text eol=lf
+*.py      text eol=lf
+*.v       text eol=lf
+*.sdc     text eol=lf
+*.json    text eol=lf
+*.md      text eol=lf
+Makefile  text eol=lf
+Dockerfile* text eol=lf
+
+*.pdf binary

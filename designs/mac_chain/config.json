@@ -1,0 +1,21 @@
+{
+  "top": "mac_chain",
+  "description": "4-tap 16x16 MAC with serial accumulate chain and end-of-path saturation. Violates timing at 2.0 ns on nangate45 by construction — the optimisation target.",
+  "rtl": ["rtl/mac_chain.v"],
+  "sdc": "constraints/mac_chain.sdc",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk",
+    "port": "clk",
+    "period_ns": 2.0
+  },
+  "notes": {
+    "latency_cycles": 2,
+    "known_bottlenecks": [
+      "serial adder chain (s0->s1->s2->s3) instead of a balanced tree",
+      "four unpipelined 16x16 multipliers in one cycle",
+      "40-bit saturation compare in series after the accumulate"
+    ],
+    "invariants": "rewrites must preserve 2-cycle latency and bit-exact outputs"
+  }
+}
