@@ -54,8 +54,43 @@ save:
 	$(DOCKER) save $(IMAGE) | gzip > astra-image.tar.gz
 	@echo "wrote astra-image.tar.gz — load with: gunzip -c astra-image.tar.gz | docker load"
 
-clean-runs:
+# --- cleanup ---------------------------------------------------------------
+# clean       flow outputs only (safe, regenerate with `make run`)
+# clean-cache Docker build cache + dangling images
+# clean-all   the above plus the astra image itself (full rebuild after)
+# reset-vm    macOS/Colima only: delete and recreate the VM. Freeing space
+#             inside the VM does not shrink its disk file on the host, so this
+#             is the only reliable way to get that space back.
+
+clean:
 	rm -rf runs/*
+	find . -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+	find . -name '*.pyc' -delete 2>/dev/null || true
+	@echo "removed run outputs and python caches"
+
+clean-cache:
+	-$(DOCKER) buildx prune -af
+	-$(DOCKER) image prune -f
+	@echo "removed build cache and dangling images"
+
+clean-all: clean clean-cache
+	-$(DOCKER) rmi -f $(IMAGE)
+	@echo "removed $(IMAGE) — run 'make build' before using the flow again"
+
+VM_CPU  ?= 6
+VM_MEM  ?= 8
+VM_DISK ?= 20
+
+# `colima delete` leaves the persistent Docker data disk behind in
+# ~/.colima/_lima/_disks/, which is where the space actually is — remove it
+# explicitly. vz+rosetta keeps `--platform linux/amd64` builds working, so an
+# x86 teammate's build failure can be reproduced on an Apple Silicon Mac.
+reset-vm:
+	-colima delete -f
+	rm -rf ~/.colima/_lima/_disks/colima
+	colima start --vm-type vz --vz-rosetta \
+		--cpu $(VM_CPU) --memory $(VM_MEM) --disk $(VM_DISK)
+	@echo "fresh VM: $(VM_CPU) cpu / $(VM_MEM) GB ram / $(VM_DISK) GB disk"
 
 help:
 	@grep -E '^#   ' $(MAKEFILE_LIST) | sed 's/^#   //'
