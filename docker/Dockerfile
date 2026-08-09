@@ -43,28 +43,57 @@ RUN git clone --depth 1 https://github.com/ivmai/cudd.git /tmp/cudd \
     && cd / && rm -rf /tmp/cudd
 
 # --- OpenSTA ---------------------------------------------------------------
-RUN git clone --depth 1 https://github.com/parallaxsw/OpenSTA.git /tmp/OpenSTA \
-    && cmake -S /tmp/OpenSTA -B /tmp/OpenSTA/build \
-             -DCMAKE_BUILD_TYPE=Release -DCUDD_DIR=/usr/local \
-    && cmake --build /tmp/OpenSTA/build -j"$(nproc)" \
-    && cmake --install /tmp/OpenSTA/build \
-    && ldconfig \
-    && rm -rf /tmp/OpenSTA \
-    && sta -version \
-    && echo "opensta=native (standalone build)" >> /etc/astra-tools.txt
+# Pinned to a commit so every teammate builds the same STA (upstream publishes
+# no release tags).
+ARG OPENSTA_SHA=3f4b337e30afccf8075118860daf2e4fea8a5c18
+RUN set -euo pipefail; \
+    mkdir -p /tmp/OpenSTA && cd /tmp/OpenSTA; \
+    git init -q; \
+    git remote add origin https://github.com/parallaxsw/OpenSTA.git; \
+    git fetch -q --depth 1 origin "${OPENSTA_SHA}"; \
+    git checkout -q FETCH_HEAD; \
+    # LTO makes gcc-13 hit an internal compiler error ("lto1: internal
+    # compiler error: in return_token") building the `sta` binary on x86_64.
+    # Upstream sets this as a normal variable, so -D on the command line
+    # cannot override it — patch the line and fail loudly if it ever moves.
+    sed -i 's/\(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE\) TRUE/\1 FALSE/' CMakeLists.txt; \
+    grep -q "CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE FALSE" CMakeLists.txt \
+        || { echo "OpenSTA CMakeLists changed: re-check the LTO workaround" >&2; exit 1; }; \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCUDD_DIR=/usr/local; \
+    cmake --build build -j"$(nproc)"; \
+    cmake --install build; \
+    ldconfig; \
+    cd / && rm -rf /tmp/OpenSTA; \
+    sta -version; \
+    echo "opensta=${OPENSTA_SHA} (LTO disabled)" >> /etc/astra-tools.txt
 
 # --- PDK -------------------------------------------------------------------
 # Only the platform directories named in PDKS are fetched. Add sky130hd here
 # if you want it: --build-arg PDKS="nangate45 sky130hd".
 ARG PDKS="nangate45"
 RUN set -euo pipefail; \
-    git clone --filter=blob:none --no-checkout --depth 1 \
-        https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git /tmp/orfs; \
-    cd /tmp/orfs; \
-    git sparse-checkout init --cone; \
+    # Big clones over HTTP/2 intermittently abort with "RPC failed; curl 92
+    # ... CANCEL". HTTP/1.1 plus a retry loop makes this survive a flaky
+    # connection instead of failing the whole build.
+    git config --global http.version HTTP/1.1; \
+    git config --global http.postBuffer 524288000; \
     paths=""; for p in ${PDKS}; do paths="$paths flow/platforms/$p"; done; \
-    git sparse-checkout set $paths; \
-    git checkout; \
+    fetch_pdks() { \
+        rm -rf /tmp/orfs; \
+        git clone --filter=blob:none --no-checkout --depth 1 \
+            https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git /tmp/orfs || return 1; \
+        cd /tmp/orfs || return 1; \
+        git sparse-checkout init --cone || return 1; \
+        git sparse-checkout set $paths || return 1; \
+        git checkout || return 1; \
+    }; \
+    ok=0; \
+    for attempt in 1 2 3; do \
+        if fetch_pdks; then ok=1; break; fi; \
+        echo "PDK fetch attempt $attempt failed; retrying in 5s" >&2; sleep 5; \
+    done; \
+    [ "$ok" = 1 ] || { echo "could not fetch PDK files after 3 attempts" >&2; exit 1; }; \
+    cd /tmp/orfs; \
     mkdir -p /pdks; \
     for p in ${PDKS}; do \
         [ -d "flow/platforms/$p" ] || { echo "no such platform: $p" >&2; exit 1; }; \
