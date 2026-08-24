@@ -5,6 +5,7 @@
 #   make shell                 shell with this repo mounted at /work
 #   make doctor                check tools + PDK
 #   make run DESIGN=mac_chain  synthesis + timing report
+#   make advise DESIGN=mac_chain  ask Claude how to close timing (runs on host)
 #   make save                  export the image as a tarball for a teammate
 #
 # Variants:
@@ -26,7 +27,7 @@ endif
 
 RUN_FLAGS = --rm -it $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work
 
-.PHONY: build shell doctor run syn pnr list save clean-runs help
+.PHONY: build shell doctor run syn pnr list advise save clean-runs help
 
 build:
 	$(DOCKER) buildx build $(PLATFORM_FLAG) --build-arg PDKS="$(PDKS)" \
@@ -49,6 +50,23 @@ pnr:
 
 list:
 	$(DOCKER) run $(RUN_FLAGS) $(IMAGE) astra list
+
+# --- advisor ---------------------------------------------------------------
+# Host-side, not containerised: the image has no `claude` binary and no
+# credentials. Reads runs/<design>/latest/ (bind-mounted, so the host sees the
+# same files) and writes advice.md next to the metrics.
+#
+#   make advise DESIGN=mac_chain
+#   make advise DESIGN=mac_chain ADVISE_ARGS=--dry-run   prompt only, no call
+#   make advise DESIGN=mac_chain ADVISE_ARGS=--force     re-spend a call
+#
+# One call per finished run. On a Claude subscription this draws from your
+# plan limits rather than billing per token, so it is deliberately not wired
+# into `make run`.
+ADVISE_ARGS ?=
+
+advise:
+	python3 tools/astra_advise.py $(DESIGN) $(ADVISE_ARGS)
 
 save:
 	$(DOCKER) save $(IMAGE) | gzip > astra-image.tar.gz

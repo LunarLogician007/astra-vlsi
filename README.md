@@ -88,6 +88,66 @@ Real output:
 
 ---
 
+## Timing advisor (optional)
+
+`make advise` hands a finished run to Claude and asks what to change to close
+timing. It reads the artifacts the run already produced — `metrics.json`, the
+parsed `02_sta/timing.json`, the RTL, the SDC, and the `notes` block from
+`config.json` — and writes `advice.md` into the run directory.
+
+```bash
+make run    DESIGN=mac_chain
+make advise DESIGN=mac_chain
+```
+
+It runs **on the host, not in the container** — the image has no `claude`
+binary and no credentials. The repo is bind-mounted at `/work`, so the host
+reads the same run directory the container wrote.
+
+```bash
+make advise DESIGN=mac_chain ADVISE_ARGS=--dry-run   # print the prompt, call nothing
+make advise DESIGN=mac_chain ADVISE_ARGS=--force     # re-advise an already-advised run
+python3 tools/astra_advise.py mac_chain --run 20260824-132334
+```
+
+### What it costs
+
+It shells out to `claude -p`, which authenticates with your Claude
+subscription rather than an API key — no per-token bill, but the usage draws
+from the **same plan limits as your interactive Claude sessions**. Note that
+the separate Agent SDK credit announced for June 15 2026 was paused and is not
+available; there is nothing to claim.
+
+So the tool is built to be frugal, and those choices are deliberate:
+
+- **One call per finished run.** It is not wired into `make run`, and it
+  refuses to re-advise a run that already has `advice.md` unless you pass
+  `--force`.
+- **The prompt is a digest, not a dump.** A 91-stage OpenSTA path becomes a
+  cell-type histogram, the top stages by delay, and the ordered cell walk —
+  about 2k tokens instead of 20k. Each invocation also carries ~10k tokens of
+  Claude Code harness overhead, which the digest is sized against.
+- **No tools, no MCP.** The advisor gets every fact inline and is denied file
+  and network tools, so one call stays one call instead of turning into an
+  agent that greps the repo.
+- **Cost is printed** after each call — notional USD plus token counts — so
+  you can see what a run drew from your plan.
+
+If you want this in CI or on a nightly sweep across many designs, put it on an
+API key instead. Unattended automation is exactly the workload that drains a
+subscription and leaves you rate-limited in your own editor.
+
+### Worth knowing
+
+The advisor is a reviewer, not an oracle — it does not edit RTL, and its
+suggestions are unverified until you re-run the flow. Treat `advice.md` as a
+starting point and check the claims. On the shipped `mac_chain` it correctly
+identified that the saturation compare is dead logic (`|s3| ≤ 2³²` against a
+`LIMIT` of `2³⁷−1`, 32× of headroom), which is a real finding sitting in the
+critical-path tail — but verify that kind of claim yourself before acting on it.
+
+---
+
 ## Layout
 
 ```
@@ -101,6 +161,7 @@ flow/scripts/*.tcl       synth.tcl, sta.tcl, doctor.tcl
 
 tools/astra.py           the CLI
 tools/parse_sta.py       OpenSTA report text → JSON
+tools/astra_advise.py    run artifacts → Claude → advice.md (host-side)
 
 runs/<design>/<timestamp>/       outputs (gitignored)
     00_inputs/           the exact RTL + SDC used
@@ -108,6 +169,7 @@ runs/<design>/<timestamp>/       outputs (gitignored)
     02_sta/              timing.rpt, timing.json, check_types.rpt
     logs/                raw tool output
     metrics.json         WNS, TNS, area, cell count, paths to artifacts
+    advice.md            `make advise` output, if run
 ```
 
 `00_inputs/` holds a copy of the RTL and SDC each run used, so a timing number
