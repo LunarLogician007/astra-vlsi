@@ -60,7 +60,19 @@ yosys dfflibmap -liberty $LIB_FILE
 yosys abc -liberty $LIB_FILE -D $period_ps
 yosys setundef -zero
 yosys splitnets -ports
-yosys opt_clean -purge
+
+# `opt_clean -purge` would also delete internal nets that still carry their
+# RTL names, and abc has already replaced every combinational cell with an
+# anonymous `$abc$...` one. Between them nothing is left for the timing report
+# to name, and path-to-RTL localisation has nothing to bind to. Dropping
+# -purge keeps the named nets; `autoname` then names the cells after the nets
+# they drive, so OpenSTA reports `a0_q[3]/Q` instead of `_14637_/Q`.
+#
+# Commercial synthesis does this by default (`a0_q_reg[3]`), which is why the
+# paper's flow can map paths back to RTL at all. Cell count and area are
+# unaffected -- only names are.
+yosys opt_clean
+yosys autoname
 
 # --- write -----------------------------------------------------------------
 file mkdir $out_dir

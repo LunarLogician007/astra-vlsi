@@ -8,6 +8,14 @@
     astra run   <design>    synthesis + timing (add --pnr for place & route)
     astra report <design>   print the run's metrics.json
 
+The Dr. RTL optimisation loop is built on top of those stages:
+
+    astra localise <design> map the critical path back onto RTL lines
+    astra score  <design>   Eq. 3 score of a run against a baseline run
+    astra sec    <top>      sequential equivalence check between two designs
+    astra skills            inspect the learned skill library
+    astra opt    <design>   the closed loop: analyse -> rewrite -> evaluate
+
 Outputs land in runs/<design>/<timestamp>/. Stdlib only.
 """
 
@@ -26,6 +34,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import parse_sta  # noqa: E402
+import toolenv    # noqa: E402
 
 ROOT = Path(os.environ.get("ASTRA_ROOT", Path(__file__).resolve().parent.parent))
 FLOW = ROOT / "flow"
@@ -65,6 +74,10 @@ def run_tool(cmd: list[str], log_path: Path, env: dict[str, str],
              quiet: bool = False) -> tuple[int, str]:
     """Run a tool, tee its output to a log, return (exit code, text)."""
     log_path.parent.mkdir(parents=True, exist_ok=True)
+    # ASTRA_TOOL_PREFIX, when set, rewrites this into a `docker run ...` that
+    # carries the same command with container-side paths. Unset -- the normal
+    # case inside the image -- cmd and env come back untouched.
+    cmd, env = toolenv.wrap(cmd, env)
     info("$ " + " ".join(cmd))
     chunks: list[str] = []
     with open(log_path, "w", encoding="utf-8") as log:
@@ -243,6 +256,9 @@ def synth_stats(log: str) -> dict[str, Any]:
 
 
 def sta_binary() -> list[str]:
+    if toolenv.dispatching():
+        # The probe would run on the host, where neither binary exists.
+        return ["sta", "-no_splash", "-exit"]
     if shutil.which("sta"):
         return ["sta", "-no_splash", "-exit"]
     if shutil.which("openroad"):
@@ -429,18 +445,24 @@ def cmd_report(args: argparse.Namespace) -> int:
 
 def cmd_doctor(args: argparse.Namespace) -> int:
     ok = True
-    print(_c("1", "tools"))
+    print(_c("1", "tools") + f"   ({toolenv.where()})")
     # OpenROAD is optional: the lean image does synthesis + timing only.
+    # eqy is optional: sec.py falls back to a Yosys miter, which is always
+    # available because Yosys is already required.
     for binary, probe, required in (("yosys", ["-V"], True),
                                     ("sta", ["-version"], True),
-                                    ("openroad", ["-version"], False)):
+                                    ("openroad", ["-version"], False),
+                                    ("eqy", ["--help"], False)):
         path = shutil.which(binary)
         if not path:
             if required:
                 print(f"  {_c('31', 'MISSING')} {binary}")
                 ok = False
             else:
-                print(f"  {_c('33', '-')}       {binary:<9} not installed (place & route unavailable)")
+                lost = {"openroad": "place & route unavailable",
+                        "eqy": "SEC falls back to the Yosys miter"}
+                print(f"  {_c('33', '-')}       {binary:<9} not installed "
+                      f"({lost.get(binary, 'optional')})")
             continue
         ver = ""
         if probe:
@@ -496,6 +518,99 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         ok = False
     print("\n" + (_c("32", "all good") if ok else _c("31", "problems above")))
     return 0 if ok else 1
+
+
+# ---------------------------------------------------------------------------
+# Dr. RTL loop commands
+#
+# Each delegates to the module that owns the logic rather than re-declaring
+# its options here: the sub-tools are runnable on their own, and one parser
+# per concept is one place for a flag to drift out of sync.
+# ---------------------------------------------------------------------------
+
+
+def cmd_opt(args: argparse.Namespace) -> int:
+    import drrtl
+    return drrtl.Orchestrator(drrtl.build_parser().parse_args(args.rest)).run()
+
+
+def cmd_sec(args: argparse.Namespace) -> int:
+    import sec as sec_mod
+    saved, sys.argv = sys.argv, ["astra-sec", *args.rest]
+    try:
+        return sec_mod.main()
+    finally:
+        sys.argv = saved
+
+
+def cmd_skills(args: argparse.Namespace) -> int:
+    import skills as skills_mod
+    return skills_mod.main(["astra-skills", *args.rest])
+
+
+def cmd_localise(args: argparse.Namespace) -> int:
+    import rtl_map
+    cfg = load_design(args.design)
+    rdir = find_run(args.design, args.run)
+    if not (rdir / "02_sta" / "timing.json").is_file():
+        die(f"no timing.json in {rdir.name}. Run: astra run {args.design}")
+    data = rtl_map.from_run(rdir, cfg["_dir"], top_k=args.top_k)
+    print(json.dumps(data, indent=2) if args.json else rtl_map.render(data))
+    return 0
+
+
+def cmd_score(args: argparse.Namespace) -> int:
+    """Eq. 3 for one run, measured against a baseline run.
+
+    Both runs must exist; the baseline is what PPA^norm is relative to, so
+    scoring a run against itself is 0.0 by construction and scoring against a
+    different clock period is meaningless.
+    """
+    import score as scoring
+
+    def ppa(rdir: Path) -> dict[str, Any]:
+        m = read_metrics(rdir)
+        if not m:
+            die(f"no metrics.json in {rdir}")
+        return {"wns_ns": m.get("sta", {}).get("wns_ns"),
+                "tns_ns": m.get("sta", {}).get("tns_ns"),
+                "area_um2": m.get("synth", {}).get("area_um2"),
+                "_period": (m.get("clock") or {}).get("period_ns"),
+                "_run": rdir.name}
+
+    cand = ppa(find_run(args.design, args.run))
+    base = ppa(find_run(args.design, args.baseline))
+    if cand["_period"] and base["_period"] and \
+            abs(float(cand["_period"]) - float(base["_period"])) > 1e-9:
+        warn(f"clock periods differ ({base['_period']} vs {cand['_period']} ns) "
+             f"— the normalised score compares two different problems")
+
+    weights = dict(scoring.DEFAULT_WEIGHTS)
+    for k in ("alpha", "beta", "gamma"):
+        v = getattr(args, k, None)
+        if v is not None:
+            weights[k] = v
+    period = float(cand["_period"] or 1.0)
+    detail = scoring.score(cand, base, weights, period)
+
+    if args.json:
+        print(json.dumps({"candidate": cand, "baseline": base, **detail}, indent=2))
+        return 0
+
+    print(_c("1", f"Eq. 3 score: {detail['score']:+.4f}") + "   (lower is better; "
+          f"baseline {base['_run']} scores 0.0000)")
+    print(f"  {'metric':<10} {'baseline':>12} {'candidate':>12} {'normalised':>12} "
+          f"{'weighted':>10}")
+    for key, label in (("wns", "WNS (ns)"), ("tns", "TNS (ns)"),
+                       ("area", "area (um2)")):
+        bkey = {"wns": "wns_ns", "tns": "tns_ns", "area": "area_um2"}[key]
+        print(f"  {label:<10} {fmt(base.get(bkey)):>12} {fmt(cand.get(bkey)):>12} "
+              f"{detail['normalized'][key]:>+12.4f} {detail['terms'][key]:>+10.4f}")
+    print(f"  {'penalty':<10} {'':>12} {'':>12} {'':>12} "
+          f"{detail['terms']['penalty']:>+10.4f}"
+          + ("   (area grew past the 10% threshold)"
+             if detail["terms"]["penalty"] else ""))
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -560,6 +675,38 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("doctor", help="check tools, PDKs and designs")
     add_quiet(sp)
     sp.set_defaults(func=cmd_doctor)
+
+    # --- Dr. RTL loop ------------------------------------------------------
+    sp = sub.add_parser("localise", aliases=["localize"],
+                        help="map the critical path back onto RTL lines")
+    sp.add_argument("design")
+    sp.add_argument("--run", default="latest")
+    sp.add_argument("--top-k", type=int, default=3)
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_localise)
+
+    sp = sub.add_parser("score", help="Eq. 3 score of a run against a baseline")
+    sp.add_argument("design")
+    sp.add_argument("--run", default="latest", help="the candidate run")
+    sp.add_argument("--baseline", required=True, help="the run PPA^norm is relative to")
+    sp.add_argument("--alpha", type=float, help="WNS weight (default 0.5)")
+    sp.add_argument("--beta", type=float, help="TNS weight (default 0.35)")
+    sp.add_argument("--gamma", type=float, help="area weight (default 0.15)")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_score)
+
+    sp = sub.add_parser("sec", help="sequential equivalence check (see: astra sec -h)")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_sec)
+
+    sp = sub.add_parser("skills", help="inspect the skill library")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_skills)
+
+    sp = sub.add_parser("opt", help="run the closed optimisation loop "
+                                    "(see: astra opt -h)")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_opt)
     return p
 
 

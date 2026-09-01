@@ -8,10 +8,18 @@
 #   make advise DESIGN=mac_chain  ask Claude how to close timing (runs on host)
 #   make save                  export the image as a tarball for a teammate
 #
+# Dr. RTL optimisation loop:
+#   make selftest              check the scoring maths (no container needed)
+#   make localise DESIGN=x     map the critical path back onto RTL lines
+#   make skills                show the learned skill library
+#   make score DESIGN=x BASELINE=<run>   Eq. 3 score of a run
+#   make opt DESIGN=x          the closed loop: analyse -> rewrite -> evaluate
+#
 # Variants:
 #   make build PDKS="nangate45 sky130hd"        add another PDK
 #   make build PLATFORM=linux/amd64             image for x86 teammates
 #   make build DOCKERFILE=docker/Dockerfile.orfs  full image, adds OpenROAD PnR
+#   make build EQY=0                            skip the eqy/sby build
 # ===========================================================================
 
 IMAGE      ?= astra:latest
@@ -19,6 +27,7 @@ DOCKERFILE ?= docker/Dockerfile
 PDKS       ?= nangate45
 DESIGN     ?= mac_chain
 DOCKER     ?= docker
+EQY        ?= 1
 
 # Native by default. Set PLATFORM to cross-build (e.g. for an x86 teammate).
 ifdef PLATFORM
@@ -27,10 +36,16 @@ endif
 
 RUN_FLAGS = --rm -it $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work
 
-.PHONY: build shell doctor run syn pnr list advise save clean-runs help
+# Same mount without a TTY: what the host-side orchestrator prepends to every
+# EDA invocation. See tools/toolenv.py.
+TOOL_PREFIX = $(DOCKER) run --rm $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work $(IMAGE)
+
+.PHONY: build shell doctor run syn pnr list advise save clean-runs help \
+        selftest localise skills score sec opt clean clean-skills
 
 build:
 	$(DOCKER) buildx build $(PLATFORM_FLAG) --build-arg PDKS="$(PDKS)" \
+		--build-arg WITH_EQY="$(EQY)" \
 		-t $(IMAGE) -f $(DOCKERFILE) . --load
 
 shell:
@@ -68,6 +83,44 @@ ADVISE_ARGS ?=
 advise:
 	python3 tools/astra_advise.py $(DESIGN) $(ADVISE_ARGS)
 
+# --- Dr. RTL optimisation loop ---------------------------------------------
+# `selftest` covers the paper's equations, the path-to-RTL mapper and the
+# skill library. Pure Python, so it runs on the host with nothing installed.
+selftest:
+	python3 tools/selftest.py
+
+localise:
+	$(DOCKER) run $(RUN_FLAGS) $(IMAGE) astra localise $(DESIGN)
+
+skills:
+	python3 tools/skills.py list
+
+# Eq. 3 needs something to be relative to:
+#   make score DESIGN=mac_chain BASELINE=20260830-101500
+BASELINE ?=
+RUN      ?= latest
+score:
+	@test -n "$(BASELINE)" || { echo "set BASELINE=<run id>; see: make list"; exit 1; }
+	$(DOCKER) run $(RUN_FLAGS) $(IMAGE) astra score $(DESIGN) \
+		--run $(RUN) --baseline $(BASELINE)
+
+SEC_ARGS ?=
+sec:
+	$(DOCKER) run $(RUN_FLAGS) $(IMAGE) astra sec $(SEC_ARGS)
+
+# The loop is the one target that needs both halves at once: `claude` and its
+# credentials on the host, Yosys/OpenSTA/eqy in the container. So it runs
+# host-side and dispatches each tool call into the image via
+# ASTRA_TOOL_PREFIX. Nothing is copied -- the repo is bind-mounted, so both
+# sides read and write the same runs/ directory.
+#
+#   make opt DESIGN=mac_chain
+#   make opt DESIGN=mac_chain OPT_ARGS="-n 6 --iters 4"
+#   make opt DESIGN=mac_chain OPT_ARGS=--dry-run   prompts only, no model call
+OPT_ARGS ?=
+opt:
+	ASTRA_TOOL_PREFIX='$(TOOL_PREFIX)' python3 tools/drrtl.py $(DESIGN) $(OPT_ARGS)
+
 save:
 	$(DOCKER) save $(IMAGE) | gzip > astra-image.tar.gz
 	@echo "wrote astra-image.tar.gz — load with: gunzip -c astra-image.tar.gz | docker load"
@@ -80,11 +133,19 @@ save:
 #             inside the VM does not shrink its disk file on the host, so this
 #             is the only reliable way to get that space back.
 
+# The skill library is deliberately NOT removed here: it is the accumulated
+# result of every past run, and it is the one output that is supposed to
+# outlive them. `make clean-skills` resets it on purpose.
 clean:
 	rm -rf runs/*
 	find . -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 	find . -name '*.pyc' -delete 2>/dev/null || true
-	@echo "removed run outputs and python caches"
+	@echo "removed run outputs and python caches (skill library kept)"
+
+clean-skills:
+	git checkout -- skills/library.json 2>/dev/null \
+		|| rm -f skills/library.json
+	@echo "skill library reset to the shipped seed set"
 
 clean-cache:
 	-$(DOCKER) buildx prune -af

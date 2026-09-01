@@ -9,6 +9,10 @@ RTL + SDC  ──►  Yosys  ──►  netlist  ──►  OpenSTA  ──►  
                                                         (WNS / TNS / paths)
 ```
 
+On top of that flow, `make opt` runs the [Dr. RTL](#dr-rtl-optimisation-loop)
+closed loop: analyse the critical path, write N rewrites in parallel, verify
+each for equivalence, keep the best, and learn from the comparison.
+
 Image is **1.1 GB** and builds natively on arm64 and x86 — no emulation.
 
 ---
@@ -148,6 +152,126 @@ critical-path tail — but verify that kind of claim yourself before acting on i
 
 ---
 
+## Dr. RTL optimisation loop
+
+`make opt` runs the closed loop from **Dr. RTL: Autonomous Agentic RTL
+Optimization through Tool-Grounded Self-Improvement** (Fang et al., HKUST,
+2026) — analyse the critical path, write several rewrites in parallel, verify
+each one, keep the best, and learn from the comparison.
+
+```bash
+make run DESIGN=mac_chain                        # see the starting point
+make opt DESIGN=mac_chain                        # the loop
+make opt DESIGN=mac_chain OPT_ARGS="-n 6 --iters 4"
+make opt DESIGN=mac_chain OPT_ARGS=--dry-run     # write the prompts, call nothing
+```
+
+The paper's loop is Eq. 2 — `D_t → {D_t^(i)}_{i=1..N} → D_{t+1}` — run by an
+orchestrator over four roles that are kept strictly apart:
+
+| role | does | does not |
+|---|---|---|
+| **Timing Analysis** (§4.1.2) | localises the top-*k* paths back to RTL lines, names root causes | propose fixes |
+| **RTL Optimization** (§4.1.3) | writes *N* candidate rewrites in parallel, guided by the skill library | run any tool |
+| **Evaluation** (§4.1.4) | Yosys, OpenSTA, equivalence check | read reports or reason |
+| **Skill Learning** (§4.2) | compares the group, distils pattern→strategy pairs | see a single candidate alone |
+
+The separation is the point: the agent that decides never runs the tools, and
+the agent that runs the tools never interprets them, so no optimisation
+decision can rest on a misread report.
+
+### The equations
+
+Every candidate is scored by **Eq. 3**, and lower is better:
+
+```
+Score_i = α·WNS^norm + β·TNS^norm + γ·Area^norm + penalty_i
+          α=0.50      β=0.35      γ=0.15
+          penalty_i = 0.5  when Area^norm > 0.10, else 0
+```
+
+**Eq. 4** promotes `argmin Score_i` *subject to* `SEC_i = 1` — a rewrite that
+changed the design's behaviour is discarded no matter how much slack it
+recovered. **Eq. 5** then z-scores the group, `A_i = (score_i − μ_t)/σ_t`, and
+that relative signal — not the raw PPA — is what the skill library learns
+from. Absolute slack numbers are noisy and design-specific; "this
+transformation beat its siblings under identical conditions" transfers.
+
+Any of it can be run on its own:
+
+```bash
+astra localise mac_chain                       # path → RTL lines + root causes
+astra score mac_chain --baseline <run-id>      # Eq. 3, with the breakdown
+astra sec mac_chain --gold a.v --gate b.v      # the SEC constraint alone
+astra skills                                   # the library and its statistics
+make selftest                                  # the maths, no container needed
+```
+
+### The skill library
+
+`skills/library.json` persists across runs *and across designs* — it is what
+makes the loop self-improving rather than merely iterative. Each entry is one
+pattern→strategy pair carrying the three statistics the paper names:
+occurrence count, SEC-pass count, and mean relative advantage. Those fold into
+a confidence:
+
+```
+confidence = sec_pass_rate  ×  logistic(−mean A_i)  ×  n/(n+3)
+             correctness       benefit                support
+```
+
+A product rather than a sum, so each factor can veto on its own: a
+transformation that breaks equivalence is worth nothing however fast it was,
+and one lucky trial stays provisional. Entries that fail SEC more often than
+not are marked `invalid` and are shown to the optimiser *as* known-bad, which
+is more useful than hiding them and letting it rediscover the same dead end.
+
+The shipped library holds **12 seed entries** with zero occurrences and zero
+confidence. They are textbook transformations offered as untested suggestions
+and must earn their statistics from real runs — the paper's own 47 entries
+were learned from its runs, and shipping look-alike statistics would be
+fabricated evidence. `make clean` keeps the library; `make clean-skills`
+resets it.
+
+### Where it runs
+
+`make opt` is the one target needing both halves at once: `claude` and its
+credentials on the host, Yosys/OpenSTA/eqy in the container. It runs host-side
+and dispatches each tool call into the image (`ASTRA_TOOL_PREFIX`, see
+`tools/toolenv.py`). Nothing is copied — the repo is bind-mounted, so both
+sides read and write the same `runs/` directory.
+
+Cost scales as *N* candidates × *K* iterations, plus one analysis call per
+iteration — so the default `-n 4 --iters 3` is up to 15 model calls, not one.
+Everything in the [advisor's cost notes](#what-it-costs) applies with that
+multiplier.
+
+### Honest differences from the paper
+
+Same method, weaker instruments, and the gaps are worth stating plainly:
+
+- **Open-source synthesis.** The paper uses commercial synthesis and argues
+  the point explicitly: weak synthesis makes trivial rewrites look effective.
+  Yosys is weaker, so a slack win here is a smaller claim than the same
+  number would be there.
+- **Equivalence checking is best-effort.** With `eqy` installed you get its
+  partitioned SEC. Without it the fallback is a Yosys miter discharged by
+  Yosys's own SAT engine, which tries temporal induction first (an unbounded
+  proof) and falls back to a bounded check of `--sec-depth` cycles. A bounded
+  pass is recorded as `method: bounded`, not silently promoted to a proof —
+  read that field before trusting a result.
+- **Scale.** The paper evaluates 20 designs averaging 812 lines. This repo
+  ships two designs of ~90 lines. The loop is the same; the evidence it
+  produces is not comparable.
+- **One generalisation of Eq. 3.** The paper's `(x−x_base)/x_base`
+  normalisation is only well-behaved while the timing baseline is negative,
+  which is its regime. Timing terms here use `−(x−x_base)/|x_base|` —
+  algebraically identical whenever `x_base < 0`, and still correct once a
+  design closes and the sign would otherwise invert. `make selftest` asserts
+  the equivalence.
+
+---
+
 ## Layout
 
 ```
@@ -159,9 +283,22 @@ designs/<name>/          inputs
 flow/config/*.tcl        PDK paths (liberty, LEF, site, layers)
 flow/scripts/*.tcl       synth.tcl, sta.tcl, doctor.tcl
 
+flow/scripts/sec.tcl     equivalence miter, discharged by Yosys's SAT engine
+
 tools/astra.py           the CLI
 tools/parse_sta.py       OpenSTA report text → JSON
 tools/astra_advise.py    run artifacts → Claude → advice.md (host-side)
+
+tools/drrtl.py           the loop: orchestrator + the four agents
+tools/score.py           Eq. 1/3/4/5 — objective, selection, advantage
+tools/rtl_map.py         critical path → RTL lines + structural root causes
+tools/sec.py             SEC driver (eqy, else the Yosys miter)
+tools/skills.py          the confidence-aware skill library
+tools/llm.py             `claude -p` wrapper shared by the agents
+tools/toolenv.py         dispatch EDA calls into the container
+tools/selftest.py        62 tests over the above (needs no EDA tools)
+
+skills/library.json      learned pattern→strategy pairs (persists across runs)
 
 runs/<design>/<timestamp>/       outputs (gitignored)
     00_inputs/           the exact RTL + SDC used
@@ -170,6 +307,20 @@ runs/<design>/<timestamp>/       outputs (gitignored)
     logs/                raw tool output
     metrics.json         WNS, TNS, area, cell count, paths to artifacts
     advice.md            `make advise` output, if run
+
+runs/<design>/opt-<timestamp>/   `make opt` outputs
+    baseline/            D_0 evaluated — what Eq. 3 is normalised against
+    iter_NN/
+        analysis.txt     the path→RTL mapping the agents were given
+        candN/
+            proposal.json    pattern, strategy, rationale, expected recovery
+            reply.md         the model's full reply
+            rtl/             the candidate design
+            sec/             equivalence check log and verdict
+            eval/            its own synthesis + STA run
+    best/                the winning RTL, with its provenance
+    trajectory.json      the three-layer hierarchical log (§4.2)
+    summary.md           per-iteration tables, PPA deltas, SEC pass rate
 ```
 
 `00_inputs/` holds a copy of the RTL and SDC each run used, so a timing number

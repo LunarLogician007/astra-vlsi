@@ -3,6 +3,7 @@
 #
 #   Yosys      logic synthesis          (apt)
 #   OpenSTA    static timing analysis   (source build, ~5 min)
+#   eqy + sby  sequential equivalence   (source build, optional)
 #   PDK        nangate45 only, ~100 MB  (sparse-checkout from ORFS)
 #
 # Roughly 1-2 GB, and it builds natively on both arm64 and x86 — no emulation.
@@ -103,6 +104,32 @@ RUN set -euo pipefail; \
     echo "pdks=${PDKS}" >> /etc/astra-tools.txt; \
     du -sh /pdks/*
 
+# --- equivalence checking (optional) ---------------------------------------
+# eqy is the SEC front end the paper's method depends on. It is *optional*
+# here: tools/sec.py falls back to a Yosys miter discharged by Yosys's own SAT
+# engine, which needs nothing beyond the Yosys already installed above. So a
+# failure to build eqy downgrades the checker rather than failing the image --
+# and `astra doctor` reports which one you ended up with.
+#
+# Skip it entirely with:  make build EQY=0
+ARG WITH_EQY=1
+RUN set -eu; \
+    if [ "${WITH_EQY}" != "1" ]; then \
+        echo "eqy=skipped (WITH_EQY=0)" >> /etc/astra-tools.txt; exit 0; \
+    fi; \
+    ( apt-get update \
+      && apt-get install -y --no-install-recommends \
+            python3-click python3-pip yosys-dev z3 \
+      && rm -rf /var/lib/apt/lists/* \
+      && git clone --depth 1 https://github.com/YosysHQ/sby.git /tmp/sby \
+      && make -C /tmp/sby install PREFIX=/usr/local \
+      && git clone --depth 1 https://github.com/YosysHQ/eqy.git /tmp/eqy \
+      && make -C /tmp/eqy install PREFIX=/usr/local \
+      && rm -rf /tmp/sby /tmp/eqy \
+      && eqy --help >/dev/null 2>&1 \
+      && echo "eqy=installed" >> /etc/astra-tools.txt ) \
+    || echo "eqy=unavailable (SEC falls back to the Yosys miter)" >> /etc/astra-tools.txt
+
 ENV ASTRA_ROOT=/work \
     ASTRA_PDK_ROOT=/pdks \
     PYTHONDONTWRITEBYTECODE=1
@@ -114,6 +141,7 @@ WORKDIR /work
 COPY flow    /work/flow
 COPY tools   /work/tools
 COPY designs /work/designs
+COPY skills  /work/skills
 
 # A wrapper rather than a symlink: when /work is a bind mount from a Windows
 # drive, the exec bit on the mounted file is gone, so invoking python3
