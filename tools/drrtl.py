@@ -672,7 +672,11 @@ class SkillLearningAgent:
                 rationale=c.get("rationale", ""),
                 score_delta=c.get("score"),
             )
-            recorded.append(entry["id"])
+            if entry.get("id"):
+                recorded.append(entry["id"])
+            else:
+                warn(f"{c['id']}: {entry.get('skipped')} "
+                     f"({strategy[:60]!r}) -- not added to the library")
 
         out: dict[str, Any] = {"recorded": recorded, "abstracted": [],
                                "observations": ""}
@@ -711,8 +715,9 @@ class SkillLearningAgent:
                 rationale=s.get("rationale", ""),
                 example=s.get("example", ""),
             )
-            out["abstracted"].append({"id": entry["id"], "verdict": verdict,
-                                      "evidence": s.get("evidence", "")})
+            if entry.get("id"):
+                out["abstracted"].append({"id": entry["id"], "verdict": verdict,
+                                          "evidence": s.get("evidence", "")})
         out["observations"] = parsed.get("observations", "")
         out["raw_reply"] = reply
         self.lib.save()

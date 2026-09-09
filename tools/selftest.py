@@ -1396,6 +1396,102 @@ class TestRtlScanDepth(unittest.TestCase):
 # ===========================================================================
 
 
+class TestSkillMerging(unittest.TestCase):
+    """The library must accumulate evidence on one entry, not fragment it.
+
+    Measured on a real run: one concept -- high fanout on a multiplier operand
+    -- had forked into four entries of one or two trials each, none of which
+    could ever clear the support term. One of the four had a *verdict* in its
+    strategy field, and an agent later declined the transformation by citing
+    it, against a mean advantage that was favourable.
+    """
+
+    def setUp(self):
+        self.lib = skills.SkillLibrary(Path(tempfile.mkdtemp()) / "lib.json")
+
+    def test_word_forms_of_one_word_match(self):
+        for a, b in (("register", "registers"), ("replicate", "replication"),
+                     ("propagate", "propagation"), ("adder", "adders")):
+            self.assertTrue(skills._same_word(a, b), f"{a} !~ {b}")
+
+    def test_different_words_do_not_match(self):
+        for a, b in (("fanout", "operand"), ("split", "single"),
+                     ("tree", "three"), ("carry", "clock")):
+            self.assertFalse(skills._same_word(a, b), f"{a} ~ {b}")
+
+    def test_verbose_and_terse_phrasings_of_one_bottleneck_merge(self):
+        rec = dict(sec_pass=True, advantage=-0.5, design="d", iteration=1)
+        self.lib.record("High-fanout operand driving multiplier with 38+ loads",
+                        "Replicate operand registers to split fanout", **rec)
+        self.lib.record("High-fanout multiplier operand from single register",
+                        "Replicate operand register to reduce fanout cone", **rec)
+        self.assertEqual(len(self.lib), 1,
+                         "one bottleneck must not become two entries")
+        self.assertEqual(self.lib.all(True)[0]["stats"]["occurrences"], 2)
+
+    def test_a_genuinely_different_strategy_stays_separate(self):
+        rec = dict(sec_pass=True, advantage=-0.5, design="d", iteration=1)
+        self.lib.record("high fanout on the critical path",
+                        "replicate the driver to split the load", **rec)
+        self.lib.record("high fanout on the critical path",
+                        "insert a pipeline stage before the load", **rec)
+        self.assertEqual(len(self.lib), 2,
+                         "two different fixes for one pattern are two skills")
+
+    def test_a_verdict_never_founds_an_entry(self):
+        entry = self.lib.record(
+            "carry propagation in a wide accumulator",
+            "unable to reduce depth safely; no equivalent transformation",
+            sec_pass=True, advantage=None, design="d", iteration=1)
+        self.assertIsNone(entry.get("id"))
+        self.assertEqual(len(self.lib), 0,
+                         "a conclusion about an attempt is not a transformation")
+
+    def test_a_verdict_still_accumulates_against_a_real_entry(self):
+        rec = dict(sec_pass=True, advantage=-0.5, design="d", iteration=1)
+        self.lib.record("High-fanout operand driving multiplier with 38+ loads",
+                        "Replicate operand registers to split fanout", **rec)
+        self.lib.record("high-fanout operand driving 16x16 multiplier",
+                        "register replication already attempted; "
+                        "insufficient margin", **rec)
+        self.assertEqual(len(self.lib), 1)
+        self.assertEqual(self.lib.all(True)[0]["stats"]["occurrences"], 2,
+                         "the outcome is real evidence even when the strategy "
+                         "field was written as a verdict")
+
+    def test_consolidate_repairs_an_already_fragmented_library(self):
+        rec = dict(sec_pass=True, advantage=-0.5, design="d", iteration=1)
+        for pat, strat in (
+                ("High-fanout operand driving multiplier with 38+ loads",
+                 "Replicate operand registers to split fanout"),
+                ("High-fanout multiplier operand from single register",
+                 "Replicate operand register to reduce fanout cone")):
+            e = {"id": skills.make_id(pat, strat), "pattern": pat,
+                 "strategy": strat, "source": "learned", "created_at": "x",
+                 "stats": {"occurrences": 1, "sec_pass": 1, "sec_fail": 0,
+                           "inconclusive": 0, "advantage_sum": -0.5,
+                           "advantage_n": 1, "score_delta_sum": 0.0,
+                           "score_delta_n": 0, "designs": ["d"],
+                           "iterations": 1}}
+            self.lib.entries[e["id"]] = e            # bypass merging
+        self.assertEqual(len(self.lib), 2)
+        merged = self.lib.consolidate()
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(len(self.lib), 1)
+        self.assertEqual(self.lib.all(True)[0]["stats"]["occurrences"], 2,
+                         "statistics must survive the merge, not be discarded")
+
+    def test_a_verdict_is_rendered_as_history_not_as_advice(self):
+        entry = {"id": "x", "pattern": "carry propagation in a wide adder",
+                 "strategy": "no equivalent optimization available",
+                 "status": "candidate", "confidence": 0.3,
+                 "stats": {"occurrences": 2, "sec_pass": 2}}
+        out = skills.render([entry])
+        self.assertIn("ATTEMPTED", out)
+        self.assertIn("not a transformation", out)
+        self.assertNotIn("->  no equivalent", out)
+
+
 class TestSkillDoc(unittest.TestCase):
     def setUp(self):
         if not skillgen.SKILL_PATH.is_file():

@@ -2,8 +2,8 @@
   "meta": {
     "version": 1,
     "note": "Pattern-strategy skill library (paper Sec. 4.2). Entries marked source=seed are textbook transformations offered as untested suggestions: they carry zero occurrences and zero confidence and must earn their statistics from real runs, exactly like a learned entry. Entries gain occurrences, SEC-pass counts and a mean relative advantage A_i as the loop runs, and are demoted to status=invalid if they break equivalence more often than not.",
-    "updated_at": "2026-09-09T02:37:45+00:00",
-    "count": 29
+    "updated_at": "2026-09-09T16:10:37+00:00",
+    "count": 27
   },
   "skills": [
     {
@@ -15,28 +15,28 @@
       "source": "learned",
       "created_at": "2026-09-09T02:13:35+00:00",
       "stats": {
-        "occurrences": 2,
-        "sec_pass": 2,
+        "occurrences": 5,
+        "sec_pass": 5,
         "sec_fail": 0,
         "inconclusive": 0,
-        "advantage_sum": -1.3967049903304432,
-        "advantage_n": 2,
-        "score_delta_sum": -0.3701694717988351,
-        "score_delta_n": 1,
+        "advantage_sum": -2.1038117715169973,
+        "advantage_n": 4,
+        "score_delta_sum": -1.295940006585738,
+        "score_delta_n": 3,
         "designs": [
           "mac_chain"
         ],
-        "iterations": 2
+        "iterations": 5
       },
       "last_seen": {
         "design": "mac_chain",
         "iteration": 1,
         "at": "2026-09-09T02:15:29+00:00"
       },
-      "confidence": 0.3207,
-      "mean_advantage": -0.6983524951652216,
+      "confidence": 0.4632,
+      "mean_advantage": -0.5259529428792493,
       "status": "candidate",
-      "updated_at": "2026-09-09T02:15:29+00:00"
+      "updated_at": "2026-09-09T16:10:37+00:00"
     },
     {
       "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
@@ -103,211 +103,51 @@
       "updated_at": "2026-09-09T02:20:02+00:00"
     },
     {
-      "id": "high-fanout-operand-driving-16x16-multiplier::register-replication-already-attempted-insuffici",
-      "pattern": "high-fanout operand driving 16x16 multiplier",
-      "strategy": "register replication already attempted; insufficient margin",
-      "rationale": "b0_q replication (attempted iter 1) split fanout but couldn't reduce critical path enough to overcome area cost and synthesis redistribution losses. Further replication without explicit decomposition creates unused signals that synthesizer removes.",
+      "id": "serial-4-term-adder-chain-instead-of-balanced-tr::restructure-accumulate-as-binary-tree-to-paralle",
+      "pattern": "Serial 4-term adder chain instead of balanced tree",
+      "strategy": "Restructure accumulate as binary tree to parallelize carry",
+      "rationale": "Original s3 = ((s0+p1)+p2)+p3 chains three 40-bit ripple carries in series, a critical depth-3 dependency. Rebalanced s3 = (s01||s23) + s3 runs p0+p1 and p2+p3 in parallel, then combines them, reducing critical carry-propagation path from 3 sequential adders to 2, cutting depth by ~33%. The carry chain depth is the dominant delay in stages 50-91, so this directly shortens the path.",
       "example": "",
       "source": "learned",
-      "created_at": "2026-09-09T02:20:02+00:00",
+      "created_at": "2026-09-09T02:52:32+00:00",
       "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": -0.7071067811865541,
-        "advantage_n": 1,
-        "score_delta_sum": -0.46583656261221806,
-        "score_delta_n": 1,
-        "designs": [
-          "mac_chain"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "mac_chain",
-        "iteration": 2,
-        "at": "2026-09-09T02:20:02+00:00"
-      },
-      "confidence": 0.2011,
-      "mean_advantage": -0.7071067811865541,
-      "status": "candidate",
-      "updated_at": "2026-09-09T02:20:02+00:00"
-    },
-    {
-      "id": "high-fanout-multiplier-operand-from-single-regis::replicate-operand-register-to-reduce-fanout-cone",
-      "pattern": "High-fanout multiplier operand from single register",
-      "strategy": "Replicate operand register to reduce fanout cone",
-      "rationale": "Operand replication reduces fanout but does not reduce critical path when bottleneck is downstream datapath logic. Synthesis redistribution and area penalty outweigh timing benefit. Fanout reduction alone is insufficient without downstream restructuring.",
-      "example": "// ATTEMPTED: replication\nwire [31:0] b0 = b_q, b1 = b_q;\nwire [31:0] prod0 = a * b0, prod1 = a * b1;\n\n// Result: area grows, WNS unchanged, insufficient margin",
-      "source": "learned",
-      "created_at": "2026-09-09T02:20:51+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
+        "occurrences": 2,
+        "sec_pass": 2,
         "sec_fail": 0,
         "inconclusive": 0,
         "advantage_sum": 0.0,
-        "advantage_n": 0,
-        "score_delta_sum": 0.0,
-        "score_delta_n": 0,
+        "advantage_n": 2,
+        "score_delta_sum": -0.9577580117004215,
+        "score_delta_n": 2,
         "designs": [
           "mac_chain"
         ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "mac_chain",
-        "iteration": 2,
-        "at": "2026-09-09T02:20:51+00:00"
-      },
-      "confidence": 0.125,
-      "mean_advantage": null,
-      "status": "candidate",
-      "updated_at": "2026-09-09T02:20:51+00:00"
-    },
-    {
-      "id": "intermediate-sign-extension-wires-in-accumulator::inline-sign-extension-concatenations-into-summat",
-      "pattern": "Intermediate sign-extension wires in accumulator tree",
-      "strategy": "Inline sign-extension concatenations into summation expressions",
-      "rationale": "Inlining sign-extension directly into addition expressions worsens both timing and area compared to intermediate wires. Synthesis optimizes multi-fan intermediate signals better than deeply nested inline expressions; decomposition into stages allows better gate placement and routing.",
-      "example": "// INEFFECTIVE: inlined\nassign sum = {s0[39], s0} + {s1[39], s1} + {s2[39], s2};\n\n// BETTER: decomposed\nwire [39:0] s0_ext = {{8{prod0[31]}}, prod0};\nwire [39:0] s1_ext = {{8{prod1[31]}}, prod1};\nassign sum = s0_ext + s1_ext + s2_ext;",
-      "source": "learned",
-      "created_at": "2026-09-09T02:20:51+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": 0.0,
-        "advantage_n": 0,
-        "score_delta_sum": 0.0,
-        "score_delta_n": 0,
-        "designs": [
-          "mac_chain"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "mac_chain",
-        "iteration": 2,
-        "at": "2026-09-09T02:20:51+00:00"
-      },
-      "confidence": 0.125,
-      "mean_advantage": null,
-      "status": "candidate",
-      "updated_at": "2026-09-09T02:20:51+00:00"
-    },
-    {
-      "id": "multi-level-addition-tree-in-accumulator::replace-tree-with-carry-save-3-2-compression",
-      "pattern": "Multi-level addition tree in accumulator",
-      "strategy": "Replace tree with carry-save 3:2 compression",
-      "rationale": "Tree of three 40-bit adds (two adds feeding a third, depth ~2 \u00d7 single-add latency) can theoretically flatten to constant depth via 3:2 compressor producing (sum, carry) plus final add. However, compressor logic overhead and the final carry-propagate stage become the new bottleneck, increasing latency beyond the original tree.",
-      "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
-      "source": "learned",
-      "created_at": "2026-09-09T02:15:29+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": 0.0,
-        "advantage_n": 0,
-        "score_delta_sum": 0.0,
-        "score_delta_n": 0,
-        "designs": [
-          "mac_chain"
-        ],
-        "iterations": 1
+        "iterations": 2
       },
       "last_seen": {
         "design": "mac_chain",
         "iteration": 1,
-        "at": "2026-09-09T02:15:29+00:00"
+        "at": "2026-09-09T02:52:32+00:00"
       },
-      "confidence": 0.125,
-      "mean_advantage": null,
+      "confidence": 0.2,
+      "mean_advantage": 0.0,
       "status": "candidate",
-      "updated_at": "2026-09-09T02:15:29+00:00"
+      "updated_at": "2026-09-09T16:09:00+00:00"
     },
     {
-      "id": "ripple-carry-propagation-in-40-bit-final-accumul::replace-ripple-carry-with-carry-save-3-2-compres",
-      "pattern": "Ripple carry propagation in 40-bit final accumulator",
-      "strategy": "Replace ripple carry with carry-save 3:2 compression tree",
-      "rationale": "Carry-save compression reduces gate count but introduces mux levels and register overhead that synthesize to slower hardware than ripple carry. Carry depth is not the bottleneck; algorithmic restructuring creates synthesis inefficiency that outweighs logical reduction.",
-      "example": "// INEFFECTIVE: carry-save\nwire [39:0] ps0 = carry_save_3_2(prod0, prod1, prod2);\nwire [39:0] result = carry_save_add(ps0, prod3);\n\n// BETTER: keep ripple\nwire [39:0] result = prod0 + prod1 + prod2 + prod3;",
+      "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+      "pattern": "40-bit carry propagation in balanced adder tree",
+      "strategy": "Unable to optimize while maintaining fixed latency",
+      "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+      "example": "",
       "source": "learned",
-      "created_at": "2026-09-09T02:20:51+00:00",
+      "created_at": "2026-09-09T16:03:21+00:00",
       "stats": {
         "occurrences": 1,
         "sec_pass": 1,
         "sec_fail": 0,
         "inconclusive": 0,
         "advantage_sum": 0.0,
-        "advantage_n": 0,
-        "score_delta_sum": 0.0,
-        "score_delta_n": 0,
-        "designs": [
-          "mac_chain"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "mac_chain",
-        "iteration": 2,
-        "at": "2026-09-09T02:20:51+00:00"
-      },
-      "confidence": 0.125,
-      "mean_advantage": null,
-      "status": "candidate",
-      "updated_at": "2026-09-09T02:20:51+00:00"
-    },
-    {
-      "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
-      "pattern": "Carry propagation in accumulator tree",
-      "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
-      "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
-      "example": "",
-      "source": "learned",
-      "created_at": "2026-09-09T02:13:35+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": 1.3967049903304432,
-        "advantage_n": 1,
-        "score_delta_sum": 0.10360996197007193,
-        "score_delta_n": 1,
-        "designs": [
-          "mac_chain"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "mac_chain",
-        "iteration": 1,
-        "at": "2026-09-09T02:13:35+00:00"
-      },
-      "confidence": 0.0144,
-      "mean_advantage": 1.3967049903304432,
-      "status": "candidate",
-      "updated_at": "2026-09-09T02:13:35+00:00"
-    },
-    {
-      "id": "sign-extension-through-intermediate-wires-in-add::inline-sign-extension-expressions-to-reduce-inte",
-      "pattern": "Sign-extension through intermediate wires in adder tree",
-      "strategy": "Inline sign-extension expressions to reduce intermediate nodes",
-      "rationale": "The current design explicitly creates four 40-bit sign-extended versions (s0\u2013s3) of the 32-bit products before adding them. These intermediate wires add routing delay and potential gate duplication. Inlining the sign-extension concatenations directly into the addition expressions eliminates the intermediate nodes, allowing synthesis to better optimize the critical datapath through the accumulator tree.",
-      "example": "",
-      "source": "learned",
-      "created_at": "2026-09-09T02:20:02+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": 1.4142135623730883,
         "advantage_n": 1,
         "score_delta_sum": -0.4599339721746848,
         "score_delta_n": 1,
@@ -318,13 +158,141 @@
       },
       "last_seen": {
         "design": "mac_chain",
+        "iteration": 1,
+        "at": "2026-09-09T16:03:21+00:00"
+      },
+      "confidence": 0.125,
+      "mean_advantage": 0.0,
+      "status": "candidate",
+      "updated_at": "2026-09-09T16:03:21+00:00"
+    },
+    {
+      "id": "40-bit-carry-ripple-in-balanced-accumulator-tree::no-further-transformation-valid-under-constraint",
+      "pattern": "40-bit carry ripple in balanced accumulator tree",
+      "strategy": "No further transformation valid under constraints",
+      "rationale": "RTL already uses optimal balanced tree; carry-save compression was attempted and synthesized slower; delay spread evenly offers no local fix point; 2-cycle latency constraint prevents pipelining or topology restructuring.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-09T16:03:21+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 1,
+        "score_delta_sum": -0.4599339721746848,
+        "score_delta_n": 1,
+        "designs": [
+          "mac_chain"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "mac_chain",
+        "iteration": 1,
+        "at": "2026-09-09T16:03:21+00:00"
+      },
+      "confidence": 0.125,
+      "mean_advantage": 0.0,
+      "status": "candidate",
+      "updated_at": "2026-09-09T16:03:21+00:00"
+    },
+    {
+      "id": "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+      "pattern": "Serial accumulation chain with 4 operands",
+      "strategy": "Rebalance serial add chain into binary tree",
+      "rationale": "Three-stage ripple-carry chain (3 adders deep) becomes two stages (2 adders deep) by computing p0+p1 and p2+p3 in parallel, then combining. Each 40-bit adder carries ~5-8 gate delays; removing one stage recovers ~0.4 ns on the critical path and closes the -0.3573 ns slack shortfall.",
+      "example": "// depth 3\nwire [W:0] s = ((a + b) + c) + d;\n// depth 2, same value\nwire [W:0] s = (a + b) + (c + d);",
+      "source": "seed+learned",
+      "created_at": "2026-09-09T02:52:32+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 1,
+        "score_delta_sum": -0.47887900585021076,
+        "score_delta_n": 1,
+        "designs": [
+          "mac_chain"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "mac_chain",
+        "iteration": 1,
+        "at": "2026-09-09T02:52:32+00:00"
+      },
+      "confidence": 0.125,
+      "mean_advantage": 0.0,
+      "status": "candidate",
+      "updated_at": "2026-09-09T16:09:00+00:00"
+    },
+    {
+      "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+      "pattern": "Carry propagation in accumulator tree",
+      "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+      "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+      "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+      "source": "learned",
+      "created_at": "2026-09-09T02:13:35+00:00",
+      "stats": {
+        "occurrences": 3,
+        "sec_pass": 3,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 1.3967049903304432,
+        "advantage_n": 1,
+        "score_delta_sum": 0.10360996197007193,
+        "score_delta_n": 1,
+        "designs": [
+          "mac_chain"
+        ],
+        "iterations": 3
+      },
+      "last_seen": {
+        "design": "mac_chain",
+        "iteration": 1,
+        "at": "2026-09-09T02:13:35+00:00"
+      },
+      "confidence": 0.0288,
+      "mean_advantage": 1.3967049903304432,
+      "status": "candidate",
+      "updated_at": "2026-09-09T16:09:00+00:00"
+    },
+    {
+      "id": "sign-extension-through-intermediate-wires-in-add::inline-sign-extension-expressions-to-reduce-inte",
+      "pattern": "Sign-extension through intermediate wires in adder tree",
+      "strategy": "Inline sign-extension expressions to reduce intermediate nodes",
+      "rationale": "The current design explicitly creates four 40-bit sign-extended versions (s0\u2013s3) of the 32-bit products before adding them. These intermediate wires add routing delay and potential gate duplication. Inlining the sign-extension concatenations directly into the addition expressions eliminates the intermediate nodes, allowing synthesis to better optimize the critical datapath through the accumulator tree.",
+      "example": "// INEFFECTIVE: inlined\nassign sum = {s0[39], s0} + {s1[39], s1} + {s2[39], s2};\n\n// BETTER: decomposed\nwire [39:0] s0_ext = {{8{prod0[31]}}, prod0};\nwire [39:0] s1_ext = {{8{prod1[31]}}, prod1};\nassign sum = s0_ext + s1_ext + s2_ext;",
+      "source": "learned",
+      "created_at": "2026-09-09T02:20:02+00:00",
+      "stats": {
+        "occurrences": 2,
+        "sec_pass": 2,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 1.4142135623730883,
+        "advantage_n": 1,
+        "score_delta_sum": -0.4599339721746848,
+        "score_delta_n": 1,
+        "designs": [
+          "mac_chain"
+        ],
+        "iterations": 2
+      },
+      "last_seen": {
+        "design": "mac_chain",
         "iteration": 2,
         "at": "2026-09-09T02:20:02+00:00"
       },
-      "confidence": 0.014,
+      "confidence": 0.0223,
       "mean_advantage": 1.4142135623730883,
       "status": "candidate",
-      "updated_at": "2026-09-09T02:20:02+00:00"
+      "updated_at": "2026-09-09T16:09:00+00:00"
     },
     {
       "id": "arithmetic-operator-chain-split-across-a-module-::keep-the-whole-chain-in-one-hierarchy-so-it-can-",
@@ -681,30 +649,6 @@
         "score_delta_n": 0,
         "designs": [],
         "iterations": 0
-      },
-      "confidence": 0.0,
-      "mean_advantage": null,
-      "status": "candidate"
-    },
-    {
-      "id": "serial-accumulate-chain::rebalance-the-chain-into-an-adder-tree",
-      "pattern": "serial accumulate chain",
-      "strategy": "rebalance the chain into an adder tree",
-      "rationale": "A left-to-right chain of N adds has depth N-1; a balanced tree has ceil(log2 N). The arithmetic result is identical because integer addition is associative in two's complement of a fixed width.",
-      "example": "// depth 3\nwire [W:0] s = ((a + b) + c) + d;\n// depth 2, same value\nwire [W:0] s = (a + b) + (c + d);",
-      "source": "seed",
-      "created_at": "2026-08-31T18:17:28+00:00",
-      "stats": {
-        "occurrences": 0,
-        "sec_pass": 0,
-        "sec_fail": 0,
-        "advantage_sum": 0.0,
-        "advantage_n": 0,
-        "score_delta_sum": 0.0,
-        "score_delta_n": 0,
-        "designs": [],
-        "iterations": 0,
-        "inconclusive": 0
       },
       "confidence": 0.0,
       "mean_advantage": null,
