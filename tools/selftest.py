@@ -1433,14 +1433,27 @@ class TestSkillDoc(unittest.TestCase):
         self.assertEqual(skillgen.inject("SYS.", ""), "SYS.")
         self.assertEqual(skillgen.load_doc(Path("/nonexistent/SKILL.md")), "")
 
-    def test_every_catalogue_entry_is_an_honest_seed(self):
+    def test_seed_entries_carry_no_statistics(self):
+        """A seed is an untested suggestion and must stay one until a run
+        gives it a record. Learned entries are exempt -- carrying measured
+        statistics is the whole point of them."""
         lib = skills.SkillLibrary()
         for e in lib.all(True):
-            if e.get("pattern") in self.raw:
-                st = e.get("stats") or {}
-                self.assertEqual(st.get("occurrences", 0), 0,
-                                 f"{e['id']} is in the document with statistics")
-                self.assertEqual(e.get("confidence", 0.0), 0.0)
+            if e.get("source") != "seed":
+                continue
+            st = e.get("stats") or {}
+            self.assertEqual(st.get("occurrences", 0), 0,
+                             f"{e['id']} is a seed with statistics")
+            self.assertEqual(e.get("confidence", 0.0), 0.0)
+
+    def test_the_document_states_no_record_for_any_entry(self):
+        """The catalogue is an index. Statistics belong in the library, where
+        they were measured, and the per-target skill block is what carries
+        them into a prompt."""
+        for line in self.raw.splitlines():
+            if line.startswith("| ") and line.count("|") == 3:
+                self.assertNotIn("confidence", line.lower())
+                self.assertNotIn("SEC pass", line)
 
 
 # ===========================================================================

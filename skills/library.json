@@ -2,8 +2,8 @@
   "meta": {
     "version": 1,
     "note": "Pattern-strategy skill library (paper Sec. 4.2). Entries marked source=seed are textbook transformations offered as untested suggestions: they carry zero occurrences and zero confidence and must earn their statistics from real runs, exactly like a learned entry. Entries gain occurrences, SEC-pass counts and a mean relative advantage A_i as the loop runs, and are demoted to status=invalid if they break equivalence more often than not.",
-    "updated_at": "2026-09-09T02:20:51+00:00",
-    "count": 22
+    "updated_at": "2026-09-09T02:37:45+00:00",
+    "count": 29
   },
   "skills": [
     {
@@ -327,6 +327,30 @@
       "updated_at": "2026-09-09T02:20:02+00:00"
     },
     {
+      "id": "arithmetic-operator-chain-split-across-a-module-::keep-the-whole-chain-in-one-hierarchy-so-it-can-",
+      "pattern": "arithmetic operator chain split across a module boundary",
+      "strategy": "keep the whole chain in one hierarchy so it can merge",
+      "rationale": "Hierarchy is a hard boundary for operator merging. A multiply in one module feeding an add in its parent cannot become a single compression tree, however obviously the two belong together.",
+      "example": "",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
       "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
       "pattern": "carry propagation across a wide accumulator",
       "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
@@ -375,6 +399,30 @@
       "status": "candidate"
     },
     {
+      "id": "hand-instantiated-arithmetic-component::use-the-inferred-operator-so-the-tool-picks-the-",
+      "pattern": "hand-instantiated arithmetic component",
+      "strategy": "use the inferred operator so the tool picks the architecture",
+      "rationale": "An explicitly instantiated adder or multiplier is a black box with a fixed architecture. The inferred operator lets synthesis choose one suited to its context and merge it with its neighbours.",
+      "example": "",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
       "id": "high-fanout-signal-on-the-critical-path::replicate-the-driver-so-each-load-group-has-its-",
       "pattern": "high-fanout signal on the critical path",
       "strategy": "replicate the driver so each load group has its own copy",
@@ -399,6 +447,30 @@
       "status": "candidate"
     },
     {
+      "id": "intermediate-arithmetic-result-truncated-between::widen-the-intermediate-so-the-operator-chain-sta",
+      "pattern": "intermediate arithmetic result truncated between operators",
+      "strategy": "widen the intermediate so the operator chain stays one datapath",
+      "rationale": "Assigning a product-plus-sum to a narrower wire and widening again downstream splits one arithmetic block into two, each optimised alone, so no compression tree spans them. Tool-dependent: a flow without a datapath extractor gains nothing here, and there narrowing to the width the data provably occupies can instead be the winning move.",
+      "example": "wire [15:0] t = a * b + c;   // splits the datapath\nwire [16:0] t = a * b + c;   // keeps it whole",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
       "id": "long-path-through-an-operand-shared-by-many-cons::isolate-the-operand-per-consumer-so-an-idle-cons",
       "pattern": "long path through an operand shared by many consumers",
       "strategy": "isolate the operand per consumer so an idle consumer stops loading it",
@@ -417,6 +489,54 @@
         "designs": [],
         "iterations": 0,
         "inconclusive": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
+      "id": "loop-carried-dependency-in-a-generate-loop::reduce-with-a-balanced-tree-instead-of-a-linear-",
+      "pattern": "loop-carried dependency in a generate loop",
+      "strategy": "reduce with a balanced tree instead of a linear scan",
+      "rationale": "A generate loop whose body consumes the previous iteration's output elaborates into a chain as deep as the trip count. A priority cascade, a ripple carry and a shift chain are all written this way. The source shows one assignment and synthesis produces N levels, which is why reading the code does not reveal it.",
+      "example": "// depth N\nfor (i = N-1; i >= 0; i = i - 1)\n  assign h[i] = r[i] | h[i+1];\n// depth ceil(log2 N)\nassign any = |r;",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
+      "id": "mixed-signed-and-unsigned-operands-in-one-expres::make-signedness-explicit-and-consistent-across-t",
+      "pattern": "mixed signed and unsigned operands in one expression",
+      "strategy": "make signedness explicit and consistent across the expression",
+      "rationale": "A signed subexpression combined with an unsigned one forces two operator implementations where one would serve, and puts conversion logic on the path between them.",
+      "example": "",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
       },
       "confidence": 0.0,
       "mean_advantage": null,
@@ -471,6 +591,30 @@
       "status": "candidate"
     },
     {
+      "id": "register-placed-inside-an-arithmetic-chain::register-the-datapath-output-and-let-retiming-pl",
+      "pattern": "register placed inside an arithmetic chain",
+      "strategy": "register the datapath output and let retiming place it",
+      "rationale": "A flop between two operators stops them being merged, so each is implemented separately and no carry architecture can be chosen across the pair. Registering the end of the chain and letting retiming move the boundary gives the same latency and a better structure.",
+      "example": "",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
       "id": "reset-logic-in-series-with-the-datapath::move-the-reset-out-of-the-data-path-and-onto-the",
       "pattern": "reset logic in series with the datapath",
       "strategy": "move the reset out of the data path and onto the register's own reset",
@@ -513,6 +657,30 @@
         "designs": [],
         "iterations": 0,
         "inconclusive": 0
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate"
+    },
+    {
+      "id": "select-network-in-series-with-a-long-arithmetic-::speculate-every-outcome-in-parallel-and-select-a",
+      "pattern": "select network in series with a long arithmetic path",
+      "strategy": "speculate every outcome in parallel and select at the end",
+      "rationale": "The canonical critical path in a pipelined datapath is not the arithmetic alone but a selection standing in front of it: hazard detection, then operand forwarding, then the ALU, in series. Computing each candidate result concurrently and choosing with one late multiplexer takes the selection off the arithmetic path. A carry-select adder exploits the same shape.",
+      "example": "// before: select, then compute\nwire [W-1:0] op = fwd ? ex_result : rf_data;\nwire [W-1:0] y  = op + b;\n// after: compute both, select last\nwire [W-1:0] y0 = rf_data   + b;\nwire [W-1:0] y1 = ex_result + b;\nwire [W-1:0] y  = fwd ? y1 : y0;",
+      "source": "seed",
+      "created_at": "2026-09-09T02:37:45+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [],
+        "iterations": 0
       },
       "confidence": 0.0,
       "mean_advantage": null,
