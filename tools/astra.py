@@ -40,6 +40,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clocks as clocks_mod  # noqa: E402
 import parse_sta  # noqa: E402
 import toolenv    # noqa: E402
 
@@ -118,10 +119,26 @@ def load_design(name: str) -> dict[str, Any]:
         if key not in cfg:
             die(f"design '{name}': config.json needs a '{key}' key")
     cfg.setdefault("pdk", "nangate45")
-    cfg.setdefault("clock", {})
-    cfg["clock"].setdefault("name", "clk")
-    cfg["clock"].setdefault("period_ns", 10.0)
+    try:
+        cs = clocks_mod.ClockSet.from_config(cfg)
+    except clocks_mod.ClockError as e:
+        die(f"design '{name}': {e}")
+    # Both shapes are kept live: `_clocks` is the whole truth, and the
+    # singular `clock` stays a one-element alias so every pre-multi-clock
+    # reader keeps working unchanged.
+    cfg["_clocks"] = cs
+    cfg["clock"] = {"name": cs.primary.name, "period_ns": cs.primary.period_ns,
+                    **({"port": cs.primary.port} if cs.primary.port else {})}
+    cfg["clocks"] = [c.to_dict() for c in cs]
     return cfg
+
+
+def design_clocks(cfg: dict[str, Any], period: float | None = None):
+    """The design's ClockSet, with a --period override applied if given."""
+    cs = cfg.get("_clocks") or clocks_mod.ClockSet.from_config(cfg)
+    if period is None:
+        return cs
+    return cs.with_period(period)
 
 
 def pdk_config(pdk: str) -> Path:
@@ -204,11 +221,24 @@ def stage_inputs(cfg: dict[str, Any], rdir: Path, period: float) -> dict[str, An
     if not sdc_src.exists():
         die(f"SDC file not found: {sdc_src}")
     text = sdc_src.read_text()
-    if "@CLK_PERIOD@" in text:
-        text = text.replace("@CLK_PERIOD@", f"{period:g}")
-    elif abs(period - float(cfg["clock"]["period_ns"])) > 1e-9:
-        warn(f"{sdc_src.name} has no @CLK_PERIOD@ placeholder, so --period only "
-             f"changes the synthesis delay target, not the constraint")
+    cs = design_clocks(cfg, period)
+    templated = any(tag in text for tag in
+                    ("@CLK_PERIOD@", "@ASTRA_CLOCK_DEFS@", "@CLK_PERIOD:"))
+    if templated:
+        stale = clocks_mod.unresolved_placeholders(
+            clocks_mod.substitute(text, cs))
+        if stale:
+            die(f"{sdc_src.name} references undeclared clock(s): "
+                f"{', '.join(stale)}\n        declared: {', '.join(cs.names())}")
+        text = clocks_mod.substitute(text, cs)
+    else:
+        if abs(period - float(cfg["clock"]["period_ns"])) > 1e-9:
+            warn(f"{sdc_src.name} has no @CLK_PERIOD@ placeholder, so --period only "
+                 f"changes the synthesis delay target, not the constraint")
+        if cs.is_multi:
+            warn(f"{sdc_src.name} declares its clocks by hand, so the "
+                 f"{len(cs)} clocks in config.json are not applied to it; add "
+                 f"@ASTRA_CLOCK_DEFS@ to generate them")
     sdc = idir / sdc_src.name
     sdc.write_text(text)
 
@@ -222,10 +252,15 @@ def do_syn(cfg: dict[str, Any], rdir: Path, args: argparse.Namespace,
     metrics = read_metrics(rdir)
     inputs = metrics["inputs"]
 
+    cs = design_clocks(cfg, period)
+    if cs.is_multi:
+        info(f"synthesis delay target: {cs.synthesis_period:g} ns "
+             f"(tightest of {len(cs)} clocks); slower domains are "
+             f"over-constrained -- see docs/multi-clock.md")
     env = base_env(cfg) | {
         "ASTRA_OUT_DIR": str(odir),
         "ASTRA_RTL_FILES": " ".join(inputs["rtl"]),
-        "ASTRA_CLK_PERIOD": str(period),
+        "ASTRA_CLK_PERIOD": str(cs.synthesis_period),
         "ASTRA_FLATTEN": "0" if args.no_flatten else "1",
     }
 
@@ -306,6 +341,7 @@ def do_sta(cfg: dict[str, Any], rdir: Path, args: argparse.Namespace) -> dict[st
              "wns_ns": s.get("wns_ns"), "tns_ns": s.get("tns_ns"),
              "violating_endpoints": s.get("violating_endpoints"),
              "hold_wns_ns": (s.get("hold") or {}).get("wns_ns"),
+             "clock_groups": parsed.get("clock_groups"),
              "report": str(odir / "timing.rpt"),
              "timing_json": str(odir / "timing.json")}
     metrics["sta"] = stage
@@ -396,7 +432,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     info(f"run: {rdir}")
     write_metrics(rdir, {
         "design": args.design, "run_id": rdir.name, "pdk": cfg["pdk"], "top": cfg["top"],
-        "clock": {"name": cfg["clock"]["name"], "period_ns": period},
+        **design_clocks(cfg, period).to_metrics(),
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "inputs": stage_inputs(cfg, rdir, period),
     })
@@ -426,8 +462,14 @@ def cmd_list(args: argparse.Namespace) -> int:
     for d in sorted(DESIGNS.glob("*/config.json")):
         cfg = json.loads(d.read_text())
         name = d.parent.name
-        print(_c("1", f"{name}") + f"  top={cfg.get('top')}  pdk={cfg.get('pdk', 'nangate45')}"
-              f"  period={cfg.get('clock', {}).get('period_ns')}ns")
+        try:
+            cs = clocks_mod.ClockSet.from_config(cfg)
+            clk = (f"period={cs.primary.period_ns:g}ns" if not cs.is_multi else
+                   "clocks=" + ",".join(f"{c.name}@{c.period_ns:g}ns" for c in cs))
+        except clocks_mod.ClockError as e:
+            clk = f"clocks=INVALID ({e})"
+        print(_c("1", f"{name}") + f"  top={cfg.get('top')}  "
+              f"pdk={cfg.get('pdk', 'nangate45')}  {clk}")
         runs = sorted(p for p in (RUNS / name).glob("*") if p.is_dir() and not p.is_symlink())
         for r in runs[-args.limit:]:
             m = read_metrics(r)

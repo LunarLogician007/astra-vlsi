@@ -41,6 +41,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import astra          # noqa: E402  flow driver: synthesis + STA
+import clocks         # noqa: E402
 import llm            # noqa: E402
 import rtl_map        # noqa: E402
 import score as scoring  # noqa: E402
@@ -174,6 +175,7 @@ class EvaluationAgent:
                  no_flatten: bool = False, quiet: bool = True) -> None:
         self.cfg = cfg
         self.period = period
+        self.clocks = astra.design_clocks(cfg, period)
         self.args = SimpleNamespace(quiet=quiet, no_flatten=no_flatten,
                                     npaths=npaths)
         self.sec_depth = sec_depth
@@ -203,14 +205,14 @@ class EvaluationAgent:
             copied.append(str(dst))
 
         sdc_src = (self.cfg["_dir"] / self.cfg["sdc"]).resolve()
-        text = sdc_src.read_text().replace("@CLK_PERIOD@", f"{self.period:g}")
+        text = clocks.substitute(sdc_src.read_text(), self.clocks)
         sdc = idir / sdc_src.name
         sdc.write_text(text)
 
         astra.write_metrics(outdir, {
             "design": self.cfg["_name"], "run_id": outdir.name,
             "label": label, "pdk": self.cfg["pdk"], "top": self.cfg["top"],
-            "clock": {"name": self.cfg["clock"]["name"], "period_ns": self.period},
+            **self.clocks.to_metrics(),
             "created_at": datetime.now().isoformat(timespec="seconds"),
             "inputs": {"rtl": copied, "sdc": str(sdc)},
         })
@@ -241,6 +243,7 @@ class EvaluationAgent:
             "tns_ns": sta.get("tns_ns"),
             "violating_endpoints": sta.get("violating_endpoints"),
             "hold_wns_ns": sta.get("hold_wns_ns"),
+            "clock_groups": sta.get("clock_groups"),
             "area_um2": syn.get("area_um2"),
             "cells": syn.get("cells"),
             "runtime_s": round(time.time() - t0, 2),
@@ -261,7 +264,8 @@ class EvaluationAgent:
                           workdir: Path) -> dict[str, Any]:
         return sec_mod.check(self.cfg["top"], gold, gate, workdir,
                              depth=self.sec_depth, engine=self.sec_engine,
-                             timeout=self.sec_timeout)
+                             timeout=self.sec_timeout,
+                             clock_set=self.clocks)
 
 
 # ===========================================================================
@@ -768,6 +772,7 @@ class Orchestrator:
             self.cfg["pdk"] = args.pdk
         self.period = float(args.period if args.period is not None
                             else self.cfg["clock"]["period_ns"])
+        self.clocks = astra.design_clocks(self.cfg, args.period)
         self.design = args.design
 
         self.weights = dict(scoring.DEFAULT_WEIGHTS)
@@ -798,7 +803,7 @@ class Orchestrator:
             "design": self.design,
             "top": self.cfg["top"],
             "pdk": self.cfg["pdk"],
-            "clock": {"name": self.cfg["clock"]["name"], "period_ns": self.period},
+            **self.clocks.to_metrics(),
             "weights": self.weights,
             "config": {
                 "candidates_per_iteration": args.n,
@@ -819,6 +824,16 @@ class Orchestrator:
     def _save(self) -> None:
         (self.outdir / "trajectory.json").write_text(
             json.dumps(self.state, indent=2, default=str) + "\n")
+
+    def _score_period(self, base_metrics: dict[str, Any] | None = None) -> float:
+        """The period Eq. 3's normalisation is scaled by.
+
+        One number is needed here because WNS and TNS are design-wide scalars.
+        On a multi-clock design it is the period of the domain that owns the
+        worst slack -- the domain the reported WNS came from.
+        """
+        groups = (base_metrics or {}).get("clock_groups")
+        return scoring.critical_period(groups, self.clocks, self.period)
 
     def _rtl_paths(self, d: Path) -> list[Path]:
         return sorted(p for p in d.glob("*.v")) + sorted(p for p in d.glob("*.sv"))
@@ -884,7 +899,8 @@ class Orchestrator:
 
         # 4. Eq. 3 / Eq. 5 -- score the group and compute relative advantage
         baseline_metrics = self.state["baseline"]["metrics"]
-        scoring.score_group(group, baseline_metrics, self.weights, self.period)
+        scoring.score_group(group, baseline_metrics, self.weights,
+                            self._score_period(baseline_metrics))
         stats = scoring.group_stats(group)
 
         for c in group:

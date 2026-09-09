@@ -44,6 +44,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clocks  # noqa: E402
 import rtl_map  # noqa: E402
 
 # --------------------------------------------------------------------------
@@ -160,8 +161,41 @@ class PathFeatures:
     families: dict[str, float]
     coverage: float
     depth: int
+    # The period of the clock that captured THIS path, not the design's. On a
+    # multi-clock design these differ, and normalising every path against one
+    # of them is the silent mis-ranking HANDOFF.md section 6.1 describes.
+    path_group: str | None = None
+    period_ns: float | None = None
+    period_exact: bool = True
     mapping: dict[str, Any] = field(default_factory=dict, repr=False)
     diagnosis: dict[str, Any] = field(default_factory=dict, repr=False)
+
+
+class _OnePeriod:
+    """Back-compat shim: a bare float means one period for every group."""
+
+    is_multi = False
+
+    def __init__(self, period_ns: float | None) -> None:
+        self._p = period_ns
+
+    def resolve_period(self, group: str | None) -> tuple[float | None, bool]:
+        return self._p, True
+
+    @property
+    def primary_period(self) -> float | None:
+        return self._p
+
+
+def period_book(period_ns: Any) -> Any:
+    """Normalise the period argument into something that resolves a group.
+
+    Accepts a ``clocks.ClockSet``, a bare float (the single-clock case, which
+    every caller predating multi-clock support passes), or None.
+    """
+    if period_ns is None or isinstance(period_ns, (int, float)):
+        return _OnePeriod(float(period_ns) if period_ns else None)
+    return period_ns
 
 
 def _origins(path: dict[str, Any]) -> frozenset[str]:
@@ -194,13 +228,19 @@ def _region_weights(mapping: dict[str, Any]) -> dict[tuple[str, int, int], float
 
 
 def path_features(path: dict[str, Any], index: int, nl: dict[str, Any],
-                  rtl: rtl_map.RtlIndex, period_ns: float | None) -> PathFeatures:
+                  rtl: rtl_map.RtlIndex, period_ns: Any) -> PathFeatures:
+    book = period_book(period_ns)
+    group = path.get("path_group")
+    own_period, exact = book.resolve_period(group)
     mapping = rtl_map.map_path(path, nl, rtl)
-    diagnosis = rtl_map.diagnose(path, period_ns)
+    diagnosis = rtl_map.diagnose(path, own_period)
     return PathFeatures(
         index=index,
         slack_ns=path.get("slack_ns"),
         status=path.get("status"),
+        path_group=group,
+        period_ns=own_period,
+        period_exact=exact,
         startpoint=path.get("startpoint") or "",
         endpoint=path.get("endpoint") or "",
         start_base=rtl_map.base_ident(rtl_map.strip_autoname(path.get("startpoint") or "")),
@@ -344,16 +384,23 @@ def criticality(feats: list[PathFeatures], clusters: list[list[int]],
     floor = (max(known) + 1.0) if known else 0.0
     base = [-(s if s is not None else floor) for s in slacks]
 
-    scale = abs(sigma) * abs(period_ns or 1.0)
-    if scale <= 0 or n == 1:
+    # sigma is a fraction of *a* clock period, so the absolute slop differs per
+    # domain: 5% of a 10 ns cycle is 500 ps, of a 2 ns cycle 100 ps. Scaling
+    # every path by one period would hand the slow domain's uncertainty to the
+    # fast one and let it win ties it should lose.
+    book = period_book(period_ns)
+    fallback = book.primary_period if hasattr(book, "primary_period") else period_ns
+    scales = [abs(sigma) * abs(f.period_ns or fallback or 1.0) for f in feats]
+    if max(scales) <= 0 or n == 1:
         best = max(base)
         tied = [i for i, b in enumerate(base) if b >= best - 1e-12]
         per_path = [1.0 / len(tied) if i in tied else 0.0 for i in range(n)]
         return per_path, _by_cluster(per_path, clusters)
 
     rho = min(max(rho, 0.0), 1.0)
-    s_cone = scale * math.sqrt(rho)
-    s_ind = scale * math.sqrt(1.0 - rho)
+    root_rho, root_ind = math.sqrt(rho), math.sqrt(1.0 - rho)
+    s_cone = [s * root_rho for s in scales]
+    s_ind = [s * root_ind for s in scales]
     rng = random.Random(seed)
     wins = [0] * n
 
@@ -361,8 +408,8 @@ def criticality(feats: list[PathFeatures], clusters: list[list[int]],
         cone_z = [rng.gauss(0.0, 1.0) for _ in clusters]
         best_i, best_v = 0, float("-inf")
         for i in range(n):
-            v = (base[i] + s_cone * cone_z[of_cluster[i]]
-                 + s_ind * rng.gauss(0.0, 1.0))
+            v = (base[i] + s_cone[i] * cone_z[of_cluster[i]]
+                 + s_ind[i] * rng.gauss(0.0, 1.0))
             if v > best_v:
                 best_i, best_v = i, v
         wins[best_i] += 1
@@ -473,7 +520,10 @@ def cluster_value(feats: list[PathFeatures], pool: list[PathFeatures],
     # TNS share is kept alongside it as reported evidence -- it is meaningful
     # only while something is violated, so it cannot be the primary term.
     impact = mass if p_crit is None else p_crit
-    sev = severity(rep.slack_ns, period_ns)
+    # The representative path's OWN clock, not the design's primary one.
+    sev = severity(rep.slack_ns, rep.period_ns
+                   if rep.period_ns is not None
+                   else period_book(period_ns).primary_period)
 
     structural = [fi for fi in (rep.diagnosis.get("findings") or [])
                   if fi.get("pattern") != "slack gap"]
@@ -654,6 +704,11 @@ class PathTarget:
     skills: list[dict[str, Any]]
     allowed_lines: dict[str, list[tuple[int, int]]]
     scope_enforceable: bool
+    # The clock that captures this target's representative path, and its
+    # period. Carried on the target so the brief handed to an agent states the
+    # cycle the path actually has to fit in, not the design's primary one.
+    clock_group: str | None = None
+    period_ns: float | None = None
     brief: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -757,7 +812,7 @@ def _make_target(tid: str, kind: str, rank: int, sel: dict[str, Any],
         # any one segment of it -- does not fire once per segment.
         diagnosis = rtl_map.diagnose(
             {"stages": sub, "slack_ns": None,
-             "logic_depth": _cell_count(sub)}, period_ns)
+             "logic_depth": _cell_count(sub)}, rep_f.period_ns)
 
     fanouts = [(int(s["fanout"]), s.get("pin") or "")
                for s in sub if s.get("fanout") is not None]
@@ -825,18 +880,24 @@ def _make_target(tid: str, kind: str, rank: int, sel: dict[str, Any],
         regions=regions, signals=signals[:12],
         findings=findings, skills=skills,
         allowed_lines=allowed, scope_enforceable=enforceable,
+        clock_group=rep_f.path_group, period_ns=rep_f.period_ns,
     )
-    t.brief = render_brief(t, period_ns)
+    t.brief = render_brief(t)
     return t
 
 
 def build_targets(timing: dict[str, Any], nl: dict[str, Any],
-                  rtl: rtl_map.RtlIndex, period_ns: float | None = None,
+                  rtl: rtl_map.RtlIndex, period_ns: Any = None,
                   k: int = 3, lam: float = MMR_LAMBDA,
                   cluster_at: float = CLUSTER_AT,
                   lib: Any = None, sigma: float = DELAY_SIGMA,
                   rho: float = CONE_RHO) -> dict[str, Any]:
-    """The portfolio: at most k distinct targets, plus how they were chosen."""
+    """The portfolio: at most k distinct targets, plus how they were chosen.
+
+    ``period_ns`` accepts a ``clocks.ClockSet`` or a bare float. With a
+    ClockSet every path is normalised against the clock that captured it.
+    """
+    period_ns = period_book(period_ns)
     paths = [p for p in (timing.get("critical_paths") or []) if p.get("stages")]
     if not paths:
         return {"targets": [], "k_requested": k, "k_effective": 0,
@@ -876,7 +937,7 @@ def build_targets(timing: dict[str, Any], nl: dict[str, Any],
             targets = seg_targets + targets
             for rank, t in enumerate(targets, start=1):
                 t.id, t.rank = f"T{rank}", rank
-                t.brief = render_brief(t, period_ns)
+                t.brief = render_brief(t)
 
     violating = sum(1 for f in feats if (f.slack_ns or 0.0) < 0)
     return {
@@ -903,10 +964,32 @@ def build_targets(timing: dict[str, Any], nl: dict[str, Any],
                                    default=None)}
             for ci, mem in enumerate(clusters)],
         "sigma": sigma, "rho": rho,
+        "clocks": _clock_coverage(feats),
         "pool": {"paths": len(paths), "violating": violating,
                  "tns_ns": tns_total,
                  "truncated": any(t.tns_share_truncated for t in targets)},
     }
+
+
+def _clock_coverage(feats: list[PathFeatures]) -> dict[str, Any]:
+    """Which clock each path was normalised against, and whether that was a
+    lookup or a fallback.
+
+    A fallback on a multi-clock design means some path was ranked against a
+    period that is not its own -- the exact failure mode section 6.1 of
+    HANDOFF.md calls the highest-risk item in the change. It is reported rather
+    than swallowed, so a wrong ranking is visible in the artifact instead of
+    only in the conclusion drawn from it.
+    """
+    seen: dict[str, dict[str, Any]] = {}
+    for f in feats:
+        key = f.path_group or "(unnamed)"
+        e = seen.setdefault(key, {"paths": 0, "period_ns": f.period_ns,
+                                  "resolved": f.period_exact})
+        e["paths"] += 1
+    unresolved = sorted(g for g, e in seen.items() if not e["resolved"])
+    return {"groups": seen, "unresolved": unresolved,
+            "all_resolved": not unresolved}
 
 
 # --------------------------------------------------------------------------
@@ -923,7 +1006,12 @@ def _walk(cells: list[str], limit: int = 40) -> str:
 
 
 def render_brief(t: PathTarget, period_ns: float | None = None) -> str:
-    """The focus brief one specialist agent receives in place of the whole report."""
+    """The focus brief one specialist agent receives in place of the whole report.
+
+    ``period_ns`` defaults to the target's own clock, which is the cycle the
+    path actually has to fit in. Passing it explicitly overrides that.
+    """
+    period_ns = period_ns if period_ns is not None else t.period_ns
     L: list[str] = []
     violating = t.slack_ns is not None and t.slack_ns < 0
     if violating:
@@ -945,6 +1033,9 @@ def render_brief(t: PathTarget, period_ns: float | None = None) -> str:
                 f"{severity(slack, period_ns):.0%} of a {period_ns:g} ns cycle)")
     L.append(f"representative  {p.get('startpoint')} -> {p.get('endpoint')}")
     L.append(f"slack           {slack} ns{frac}")
+    if t.clock_group:
+        L.append(f"clock           {t.clock_group}"
+                 + (f", {t.period_ns:g} ns period" if t.period_ns else ""))
     if t.kind == "cone":
         L.append(f"cluster         {t.member_count} path(s) through the same cone")
     else:
@@ -1080,7 +1171,13 @@ def from_run(rdir: Path, design_dir: Path | None = None,
     if period_ns is None:
         m = rdir / "metrics.json"
         if m.is_file():
-            period_ns = (json.loads(m.read_text()).get("clock") or {}).get("period_ns")
+            metrics = json.loads(m.read_text())
+            # The whole clock set, so each path is ranked against its own
+            # clock. Falls back to the primary period only if the run predates
+            # multi-clock metrics.
+            period_ns = clocks.from_metrics(metrics)
+            if period_ns is None:
+                period_ns = (metrics.get("clock") or {}).get("period_ns")
     return build_targets(timing, nl, rtl_map.RtlIndex(srcs), period_ns,
                          k, lam, cluster_at, lib, sigma, rho)
 

@@ -56,6 +56,74 @@ proc astra_slack_summary {prefix path_delay} {
     if {$ok} { astra_kv "$prefix.violating_endpoints" $nviol }
 }
 
+# Per-clock-group worst/total negative slack.
+#
+# A single design-wide WNS says nothing about which domain owns it. Once a
+# design has more than one clock, every consumer that divides a slack by "the
+# period" divides four fifths of the paths by the wrong number, and the
+# mis-ranking is silent -- see HANDOFF.md section 6.1. Paths are bucketed by
+# their capture clock, which is what OpenSTA names a path group after, so the
+# name emitted here joins directly onto the `Path Group:` field the report
+# already prints per path.
+#
+# Everything is guarded: on a build where path objects do not expose `slack`
+# via get_property, no group KVs are emitted and the Python side falls back to
+# bucketing the reported paths itself.
+proc astra_group_summary {prefix path_delay} {
+    if {[catch {all_clocks} clks]} { return }
+    foreach clk $clks {
+        set name ""
+        if {[catch {get_name $clk} name]} {
+            if {[catch {get_property $clk name} name]} { continue }
+        }
+        if {$name eq ""} { continue }
+
+        set paths {}
+        if {[catch {
+            set paths [find_timing_paths -path_delay $path_delay \
+                           -to [get_clocks $name] \
+                           -group_path_count 100000 -endpoint_path_count 1]
+        }]} {
+            # OpenSTA < 2.6 spelling.
+            if {[catch {
+                set paths [find_timing_paths -path_delay $path_delay \
+                               -to [get_clocks $name] \
+                               -group_count 100000 -endpoint_count 1]
+            }]} { continue }
+        }
+
+        set wns ""
+        set tns 0.0
+        set nviol 0
+        set nread 0
+        foreach p $paths {
+            set s ""
+            if {[catch {get_property $p slack} s]} { continue }
+            if {$s eq "" || $s eq "INF" || $s eq "-INF"} { continue }
+            incr nread
+            if {$wns eq "" || $s < $wns} { set wns $s }
+            if {$s < 0} {
+                set tns [expr {$tns + $s}]
+                incr nviol
+            }
+        }
+        astra_kv "$prefix.group.$name.endpoints" [llength $paths]
+        if {$nread > 0} {
+            # NOT astra_to_ns. `sta::worst_slack` hands back seconds, but
+            # `get_property <path> slack` is already in library time units --
+            # the same units report_checks prints, which is what parse_paths
+            # reads per path. Converting here produced 1e9-times-too-large
+            # numbers that the parser's magnitude guard happened to rescue;
+            # that guard only fires above 1e6, so a slack under 1 ps would
+            # have sailed through it and been recorded as tens of thousands
+            # of nanoseconds.
+            astra_kv "$prefix.group.$name.wns_ns" $wns
+            astra_kv "$prefix.group.$name.tns_ns" $tns
+            astra_kv "$prefix.group.$name.violating_endpoints" $nviol
+        }
+    }
+}
+
 # One report_checks call, tolerating the option rename that happened in
 # OpenSTA (-group_count -> -group_path_count).
 proc astra_checks {delay n} {
@@ -101,6 +169,7 @@ proc astra_report_checks_extra {tag} {
 proc astra_timing_report {tag {npaths 20}} {
     astra_slack_summary $tag max
     astra_slack_summary "${tag}.hold" min
+    astra_group_summary $tag max
     astra_report_paths $tag $npaths
     astra_report_checks_extra $tag
 }

@@ -490,16 +490,32 @@ def analyse(timing: dict[str, Any], nl: dict[str, Any], rtl: RtlIndex,
 
     out = []
     for rank, p in enumerate(ranked, start=1):
+        own = _period_of(period_ns, p.get("path_group"))
         out.append({
             "rank": rank,
             "startpoint": p.get("startpoint"),
             "endpoint": p.get("endpoint"),
             "slack_ns": p.get("slack_ns"),
             "status": p.get("status"),
+            "clock_group": p.get("path_group"),
+            "period_ns": own,
             "mapping": map_path(p, nl, rtl),
-            "diagnosis": diagnose(p, period_ns),
+            "diagnosis": diagnose(p, own),
         })
     return {"top_k": len(out), "paths": out}
+
+
+def _period_of(period_ns: Any, group: str | None) -> float | None:
+    """Resolve one path's period.
+
+    ``period_ns`` is either a ``clocks.ClockSet`` -- in which case the path's
+    own capture clock decides -- or a bare float, which every single-clock
+    caller passes and which applies to every path. Duck-typed so this module
+    keeps its current import surface.
+    """
+    if hasattr(period_ns, "resolve_period"):
+        return period_ns.resolve_period(group)[0]
+    return period_ns
 
 
 def render(analysis: dict[str, Any]) -> str:
@@ -573,7 +589,10 @@ def from_run(rdir: Path, design_dir: Path | None = None,
     if period_ns is None:
         m = rdir / "metrics.json"
         if m.is_file():
-            period_ns = (json.loads(m.read_text()).get("clock") or {}).get("period_ns")
+            metrics = json.loads(m.read_text())
+            import clocks
+            period_ns = clocks.from_metrics(metrics) \
+                or (metrics.get("clock") or {}).get("period_ns")
     return analyse(timing, nl, RtlIndex(srcs), period_ns, top_k)
 
 

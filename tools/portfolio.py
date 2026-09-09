@@ -574,7 +574,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
                           group))
 
         base = self.state["baseline"]["metrics"]
-        scoring.score_group(group, base, self.weights, self.period)
+        scoring.score_group(group, base, self.weights, self._score_period(base))
         for c in group:
             m = c.get("metrics") or {}
             info(f"  {c['id']}: SEC {'pass' if scoring.sec_passed(c) else 'FAIL'}  "
@@ -607,7 +607,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
 
         # 1. Portfolio selection -- mechanical, no model call.
         try:
-            sel = pathsel.from_run(parent_dir, self.cfg["_dir"], self.period,
+            sel = pathsel.from_run(parent_dir, self.cfg["_dir"], self.clocks,
                                    self.args.top_k, self.args.stage,
                                    self.args.mmr_lambda, self.args.cluster_at,
                                    self.lib, self.args.delay_sigma,
@@ -666,7 +666,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
                                                              gold=gold), group))
 
         base = self.state["baseline"]["metrics"]
-        scoring.score_group(group, base, self.weights, self.period)
+        scoring.score_group(group, base, self.weights, self._score_period(base))
         for c, tgt in zip(group, targets):
             self._scope_check(c, tgt, parent_rtl)
             m = c.get("metrics") or {}
@@ -902,7 +902,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
         if m.get("wns_ns") is None and m.get("area_um2") is None:
             cand["score"] = cand["score_detail"] = None
         else:
-            detail = scoring.score(m, base, self.weights, self.period)
+            detail = scoring.score(m, base, self.weights, self._score_period(base))
             cand["score"] = detail["score"]
             cand["score_detail"] = detail
         cand["advantage"] = None

@@ -19,13 +19,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import clocks       # noqa: E402
 import drrtl        # noqa: E402
 import merge        # noqa: E402
+import parse_sta    # noqa: E402
 import pathsel      # noqa: E402
 import portfolio    # noqa: E402
 import rtl_map      # noqa: E402
 import rtlscan      # noqa: E402
 import score        # noqa: E402
+import sec          # noqa: E402
 import skillgen     # noqa: E402
 import skills       # noqa: E402
 
@@ -729,7 +732,8 @@ def _stage(cell, pin, delay=0.02, fanout=None):
             "description": pin, "transition": None}
 
 
-def _path(cone, end, slack, cells, delay=0.02, fanout=None, shared=0.8):
+def _path(cone, end, slack, cells, delay=0.02, fanout=None, shared=0.8,
+          group="clk"):
     """A synthetic OpenSTA path, in the shape parse_sta produces.
 
     Paths through one logic cone share most of their instances and diverge
@@ -749,7 +753,7 @@ def _path(cone, end, slack, cells, delay=0.02, fanout=None, shared=0.8):
             "slack_ns": slack, "status": "VIOLATED" if slack < 0 else "MET",
             "stages": stages, "logic_depth": len(cells),
             "arrival_ns": None, "required_ns": None,
-            "path_group": "clk", "path_type": "max"}
+            "path_group": group, "path_type": "max"}
 
 
 def _empty_index():
@@ -1187,6 +1191,496 @@ class TestPathSelOnRealRun(unittest.TestCase):
 # ===========================================================================
 # mechanical union
 # ===========================================================================
+
+
+class TestClockSet(unittest.TestCase):
+    """The data model. A design used to carry one clock; every consumer
+    divided by it."""
+
+    def test_the_singular_form_still_loads(self):
+        """Every design shipped before multi-clock support uses `clock`.
+        Dropping that form would break them all."""
+        cs = clocks.ClockSet.from_config({"clock": {"name": "clk",
+                                                    "period_ns": 2.0}})
+        self.assertEqual(len(cs), 1)
+        self.assertEqual(cs.primary.name, "clk")
+        self.assertEqual(cs.primary.period_ns, 2.0)
+
+    def test_an_absent_clock_gets_the_documented_defaults(self):
+        cs = clocks.ClockSet.from_config({})
+        self.assertEqual(cs.primary.name, clocks.DEFAULT_CLOCK_NAME)
+        self.assertEqual(cs.primary.period_ns, clocks.DEFAULT_PERIOD_NS)
+
+    def test_the_plural_form_keeps_declaration_order(self):
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "clk_a", "period_ns": 5.0},
+            {"name": "clk_b", "period_ns": 2.0},
+        ]})
+        self.assertEqual(cs.names(), ["clk_a", "clk_b"])
+        self.assertEqual(cs.primary.name, "clk_a", "primary is first declared")
+        self.assertEqual(cs.tightest.name, "clk_b", "tightest is shortest")
+
+    def test_a_generated_clock_derives_its_period_from_the_ratio(self):
+        """A divider states a ratio, not a period. Making the author restate
+        the product is how the two drift apart."""
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "clk_a", "period_ns": 4.0},
+            {"name": "clk_a_div2", "generated_from": "clk_a", "divide_by": 2,
+             "port": "div_q"},
+        ]})
+        self.assertEqual(cs.by_name("clk_a_div2").period_ns, 8.0)
+
+    def test_a_period_resolves_through_a_cascade_of_dividers(self):
+        """A ripple divider generates each stage from the one above it, so the
+        source of a generated clock is often itself generated. Resolving only
+        against clocks carrying an explicit period fails on stage two."""
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "m", "period_ns": 4.0},
+            {"name": "d2", "generated_from": "m", "divide_by": 2},
+            {"name": "d4", "generated_from": "d2", "divide_by": 2},
+            {"name": "d8", "generated_from": "d4", "divide_by": 2},
+        ]})
+        self.assertEqual([c.period_ns for c in cs], [4.0, 8.0, 16.0, 32.0])
+        self.assertEqual(cs.async_groups(), [["m", "d2", "d4", "d8"]],
+                         "a whole ripple chain is synchronous to its master")
+
+    def test_a_cycle_among_generated_clocks_is_rejected(self):
+        with self.assertRaises(clocks.ClockError):
+            clocks.ClockSet.from_config({"clocks": [
+                {"name": "a", "generated_from": "b", "divide_by": 2},
+                {"name": "b", "generated_from": "a", "divide_by": 2},
+            ]})
+
+    def test_a_clock_generated_from_nothing_is_rejected(self):
+        with self.assertRaises(clocks.ClockError):
+            clocks.ClockSet.from_config({"clocks": [
+                {"name": "a", "period_ns": 1.0},
+                {"name": "b", "generated_from": "nonexistent", "divide_by": 2},
+            ]})
+
+    def test_duplicate_names_are_rejected(self):
+        with self.assertRaises(clocks.ClockError):
+            clocks.ClockSet.from_config({"clocks": [
+                {"name": "clk", "period_ns": 1.0},
+                {"name": "clk", "period_ns": 2.0},
+            ]})
+
+    def test_a_nonpositive_period_is_rejected(self):
+        for bad in (0.0, -1.0):
+            with self.assertRaises(clocks.ClockError):
+                clocks.ClockSet.from_config(
+                    {"clocks": [{"name": "clk", "period_ns": bad}]})
+
+    def test_generated_clocks_join_their_masters_group(self):
+        """A divided clock is synchronous to what it divides. Only independent
+        masters are asynchronous to each other."""
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "a", "period_ns": 2.0},
+            {"name": "a_div2", "generated_from": "a", "divide_by": 2},
+            {"name": "b", "period_ns": 3.0},
+        ]})
+        self.assertEqual(cs.async_groups(), [["a", "a_div2"], ["b"]])
+
+    def test_the_synthesis_target_is_the_tightest_period(self):
+        """Yosys maps in one pass and takes one delay target, so it must be
+        the one that never under-constrains a domain."""
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "slow", "period_ns": 10.0},
+            {"name": "fast", "period_ns": 1.5},
+        ]})
+        self.assertEqual(cs.synthesis_period, 1.5)
+
+    def test_period_override_keeps_the_ratios_between_domains(self):
+        """--period on a multi-clock design is ambiguous. Collapsing every
+        clock onto one number would silently delete the divider ratios that
+        are the point of having them."""
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "a", "period_ns": 4.0},
+            {"name": "b", "period_ns": 8.0},
+        ]}).with_period(2.0)
+        self.assertEqual([c.period_ns for c in cs], [2.0, 4.0])
+
+    def test_metrics_carry_both_shapes(self):
+        """A reader predating multi-clock support reads `clock` and must not
+        get None."""
+        m = clocks.ClockSet.from_config({"clocks": [
+            {"name": "a", "period_ns": 4.0},
+            {"name": "b", "period_ns": 8.0},
+        ]}).to_metrics()
+        self.assertEqual(m["clock"], {"name": "a", "period_ns": 4.0})
+        self.assertEqual(len(m["clocks"]), 2)
+        self.assertIsNotNone(clocks.from_metrics(m))
+        self.assertEqual(len(clocks.from_metrics(m)), 2)
+
+
+class TestClockResolution(unittest.TestCase):
+    """Resolving a path group to a period. This is the piece HANDOFF section
+    6.1 calls the highest-risk item in the change."""
+
+    def _two(self):
+        return clocks.ClockSet.from_config({"clocks": [
+            {"name": "fast", "period_ns": 2.0},
+            {"name": "slow", "period_ns": 10.0},
+        ]})
+
+    def test_a_group_resolves_to_its_own_clock(self):
+        cs = self._two()
+        self.assertEqual(cs.resolve_period("slow"), (10.0, True))
+        self.assertEqual(cs.resolve_period("fast"), (2.0, True))
+
+    def test_an_unknown_group_is_flagged_not_silently_defaulted(self):
+        """The failure mode being guarded: falling back to the primary period
+        is sometimes unavoidable, but it must never be indistinguishable from
+        a real lookup."""
+        period, exact = self._two().resolve_period("nonexistent")
+        self.assertEqual(period, 2.0, "falls back to primary")
+        self.assertFalse(exact, "and says that it did")
+
+    def test_a_single_clock_design_never_reports_a_fallback(self):
+        cs = clocks.ClockSet.from_config({"clock": {"name": "clk",
+                                                    "period_ns": 2.0}})
+        self.assertEqual(cs.resolve_period(None), (2.0, True))
+        self.assertEqual(cs.resolve_period("anything"), (2.0, True),
+                         "with one clock every path is on it")
+
+
+class TestMultiClockRanking(unittest.TestCase):
+    """The trap: paths normalised against a period that is not their own.
+
+    Nothing raises when this is wrong. The portfolio picks the wrong cone and
+    reports confident numbers while doing it, which is why it gets a
+    regression test rather than a comment.
+    """
+
+    def _feats(self, paths, book):
+        nl, rtl = _empty_index(), _NoRtl()
+        return [pathsel.path_features(p, i, nl, rtl, book)
+                for i, p in enumerate(paths)]
+
+    def _two(self):
+        return clocks.ClockSet.from_config({"clocks": [
+            {"name": "fast", "period_ns": 2.0},
+            {"name": "slow", "period_ns": 10.0},
+        ]})
+
+    def test_each_path_carries_its_own_clocks_period(self):
+        feats = self._feats(
+            [_path("a", "x", -0.5, ["XOR2_X1"] * 5, group="fast"),
+             _path("b", "y", -0.5, ["MUX2_X1"] * 5, group="slow")],
+            self._two())
+        self.assertEqual(feats[0].period_ns, 2.0)
+        self.assertEqual(feats[1].period_ns, 10.0)
+        self.assertTrue(all(f.period_exact for f in feats))
+
+    def test_equal_slack_in_a_slower_domain_is_less_severe(self):
+        """Half a nanosecond short of a 2 ns cycle is a quarter of the budget.
+        Half a nanosecond short of a 10 ns cycle is a twentieth. Ranking them
+        equal -- which one shared period does -- sends an agent to the wrong
+        cone."""
+        fast = pathsel.severity(-0.5, 2.0)
+        slow = pathsel.severity(-0.5, 10.0)
+        self.assertGreater(fast, slow)
+        feats = self._feats(
+            [_path("a", "x", -0.5, ["XOR2_X1"] * 5, group="fast"),
+             _path("b", "y", -0.5, ["MUX2_X1"] * 5, group="slow")],
+            self._two())
+        self.assertAlmostEqual(
+            pathsel.cluster_value([feats[0]], feats, self._two())
+            ["terms"]["severity"], fast)
+        self.assertAlmostEqual(
+            pathsel.cluster_value([feats[1]], feats, self._two())
+            ["terms"]["severity"], slow)
+
+    def test_the_old_single_period_behaviour_would_have_tied_them(self):
+        """Pinning the bug this replaced: with one period both paths score
+        identically, so the selector has nothing to order them by."""
+        feats = self._feats(
+            [_path("a", "x", -0.5, ["XOR2_X1"] * 5, group="fast"),
+             _path("b", "y", -0.5, ["MUX2_X1"] * 5, group="slow")],
+            2.0)
+        self.assertEqual(feats[0].period_ns, feats[1].period_ns)
+        self.assertAlmostEqual(
+            pathsel.cluster_value([feats[0]], feats, 2.0)["terms"]["severity"],
+            pathsel.cluster_value([feats[1]], feats, 2.0)["terms"]["severity"])
+
+    def test_a_bare_float_still_applies_to_every_path(self):
+        """Back-compat: every single-clock caller passes a float and must get
+        exactly the behaviour it had before."""
+        feats = self._feats([_path("a", "x", -0.5, ["XOR2_X1"] * 5)], 2.0)
+        self.assertEqual(feats[0].period_ns, 2.0)
+        self.assertTrue(feats[0].period_exact)
+
+    def test_uncertainty_scales_with_each_paths_own_period(self):
+        """sigma is a fraction of a period, so 5% of 10 ns is five times the
+        absolute slop of 5% of 2 ns. Using one period hands the slow domain's
+        uncertainty to the fast one."""
+        book = self._two()
+        feats = self._feats(
+            [_path("a", "x", -0.50, ["XOR2_X1"] * 5, group="fast"),
+             _path("b", "y", -0.44, ["MUX2_X1"] * 5, group="slow")], book)
+        clusters, _ = pathsel.cluster(feats, 0.99)
+        per_path, _ = pathsel.criticality(feats, clusters, book, samples=4000)
+        # The slow path is nominally better by 60 ps, but 5% of its own 10 ns
+        # cycle is 500 ps of slop, so it takes a real share of the wins.
+        self.assertGreater(per_path[1], 0.10,
+                           "the wide-uncertainty domain must not be dismissed")
+        self.assertEqual(round(sum(per_path), 6), 1.0)
+
+    def test_an_unresolved_group_is_reported_in_the_selection(self):
+        """A path ranked against a period that is not its own is the exact
+        silent failure. It has to reach the artifact."""
+        book = self._two()
+        feats = self._feats(
+            [_path("a", "x", -0.5, ["XOR2_X1"] * 5, group="mystery")], book)
+        self.assertFalse(feats[0].period_exact)
+        cov = pathsel._clock_coverage(feats)
+        self.assertFalse(cov["all_resolved"])
+        self.assertEqual(cov["unresolved"], ["mystery"])
+
+
+class TestClockSdc(unittest.TestCase):
+    """SDC generation. One substitution cannot express five clocks."""
+
+    def _cs(self):
+        return clocks.ClockSet.from_config({"clocks": [
+            {"name": "clk_a", "period_ns": 2.0, "port": "clk_a"},
+            {"name": "clk_b", "period_ns": 5.0, "port": "clk_b"},
+            {"name": "clk_a_div2", "generated_from": "clk_a", "divide_by": 2,
+             "port": "div/Q"},
+        ]})
+
+    def test_the_old_placeholder_still_means_the_primary_clock(self):
+        """The three shipped designs use it and must render unchanged."""
+        cs = clocks.ClockSet.from_config({"clock": {"name": "clk",
+                                                    "period_ns": 2.0}})
+        self.assertEqual(clocks.substitute("set P @CLK_PERIOD@", cs),
+                         "set P 2")
+
+    def test_a_named_placeholder_picks_that_clock(self):
+        out = clocks.substitute("a=@CLK_PERIOD:clk_a@ b=@CLK_PERIOD:clk_b@",
+                                self._cs())
+        self.assertEqual(out, "a=2 b=5")
+
+    def test_the_generated_block_declares_every_clock(self):
+        out = clocks.substitute("@ASTRA_CLOCK_DEFS@", self._cs())
+        self.assertIn("create_clock -name clk_a -period 2", out)
+        self.assertIn("create_clock -name clk_b -period 5", out)
+        self.assertIn("create_generated_clock -name clk_a_div2", out)
+        self.assertIn("-divide_by 2", out)
+
+    def test_independent_masters_are_declared_asynchronous(self):
+        """Without this every crossing is analysed as a setup path between
+        clocks with no phase relationship, and those false violations swamp
+        the TNS shares the portfolio ranks on."""
+        out = clocks.substitute("@ASTRA_CLOCK_DEFS@", self._cs())
+        self.assertIn("set_clock_groups -asynchronous", out)
+        self.assertIn("-group {clk_a clk_a_div2}", out)
+        self.assertIn("-group {clk_b}", out)
+
+    def test_a_single_clock_design_gets_no_clock_groups(self):
+        """One clock cannot be asynchronous to itself, and emitting the
+        command anyway would be a syntax error with no cause visible."""
+        cs = clocks.ClockSet.from_config({"clock": {"name": "clk",
+                                                    "period_ns": 2.0}})
+        self.assertNotIn("set_clock_groups",
+                         clocks.substitute("@ASTRA_CLOCK_DEFS@", cs))
+
+    def test_a_cascaded_generated_clock_sources_from_a_pin(self):
+        """A master clock arrives on a port; a generated clock's source is an
+        internal pin. Emitting get_ports for the second is how a cascaded
+        divider fails, and it fails inside OpenSTA rather than here."""
+        cs = clocks.ClockSet.from_config({"clocks": [
+            {"name": "m", "period_ns": 4.0, "port": "clk_m"},
+            {"name": "d2", "generated_from": "m", "divide_by": 2,
+             "port": "d2_r/Q"},
+            {"name": "d4", "generated_from": "d2", "divide_by": 2,
+             "port": "d4_r/Q"},
+        ]})
+        out = clocks.render_clock_defs(cs)
+        self.assertIn("-name d2 -source [get_ports {clk_m}]", out)
+        self.assertIn("-name d4 -source [get_pins {d2_r/Q}]", out)
+
+    def test_a_placeholder_inside_a_comment_is_left_alone(self):
+        """SDC is line-oriented and the clock block is many lines, so
+        expanding it inside a `#` comment uncomments everything after the
+        first line and welds the rest of the comment onto the last generated
+        command. Documenting the placeholder in a header comment is the
+        obvious thing to do -- the benchmark's own SDC did it immediately and
+        produced an SDC that OpenSTA could not parse."""
+        src = ("# @ASTRA_CLOCK_DEFS@ is generated from config.json,\n"
+               "# and @CLK_PERIOD:clk_a@ names one clock.\n"
+               "@ASTRA_CLOCK_DEFS@\n")
+        out = clocks.substitute(src, self._cs())
+        lines = out.splitlines()
+        self.assertEqual(lines[0], "# @ASTRA_CLOCK_DEFS@ is generated from "
+                                   "config.json,")
+        self.assertEqual(lines[1], "# and @CLK_PERIOD:clk_a@ names one clock.")
+        self.assertIn("create_clock -name clk_a", out)
+        self.assertEqual(out.count("create_clock -name clk_a"), 1,
+                         "expanded once, at the live line only")
+
+    def test_a_placeholder_only_mentioned_in_a_comment_is_not_unresolved(self):
+        self.assertEqual(
+            clocks.unresolved_placeholders("# see @CLK_PERIOD:ghost@\n"), [])
+
+    def test_a_trailing_comment_does_not_block_substitution(self):
+        """Only lines that *start* with # are comments; a trailing comment
+        must not stop the code on that line from being substituted."""
+        self.assertEqual(
+            clocks.substitute("set P @CLK_PERIOD:clk_a@ ;# the fast one\n",
+                              self._cs()),
+            "set P 2 ;# the fast one\n")
+
+    def test_a_placeholder_naming_no_declared_clock_is_detectable(self):
+        """Left in the file it reaches OpenSTA as a syntax error that says
+        nothing about the cause."""
+        out = clocks.substitute("@CLK_PERIOD:ghost@", self._cs())
+        self.assertEqual(clocks.unresolved_placeholders(out),
+                         ["@CLK_PERIOD:ghost@"])
+
+
+class TestClockGroupParsing(unittest.TestCase):
+    """Per-group slack, from the Tcl side or derived from the report."""
+
+    def test_emitted_groups_are_preferred(self):
+        kv = ("ASTRA_KV post_synth.group.clk_a.wns_ns -0.5\n"
+              "ASTRA_KV post_synth.group.clk_a.tns_ns -2.0\n"
+              "ASTRA_KV post_synth.group.clk_b.wns_ns 0.25\n")
+        got = parse_sta.parse_log(kv, "post_synth")["clock_groups"]
+        self.assertEqual(got["source"], "sta")
+        self.assertTrue(got["complete"])
+        self.assertEqual(got["groups"]["clk_a"]["wns_ns"], -0.5)
+        self.assertEqual(got["groups"]["clk_b"]["wns_ns"], 0.25)
+
+    def test_groups_fall_back_to_bucketing_the_reported_paths(self):
+        """The parser has always captured Path Group per path and nothing has
+        ever read it. On a build that cannot emit group KVs it is the only
+        source there is."""
+        paths = [_path("a", "x", -0.5, ["XOR2_X1"] * 3, group="clk_a"),
+                 _path("b", "y", -0.2, ["XOR2_X1"] * 3, group="clk_a"),
+                 _path("c", "z", 0.4, ["XOR2_X1"] * 3, group="clk_b")]
+        got = parse_sta.clock_groups({}, paths)
+        self.assertEqual(got["source"], "reported")
+        self.assertFalse(got["complete"],
+                         "it sees only the reported paths, so TNS is a floor")
+        self.assertEqual(got["groups"]["clk_a"]["wns_ns"], -0.5)
+        self.assertAlmostEqual(got["groups"]["clk_a"]["tns_ns"], -0.7)
+        self.assertEqual(got["groups"]["clk_a"]["violating_endpoints"], 2)
+        self.assertEqual(got["groups"]["clk_b"]["violating_endpoints"], 0)
+
+    def test_a_sub_picosecond_slack_is_not_rescaled(self):
+        """The unit trap. `get_property <path> slack` is in library units,
+        unlike `sta::worst_slack` which is in seconds. Converting it made every
+        group number 1e9 too large, and the parser's magnitude guard -- which
+        only fires above 1e6 -- happened to rescue it at the scale being
+        tested. At -0.0001 ns the wrong value is 1e5, under the guard, and
+        would have been recorded as -100000 ns."""
+        kv = "ASTRA_KV post_synth.group.clk.wns_ns -0.0001\n"
+        got = parse_sta.parse_log(kv, "post_synth")["clock_groups"]
+        self.assertAlmostEqual(got["groups"]["clk"]["wns_ns"], -0.0001)
+
+    def test_group_slack_is_cross_checked_against_the_design_wns(self):
+        """The worst slack over all groups IS the design's worst slack. They
+        come from different OpenSTA calls, so a disagreement means one of them
+        is being read wrong -- which is how the unit bug above was found."""
+        kv = ("ASTRA_KV post_synth.wns_ns -0.5\n"
+              "ASTRA_KV post_synth.group.a.wns_ns -0.5\n"
+              "ASTRA_KV post_synth.group.b.wns_ns 0.2\n")
+        self.assertTrue(parse_sta.parse_log(kv, "post_synth")
+                        ["clock_groups"]["agrees_with_design_wns"])
+
+        wrong = ("ASTRA_KV post_synth.wns_ns -0.5\n"
+                 "ASTRA_KV post_synth.group.a.wns_ns -2000.0\n")
+        self.assertFalse(parse_sta.parse_log(wrong, "post_synth")
+                         ["clock_groups"]["agrees_with_design_wns"])
+
+
+class TestCriticalPeriod(unittest.TestCase):
+    """Eq. 3 needs one period, because WNS and TNS are design-wide scalars."""
+
+    def _cs(self):
+        return clocks.ClockSet.from_config({"clocks": [
+            {"name": "fast", "period_ns": 2.0},
+            {"name": "slow", "period_ns": 10.0},
+        ]})
+
+    def test_it_is_the_period_of_the_group_owning_the_worst_slack(self):
+        groups = {"groups": {"fast": {"wns_ns": 0.3},
+                             "slow": {"wns_ns": -1.2}}}
+        self.assertEqual(score.critical_period(groups, self._cs()), 10.0)
+
+    def test_with_nothing_violating_it_falls_back_to_the_tightest(self):
+        """The tightest gives the smallest zero-band floor, so the band never
+        swallows a real change in a fast domain."""
+        self.assertEqual(score.critical_period(None, self._cs()), 2.0)
+
+    def test_an_unknown_group_name_does_not_crash_the_score(self):
+        groups = {"groups": {"ghost": {"wns_ns": -1.0}}}
+        self.assertEqual(score.critical_period(groups, self._cs()), 2.0)
+
+
+class TestEquivalenceContract(unittest.TestCase):
+    """docs/equivalence-contract.md, enforced.
+
+    Both SEC engines build a miter over one common clock. On a genuinely
+    multi-clock design that answers a different question than the one asked,
+    so the check declines rather than returning a confident wrong answer.
+    """
+
+    def _multi(self):
+        return clocks.ClockSet.from_config({"clocks": [
+            {"name": "clk_sys", "period_ns": 2.0},
+            {"name": "clk_io", "period_ns": 8.0},
+        ]})
+
+    def _files(self):
+        d = Path(tempfile.mkdtemp())
+        f = d / "top.v"
+        f.write_text("module top(); endmodule\n")
+        return d, [f]
+
+    def test_a_multi_clock_design_declines_rather_than_guessing(self):
+        d, files = self._files()
+        v = sec.check("top", files, files, d, clock_set=self._multi())
+        self.assertEqual(v["method"], "unsupported")
+        self.assertIn("clock", v["reason"])
+
+    def test_declining_is_not_a_pass(self):
+        """It must never promote a candidate through Eq. 4."""
+        d, files = self._files()
+        v = sec.check("top", files, files, d, clock_set=self._multi())
+        self.assertFalse(score.sec_passed({"sec": v}))
+        self.assertIsNone(score.select_best(
+            [{"id": "c0", "score": -1.0, "sec": v}]))
+
+    def test_declining_is_not_a_refutation_either(self):
+        """The distinction that keeps the skill library honest: recording
+        'this transformation breaks equivalence' because the checker could not
+        run would condemn a sound strategy on evidence that does not exist."""
+        d, files = self._files()
+        v = sec.check("top", files, files, d, clock_set=self._multi())
+        self.assertFalse(score.sec_decided({"sec": v}),
+                         "an unrun check has not decided anything")
+        tally = score.sec_tally([{"id": "c0", "sec": v}])
+        self.assertEqual(tally["undecided"], 1)
+        self.assertEqual(tally["decided"], 0)
+        self.assertIsNone(tally["rate"],
+                          "no pass rate can be reported over nothing")
+
+    def test_a_single_clock_design_is_unaffected(self):
+        """The guard must not disturb the case that already works."""
+        d, files = self._files()
+        one = clocks.ClockSet.from_config({"clock": {"name": "clk",
+                                                     "period_ns": 2.0}})
+        v = sec.check("top", files, files, d, clock_set=one, engine="eqy")
+        self.assertNotEqual(v["method"], "unsupported")
+
+    def test_a_missing_file_still_reports_as_an_error(self):
+        """Declining on clocks must not mask an ordinary failure."""
+        d, _ = self._files()
+        v = sec.check("top", [d / "nope.v"], [d / "nope.v"], d,
+                      clock_set=self._multi())
+        self.assertEqual(v["method"], "error")
 
 
 class TestMerge(unittest.TestCase):

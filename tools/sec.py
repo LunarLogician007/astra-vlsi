@@ -185,19 +185,46 @@ def check_eqy(top: str, gold: list[Path], gate: list[Path], workdir: Path,
 # ---------------------------------------------------------------------------
 
 
+def unsupported(reason: str, engine: str, **extra: Any) -> dict[str, Any]:
+    """A check that was not run because it would not have meant anything.
+
+    Distinct from ``_fail``: ``method="unsupported"`` is undecided, not a
+    refutation, so it neither promotes a candidate nor teaches the skill
+    library that a sound transformation breaks equivalence.
+    """
+    return {"equivalent": False, "method": "unsupported", "reason": reason,
+            "engine": engine, **extra}
+
+
 def check(top: str, gold: list[Path], gate: list[Path], workdir: Path,
           depth: int = DEFAULT_DEPTH, liberty: Path | None = None,
-          engine: str = "auto", timeout: int = 1800) -> dict[str, Any]:
+          engine: str = "auto", timeout: int = 1800,
+          clock_set: Any = None) -> dict[str, Any]:
     """Run SEC and return a verdict dict. Never raises on an unequal design.
 
     ``engine="auto"`` prefers eqy and falls back to the Yosys miter -- but
     only when eqy is *absent*, not when it ran and said no. An eqy verdict of
     "not equivalent" is a verdict, and retrying it on a weaker engine until
     one of them agrees would defeat the point of the constraint.
+
+    ``clock_set`` enforces the equivalence contract. Both engines build a
+    miter over a common clock, so on a genuinely multi-clock design the
+    question they answer is not the question that was asked -- see
+    docs/equivalence-contract.md. Rather than return a confident answer to the
+    wrong question, the check declines and says so.
     """
     missing = [str(p) for p in (*gold, *gate) if not Path(p).is_file()]
     if missing:
         return _fail(f"missing source file(s): {', '.join(missing)}", engine)
+
+    if clock_set is not None and getattr(clock_set, "is_multi", False):
+        names = ", ".join(getattr(clock_set, "names", lambda: [])())
+        return unsupported(
+            f"the design has {len(clock_set)} clocks ({names}); both engines "
+            f"build a miter over one common clock, so a verdict here would "
+            f"not be a statement about the design. Cut the CDC boundaries and "
+            f"check each domain separately -- see docs/equivalence-contract.md",
+            engine, clocks=len(clock_set))
 
     # When tools run elsewhere the host cannot see which engines exist, so
     # "auto" resolves to the one that is always present. Ask for eqy by name

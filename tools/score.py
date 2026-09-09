@@ -75,6 +75,38 @@ def norm_timing(value: float, baseline: float, period_ns: float = 1.0) -> float:
     return -(value - baseline) / denom
 
 
+def critical_period(clock_groups: dict[str, Any] | None,
+                    clock_set: Any = None, default: float = 1.0) -> float:
+    """The period that scales the timing normalisation, on any number of clocks.
+
+    WNS and TNS are design-wide scalars, so the zero-band floor needs one
+    period -- but on a multi-clock design "the period" is not a thing. The
+    period of the group that owns the worst slack is the right one: that group
+    is what the reported WNS came from, so it is the cycle the number is
+    already relative to.
+
+    Falls back to the tightest clock when no group owns a slack (nothing
+    violates, or the STA build emitted no groups). Tightest rather than
+    primary because it produces the smallest floor, so the zero band never
+    swallows a real change in a fast domain.
+    """
+    groups = (clock_groups or {}).get("groups") or {}
+    worst_name, worst = None, None
+    for name, g in groups.items():
+        wns = (g or {}).get("wns_ns")
+        if wns is None:
+            continue
+        if worst is None or wns < worst:
+            worst_name, worst = name, wns
+    if clock_set is None:
+        return default
+    if worst_name is not None:
+        clk = clock_set.by_name(worst_name)
+        if clk is not None:
+            return clk.period_ns
+    return clock_set.tightest.period_ns
+
+
 def norm_area(value: float, baseline: float) -> float:
     """Normalised area delta. Positive = the candidate got bigger."""
     if baseline is None or abs(baseline) < 1e-12:
@@ -170,18 +202,20 @@ def sec_passed(cand: dict[str, Any]) -> bool:
 def sec_decided(cand: dict[str, Any]) -> bool:
     """Did the equivalence check actually reach a verdict?
 
-    A timeout or a crashed tool did not. That distinction does not matter for
-    Eq. 4 -- an undecided candidate still cannot be promoted -- but it matters
-    enormously for skill learning: recording "this transformation breaks
-    equivalence" because the SAT solver ran out of time would condemn a
-    perfectly good strategy on evidence that does not exist.
+    A timeout or a crashed tool did not. Neither did a check the engine
+    declined to run because it could not have meant anything -- see the
+    multi-clock case in docs/equivalence-contract.md. That distinction does
+    not matter for Eq. 4 -- an undecided candidate still cannot be promoted --
+    but it matters enormously for skill learning: recording "this
+    transformation breaks equivalence" because the SAT solver ran out of time
+    would condemn a perfectly good strategy on evidence that does not exist.
     """
     sec = cand.get("sec")
     if not isinstance(sec, dict):
         return sec is not None
     if sec.get("equivalent") is True:
         return True
-    return sec.get("method") not in ("error", "skipped", None)
+    return sec.get("method") not in ("error", "skipped", "unsupported", None)
 
 
 def select_best(candidates: Iterable[dict[str, Any]]) -> dict[str, Any] | None:

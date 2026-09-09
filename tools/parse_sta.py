@@ -348,6 +348,7 @@ def parse_log(text: str, tag: str = "post_synth") -> dict[str, Any]:
     return {
         "tag": tag,
         "summary": summary,
+        "clock_groups": clock_groups(summary, paths),
         "critical_paths": paths,
         "hold_paths": hold_paths,
         "worst_path": paths[0] if paths else None,
@@ -356,6 +357,70 @@ def parse_log(text: str, tag: str = "post_synth") -> dict[str, Any]:
         "steps": parse_steps(text),
         "sections": sections,
     }
+
+
+def clock_groups(summary: dict[str, Any],
+                 paths: list[dict[str, Any]]) -> dict[str, Any]:
+    """Per-clock-group slack, and where the numbers came from.
+
+    Preferred source is the Tcl side, which sees every endpoint. Failing that
+    the reported paths are bucketed by their own ``Path Group`` field -- which
+    the parser has always captured and nothing has ever read. That fallback
+    covers only the paths that were reported, so it is marked ``reported`` and
+    its TNS is a floor, not the design's total. Saying which is which matters:
+    a truncated TNS used as a denominator inflates every share computed from
+    it, and that has already produced a wrong number once in this codebase.
+    """
+    emitted = summary.get("group")
+    if isinstance(emitted, dict) and emitted:
+        groups = {k: dict(v) for k, v in emitted.items()
+                  if isinstance(v, dict)}
+        return {"source": "sta", "complete": True, "groups": groups,
+                **_group_agreement(groups, summary.get("wns_ns"))}
+
+    buckets: dict[str, list[float]] = {}
+    for p in paths:
+        g, s = p.get("path_group"), p.get("slack_ns")
+        if g is None or s is None:
+            continue
+        buckets.setdefault(g, []).append(float(s))
+    groups = {
+        g: {"wns_ns": min(ss),
+            "tns_ns": sum(s for s in ss if s < 0),
+            "violating_endpoints": sum(1 for s in ss if s < 0),
+            "endpoints": len(ss)}
+        for g, ss in buckets.items()
+    }
+    return {"source": "reported", "complete": False, "groups": groups,
+            **_group_agreement(groups, summary.get("wns_ns"))}
+
+
+def _group_agreement(groups: dict[str, Any],
+                     design_wns: Any) -> dict[str, Any]:
+    """Cross-check the per-group numbers against the design-wide WNS.
+
+    The worst slack over all groups is the design's worst slack -- they are
+    two routes to one number, produced by different OpenSTA calls. When they
+    disagree, one of the two is being read wrong.
+
+    This exists because it happened: the group summary was converting
+    ``get_property <path> slack`` from seconds, but unlike ``sta::worst_slack``
+    that property is already in library units, so every group number came out
+    1e9 times too large. The parser's magnitude guard silently rescued it at
+    the scale being tested, and would not have below 1 ps. A mismatch is
+    reported rather than repaired, because which side is wrong is not
+    something this function can know.
+    """
+    slacks = [g.get("wns_ns") for g in groups.values()
+              if isinstance(g, dict) and g.get("wns_ns") is not None]
+    if not slacks or design_wns is None:
+        return {"agrees_with_design_wns": None}
+    worst = min(slacks)
+    delta = abs(worst - float(design_wns))
+    tol = max(1e-6, abs(float(design_wns)) * 1e-3)
+    return {"agrees_with_design_wns": delta <= tol,
+            "group_wns_ns": worst,
+            "design_wns_ns": float(design_wns)}
 
 
 def main(argv: list[str]) -> int:
