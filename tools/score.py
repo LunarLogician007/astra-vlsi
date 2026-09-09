@@ -240,6 +240,50 @@ def advantages(candidates: list[dict[str, Any]],
     return candidates
 
 
+def sec_tally(candidates: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """SEC outcomes, keeping "not generated" apart from "not equivalent".
+
+    A candidate the model never produced -- a CLI failure, a reply with no
+    Verilog in it -- has said nothing about whether the transformation is
+    sound, and a timed-out solver has said nothing either. Folding those in
+    with refutations understates the pass rate by however unreliable the
+    harness happened to be that day, which is a fact about the harness
+    reported as a fact about the method. On one real run it turned three of
+    three candidates passing into a reported 33%, because six of nine model
+    calls had died before writing anything.
+
+    The distinction already exists in `sec_decided`; this is the reporting
+    that uses it.
+    """
+    cands = list(candidates)
+    generated = [c for c in cands if not c.get("error")]
+    decided = [c for c in generated if sec_decided(c)]
+    passed = [c for c in decided if sec_passed(c)]
+    return {
+        "total": len(cands),
+        "not_generated": len(cands) - len(generated),
+        "undecided": len(generated) - len(decided),
+        "decided": len(decided),
+        "passed": len(passed),
+        "rate": (len(passed) / len(decided)) if decided else None,
+    }
+
+
+def render_sec_tally(t: dict[str, Any]) -> str:
+    """One line, with the caveats inline rather than in a footnote."""
+    if not t["decided"]:
+        return f"SEC: no candidate reached a verdict ({t['total']} attempted)"
+    out = f"SEC pass rate {t['passed']}/{t['decided']} ({t['rate']:.0%} of decided)"
+    extra = []
+    if t["not_generated"]:
+        extra.append(f"{t['not_generated']} never generated")
+    if t["undecided"]:
+        extra.append(f"{t['undecided']} undecided (solver timeout)")
+    if extra:
+        out += " -- " + ", ".join(extra) + ", excluded"
+    return out
+
+
 def group_stats(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     """mu_t, sigma_t and group size, for the trajectory log."""
     scores = [float(c["score"]) for c in candidates

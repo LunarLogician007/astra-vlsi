@@ -1169,12 +1169,12 @@ class Orchestrator:
             "",
         ]
 
-        total = sum(len(it.get("candidates", [])) for it in self.state["iterations"])
-        passed = sum(1 for it in self.state["iterations"]
-                     for c in it.get("candidates", [])
-                     if (c.get("sec") or {}).get("equivalent"))
-        lines += [f"SEC pass rate {passed}/{total}"
-                  + (f" ({passed / total:.0%})" if total else ""), ""]
+        # Counted over candidates that actually reached a verdict. A reply the
+        # model never produced says nothing about whether the transformation
+        # was sound, and folding it in reports a flaky harness as a bad method.
+        cands = [c for it in self.state["iterations"]
+                 for c in it.get("candidates", [])]
+        lines += [scoring.render_sec_tally(scoring.sec_tally(cands)), ""]
 
         lines.append("## Iterations")
         lines.append("")

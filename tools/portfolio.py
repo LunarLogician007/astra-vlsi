@@ -1047,9 +1047,10 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
         ]
 
         cands = [c for it in self.state["iterations"] for c in it.get("candidates", [])]
-        passed = sum(1 for c in cands if (c.get("sec") or {}).get("equivalent"))
-        L += [f"SEC pass rate {passed}/{len(cands)}"
-              + (f" ({passed / len(cands):.0%})" if cands else ""), ""]
+        unions = [c for it in self.state["iterations"] for c in it.get("unions", [])]
+        L += [scoring.render_sec_tally(scoring.sec_tally(cands)) + "  (specialists)",
+              "", scoring.render_sec_tally(scoring.sec_tally(unions)) + "  (unions)",
+              ""]
 
         cl = self.state.get("cleanup") or {}
         if cl:
