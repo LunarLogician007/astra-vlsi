@@ -392,14 +392,23 @@ graphify explain "pathsel"     # a node, its neighbours, and why each edge exist
 graphify path "portfolio.py" "score.py"    # shortest path between two nodes
 ```
 
-Current index: **981 nodes, 1734 edges, 49 communities**, one per module. Line
+Current index: **996 nodes, 1752 edges, 51 communities**, one per module. Line
 numbers were spot-checked against the tree and are exact. `runs/` is not
 indexed, so the 92 MB of run artifacts add no noise.
 
-`graphify-out/` is **gitignored** — it is derived, ~1.5 MB, churns on every
-edit, and rebuilds in seconds from source. `GRAPH_REPORT.md` inside it is worth
-reading once: it lists the most-connected abstractions, import cycles (none),
-and cross-module coupling.
+`GRAPH_REPORT.md`, `graph.json` and `graph.html` are now **tracked**, so the
+graph is browsable from the repo without a local install. The rebuild cache and
+the dated backup directories are not — several MB, churning on every rebuild.
+
+The tracked three are still **derived**, and go stale the moment code changes.
+`GRAPH_REPORT.md` records the commit it was built from; check that against
+`git rev-parse HEAD` before trusting it, and `graphify update .` to refresh.
+Note that a rebuild which finds no topology change leaves the outputs untouched
+— including that commit stamp — so to refresh the stamp alone, delete the three
+files and rebuild.
+
+The report is worth reading once: it lists the most-connected abstractions,
+import cycles (none), and cross-module coupling.
 
 The one structural finding worth carrying forward: every "surprising
 connection" it reports is `pathsel.py → rtl_map.RtlIndex`. That is the addon's
