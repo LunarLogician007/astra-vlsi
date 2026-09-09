@@ -246,7 +246,36 @@ violation and swamps the portfolio's TNS shares and criticality distribution.
 
 ---
 
-## 8. Verify without tools or a model
+## 8. Navigating the code — graphify
+
+The repo is indexed as a queryable code knowledge graph. Local AST parsing via
+tree-sitter: no LLM, no network, no vector store, no API key.
+
+```bash
+graphify update .              # rebuild (seconds); regenerates graphify-out/
+graphify explain "pathsel"     # a node, its neighbours, and why each edge exists
+graphify path "portfolio.py" "score.py"    # shortest path between two nodes
+```
+
+Current index: **803 nodes, 1464 edges, 43 communities**, one per module. Line
+numbers were spot-checked against the tree and are exact. `runs/` is not
+indexed, so the 92 MB of run artifacts add no noise.
+
+`graphify-out/` is **gitignored** — it is derived, ~1.5 MB, churns on every
+edit, and rebuilds in seconds from source. `GRAPH_REPORT.md` inside it is worth
+reading once: it lists the most-connected abstractions, import cycles (none),
+and cross-module coupling.
+
+The one structural finding worth carrying forward: every "surprising
+connection" it reports is `pathsel.py → rtl_map.RtlIndex`. That is the addon's
+single real coupling to the base flow, and it is the thing that would have to
+move if `rtl_map` is reworked for multi-clock (§6.1).
+
+Installed at `~/.local/share/graphify-venv`, linked into `~/.local/bin`. Note
+`graphify install` also created a **global** `~/.claude/CLAUDE.md`, which
+applies to every project on this machine, not just this repo.
+
+## 9. Verify without tools or a model
 
 ```bash
 python3 tools/selftest.py                    # 163 tests

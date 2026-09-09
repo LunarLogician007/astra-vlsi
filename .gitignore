@@ -6,3 +6,7 @@ astra-image.tar.gz
 __pycache__/
 *.pyc
 .DS_Store
+
+# graphify code knowledge graph -- regenerated in seconds by `graphify update .`
+# (local AST parsing, no LLM, no network), so the derived graph is not tracked.
+graphify-out/
