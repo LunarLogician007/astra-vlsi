@@ -458,10 +458,18 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
 
     def __init__(self, args: argparse.Namespace) -> None:
         super().__init__(args)
+        # Each agent gets only the sections it can act on. The merge agent in
+        # particular reconciles diffs between rewrites that already exist, so
+        # the transformation catalogue and the path-reading material are cost
+        # with no possible use -- they push the diffs and the parent RTL
+        # further down a prompt the model has to hold all of.
         self.skill = skillgen.load_doc()
-        self.cleaner = RtlCleanupAgent(args.model, args.timeout, self.skill)
-        self.specialist = PathSpecialistAgent(args.model, args.timeout, self.skill)
-        self.merger = MergeAgent(args.model, args.timeout, self.skill)
+        self.cleaner = RtlCleanupAgent(args.model, args.timeout,
+                                       skillgen.load_doc(role="cleanup"))
+        self.specialist = PathSpecialistAgent(args.model, args.timeout,
+                                              skillgen.load_doc(role="specialist"))
+        self.merger = MergeAgent(args.model, args.timeout,
+                                 skillgen.load_doc(role="merge"))
         self.calls_planned = call_budget(args)
 
         self.state["mode"] = "portfolio"
@@ -911,9 +919,14 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
 
         info(f"run: {self.outdir}")
         info(f"skill library: {self.lib.path} ({len(self.lib)} entries)")
-        info(f"skill document: "
-             + (f"{len(self.skill)} chars from {skillgen.SKILL_PATH.name}"
-                if self.skill else "none (run: astra skilldoc build)"))
+        if self.skill:
+            per_role = ", ".join(
+                f"{r} {len(skillgen.load_doc(role=r))}"
+                for r in skillgen.ALL_ROLES)
+            info(f"skill document: {len(self.skill)} chars "
+                 f"({skillgen.SKILL_PATH.name}); injected per role: {per_role}")
+        else:
+            info("skill document: none (run: astra skilldoc build)")
         info(f"planned model calls: {self.calls_planned}"
              + (f", capped at {self.args.max_calls}" if self.args.max_calls else ""))
         if self.args.max_calls and self.calls_planned > self.args.max_calls:

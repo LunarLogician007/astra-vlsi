@@ -1429,6 +1429,46 @@ class TestSkillDoc(unittest.TestCase):
         self.assertIn("[skill document truncated", out)
         self.assertLess(len(out), 700)
 
+    def test_each_role_gets_only_what_it_can_act_on(self):
+        full = skillgen.load_doc()
+        sizes = {r: len(skillgen.load_doc(role=r)) for r in skillgen.ALL_ROLES}
+        for r, n in sizes.items():
+            self.assertGreater(n, 0, f"{r} got an empty document")
+            self.assertLessEqual(n, len(full))
+        self.assertLess(sizes["merge"], sizes["specialist"] / 2,
+                        "the merge agent reconciles existing diffs and needs "
+                        "neither the catalogue nor the path-reading material")
+
+    def test_the_merge_role_keeps_the_rules_a_merge_can_break(self):
+        doc = skillgen.load_doc(role="merge")
+        self.assertIn("equivalence", doc.lower())
+        self.assertIn("Reformatting", doc,
+                      "a reflowed file is exactly what makes a merge "
+                      "impossible, so the merge agent must be warned")
+
+    def test_the_cleanup_role_drops_path_reading(self):
+        """It runs before synthesis, so a timing report does not exist yet."""
+        self.assertNotIn("How to read a critical path",
+                         skillgen.load_doc(role="cleanup"))
+        self.assertIn("How to read a critical path",
+                      skillgen.load_doc(role="specialist"))
+
+    def test_role_markers_never_reach_a_prompt(self):
+        for role in (None, *skillgen.ALL_ROLES):
+            self.assertNotIn(skillgen._ROLE_MARK, skillgen.load_doc(role=role))
+
+    def test_an_untagged_document_is_returned_whole(self):
+        """Filtering must never silently empty a hand-written document."""
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "SKILL.md"
+            f.write_text("---\nname: x\n---\n\n## A section\n\nbody text\n")
+            for role in skillgen.ALL_ROLES:
+                self.assertIn("body text", skillgen.load_doc(f, role=role))
+
+    def test_an_unknown_section_goes_to_every_role(self):
+        self.assertEqual(skillgen._roles_for("Something Nobody Listed"),
+                         skillgen.ALL_ROLES)
+
     def test_a_missing_document_is_a_no_op_not_a_failure(self):
         self.assertEqual(skillgen.inject("SYS.", ""), "SYS.")
         self.assertEqual(skillgen.load_doc(Path("/nonexistent/SKILL.md")), "")

@@ -53,6 +53,35 @@ SKILL_PATH = SKILL_DIR / "SKILL.md"
 # against the ~10k of harness overhead each call already carries.
 BUDGET = 14000
 
+# Which agent needs which section. The document goes into a system prompt once
+# per candidate, so a section an agent cannot act on is pure cost: it pushes
+# the RTL and the target brief further down a prompt the model holds all of.
+#
+# The merge agent is the clear case. It reconciles diffs between rewrites that
+# already exist and never invents a transformation, so the catalogue and the
+# whole path-reading apparatus say nothing it can use. What it does need is the
+# equivalence rules and the warning about reformatting -- a reflowed file is
+# precisely what makes a merge impossible.
+#
+# The cleanup agent runs before anything has been synthesised, so instructions
+# for reading a timing report describe evidence it does not have yet.
+ALL_ROLES = ("cleanup", "specialist", "merge")
+
+_SECTION_ROLES: dict[str, tuple[str, ...]] = {
+    "The invariants": ALL_ROLES,
+    "What synthesis already does": ("cleanup", "specialist"),
+    "Where an LLM is reliable": ("cleanup", "specialist"),
+    "How to read a critical path": ("specialist",),
+    "What reliably works": ("cleanup", "specialist"),
+    "Coding patterns that block": ("cleanup", "specialist"),
+    "What wastes an iteration": ALL_ROLES,
+    "Arguing equivalence": ALL_ROLES,
+    "Transformation catalogue": ("cleanup", "specialist"),
+    "Choosing among them": ("specialist",),
+}
+
+_ROLE_MARK = "<!-- roles:"
+
 _FRONTMATTER = """\
 ---
 name: rtl-timing-optimization
@@ -271,6 +300,28 @@ and the proof is run on every candidate.
 # ---------------------------------------------------------------------------
 
 
+def _roles_for(heading: str) -> tuple[str, ...]:
+    for prefix, roles in _SECTION_ROLES.items():
+        if heading.startswith(prefix):
+            return roles
+    return ALL_ROLES        # an unrecognised section goes to everyone
+
+
+def _tag_sections(md: str) -> str:
+    """Put a role marker under every `##` heading.
+
+    Written into the document rather than kept only in this file, so a
+    regenerated or hand-edited SKILL.md carries its own routing instead of
+    silently falling back to sending every section to every agent.
+    """
+    out: list[str] = []
+    for line in md.splitlines():
+        out.append(line)
+        if line.startswith("## "):
+            out.append(f"{_ROLE_MARK} {' '.join(_roles_for(line[3:].strip()))} -->")
+    return "\n".join(out)
+
+
 def render_doc(lib: skills_mod.SkillLibrary) -> str:
     """The whole document, assembled from the library and the preamble."""
     entries = sorted(lib.all(include_invalid=False),
@@ -281,11 +332,16 @@ def render_doc(lib: skills_mod.SkillLibrary) -> str:
         strat = str(e["strategy"]).replace("|", "/")
         rows.append(f"| {pat} | {strat} |")
     rows.append("")
-    return "\n".join([_FRONTMATTER, _PREAMBLE, "\n".join(rows), _FOOTER])
+    body = _tag_sections("\n".join([_PREAMBLE, "\n".join(rows), _FOOTER]))
+    return f"{_FRONTMATTER}\n{body}\n"
 
 
-def load_doc(path: Path | None = None) -> str:
-    """The skill body, without its frontmatter. Empty when absent.
+def load_doc(path: Path | None = None, role: str | None = None) -> str:
+    """The skill body, without its frontmatter or its role markers.
+
+    ``role`` keeps only the sections that role can act on. A document carrying
+    no markers -- hand-written, or produced before the markers existed -- is
+    returned whole, so filtering can never silently empty it.
 
     Callers degrade rather than fail: the pipeline runs without a skill
     document, it just runs with less guidance.
@@ -299,7 +355,34 @@ def load_doc(path: Path | None = None) -> str:
         end = text.find("\n---", 3)
         if end >= 0:
             text = text[end + 4:]
-    return text.strip()
+    text = text.strip()
+
+    kept: list[str] = []
+    keep, tagged = True, False
+    for line in text.splitlines():
+        if line.startswith("## "):
+            kept.append(line)
+            keep = True                     # settled by the marker beneath it
+            continue
+        if line.startswith(_ROLE_MARK):
+            tagged = True
+            keep = role is None or role in line
+            if not keep and kept and kept[-1].startswith("## "):
+                kept.pop()                  # drop the heading of a cut section
+            continue
+        if keep:
+            kept.append(line)
+    if not tagged:
+        return text
+
+    # Collapse the blank runs left behind where sections were removed.
+    out: list[str] = []
+    blanks = 0
+    for line in kept:
+        blanks = blanks + 1 if not line.strip() else 0
+        if blanks < 3:
+            out.append(line)
+    return "\n".join(out).strip()
 
 
 def inject(system: str, doc: str, budget: int = BUDGET) -> str:

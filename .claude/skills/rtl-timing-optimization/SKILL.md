@@ -14,6 +14,7 @@ around without shortening the longest path from a launch flop to a capture
 flop has not helped, however much better the code reads afterwards.
 
 ## The invariants
+<!-- roles: cleanup specialist merge -->
 
 Checked by tools after you answer, so there is nothing to gain by bending them:
 
@@ -27,6 +28,7 @@ Checked by tools after you answer, so there is nothing to gain by bending them:
    constructs.
 
 ## What synthesis already does -- doing it again wastes the iteration
+<!-- roles: cleanup specialist -->
 
 Modern synthesis performs these before you see a timing report. Redoing them in
 RTL changes nothing and costs an equivalence proof and a synthesis run:
@@ -52,6 +54,7 @@ representation. Those require knowing what the code means. That is where you
 add value, and it is the only place you do.
 
 ## Where an LLM is reliable at this, and where it is not
+<!-- roles: cleanup specialist -->
 
 Published evaluations of LLM-driven RTL optimisation find the ability is
 uneven, and it is worth knowing which side of the line you are on:
@@ -69,6 +72,7 @@ be conservative, and prefer returning the file unchanged over a rewrite you
 cannot argue precisely.
 
 ## How to read a critical path
+<!-- roles: specialist -->
 
 Instance names in an OpenSTA report (`_14637_`, or a chain like
 `acc_out[33]_DFF_X1_Q_D_AOI21_X1_ZN`) are synthesis-generated and carry no
@@ -87,6 +91,7 @@ delay concentrated in a few of many stages has a local fix; one where it is
 spread evenly does not, and needs the structure changed.
 
 ## What reliably works
+<!-- roles: cleanup specialist -->
 
 Ordered by how often it recovers real slack.
 
@@ -138,6 +143,7 @@ work can be moved between them. Latency must not change: this redistributes
 logic across existing flops, it does not add one.
 
 ## Coding patterns that block the tool's own datapath optimisation
+<!-- roles: cleanup specialist -->
 
 These are not slow in themselves -- they stop synthesis from applying the
 architecture-level optimisations it would otherwise apply to an arithmetic
@@ -164,6 +170,7 @@ these; a simpler open-source flow may not merge operators at all, and there
 winning move rather than the mistake. Trust the measurement over the rule.
 
 ## What wastes an iteration
+<!-- roles: cleanup specialist merge -->
 
 - Renaming signals, reordering independent statements, adding attributes.
 - Restating the same logic with different operators.
@@ -175,6 +182,7 @@ winning move rather than the mistake. Trust the measurement over the rule.
   to find that out.
 
 ## Arguing equivalence
+<!-- roles: cleanup specialist merge -->
 
 Every rewrite needs the reason its outputs are bit-identical. Be specific about
 the two things that actually break rewrites:
@@ -188,6 +196,7 @@ the two things that actually break rewrites:
   a frequent source of a failed check.
 
 ## Transformation catalogue
+<!-- roles: cleanup specialist -->
 
 An index, not a reference: whichever of these match your target are supplied in
 full alongside it, with their rationale and their measured record. **The
@@ -228,6 +237,7 @@ fares, so a later run can tell which work on real designs.
 | wide comparison at the end of the datapath | precompute the comparison from partial results in parallel with the final arithmetic |
 
 ## Choosing among them
+<!-- roles: specialist -->
 
 Prefer the transformation that removes the most logic levels from the *measured*
 path. When two are comparable, prefer the one whose equivalence argument is
