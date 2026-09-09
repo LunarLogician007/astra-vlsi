@@ -456,9 +456,17 @@ like everything else.
 | skill learning | 1 |
 | **per iteration** | **k + 2 = 5** |
 
-Defaults (`-k 3 --iters 3 --clean 1`) are **16 calls**, against `make opt`'s 18
-at its defaults. `--max-calls N` refuses to start over budget; the plan is
-printed before anything runs and written to `budget.json`.
+Defaults (`-k 3 --iters 4 --clean 1`) plan **21 calls**, but that is a ceiling:
+`--patience 3` ends a run that has stopped earning, so the extra iterations
+cost calls only when they are finding something. `--max-calls N` refuses to
+start over budget; the plan is printed before anything runs and written to
+`budget.json`.
+
+Worth knowing before reading too much into a long run: across every run
+recorded here, the best score came from **iteration 1**, and no later iteration
+improved on it — the one exception being an early Opus run where iteration 2
+did. The headroom is there for the cases where iterating pays, not because it
+usually does.
 
 ### For a head-to-head
 
@@ -466,9 +474,14 @@ printed before anything runs and written to `budget.json`.
 rather than the model:
 
 ```bash
-make opt       DESIGN=mac_chain OPT_ARGS="--model haiku"
-make portfolio DESIGN=mac_chain PF_ARGS="--model haiku"
+make clean-skills          # the library persists; reset it between arms
+make opt       DESIGN=mac_chain OPT_ARGS="--model haiku --iters 3"
+make clean-skills
+make portfolio DESIGN=mac_chain PF_ARGS="--model haiku --iters 3"
 ```
+
+Match `--iters` explicitly: the two loops ship different defaults (3 and 4), so
+leaving them out compares different budgets rather than different methods.
 
 Compare the two `summary.md` files on WNS/TNS/area, and on SEC pass rate — the
 scoped edits are the change most likely to move that number, and 5/12 is the

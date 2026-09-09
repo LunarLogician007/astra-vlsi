@@ -1174,6 +1174,19 @@ def build_parser() -> argparse.ArgumentParser:
             # The pool is one path per endpoint; 20 truncates the TNS
             # denominator on anything bigger than the shipped designs.
             a.default = 60
+        if a.dest == "iters":
+            # A ceiling, not a target: `--patience` stops a loop that has
+            # stopped earning, so raising this costs calls only on runs where
+            # later iterations are actually finding something. Every run
+            # recorded so far peaked at iteration 1, with one exception, so
+            # the headroom matters more than the expectation.
+            a.default = 4
+            a.help = "maximum iterations; --patience ends a stalled run sooner"
+        if a.dest == "patience":
+            # One more than the old default, so a four-iteration ceiling can
+            # actually be reached: at patience 2 the loop always stopped at
+            # three regardless of --iters.
+            a.default = 3
 
     g = p.add_argument_group("portfolio")
     g.add_argument("--mmr-lambda", type=float, default=pathsel.MMR_LAMBDA,

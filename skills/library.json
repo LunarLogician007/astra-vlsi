@@ -2,7 +2,7 @@
   "meta": {
     "version": 1,
     "note": "Pattern-strategy skill library (paper Sec. 4.2). Entries marked source=seed are textbook transformations offered as untested suggestions: they carry zero occurrences and zero confidence and must earn their statistics from real runs, exactly like a learned entry. Entries gain occurrences, SEC-pass counts and a mean relative advantage A_i as the loop runs, and are demoted to status=invalid if they break equivalence more often than not.",
-    "updated_at": "2026-09-09T16:10:37+00:00",
+    "updated_at": "2026-09-09T16:20:09+00:00",
     "count": 27
   },
   "skills": [
@@ -15,28 +15,28 @@
       "source": "learned",
       "created_at": "2026-09-09T02:13:35+00:00",
       "stats": {
-        "occurrences": 5,
-        "sec_pass": 5,
+        "occurrences": 7,
+        "sec_pass": 7,
         "sec_fail": 0,
         "inconclusive": 0,
-        "advantage_sum": -2.1038117715169973,
-        "advantage_n": 4,
-        "score_delta_sum": -1.295940006585738,
-        "score_delta_n": 3,
+        "advantage_sum": -3.4738058526759783,
+        "advantage_n": 6,
+        "score_delta_sum": -1.6661094783845731,
+        "score_delta_n": 4,
         "designs": [
           "mac_chain"
         ],
-        "iterations": 5
+        "iterations": 7
       },
       "last_seen": {
         "design": "mac_chain",
         "iteration": 1,
-        "at": "2026-09-09T02:15:29+00:00"
+        "at": "2026-09-09T16:20:09+00:00"
       },
-      "confidence": 0.4632,
-      "mean_advantage": -0.5259529428792493,
+      "confidence": 0.5327,
+      "mean_advantage": -0.578967642112663,
       "status": "candidate",
-      "updated_at": "2026-09-09T16:10:37+00:00"
+      "updated_at": "2026-09-09T16:20:09+00:00"
     },
     {
       "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
@@ -239,28 +239,28 @@
       "source": "learned",
       "created_at": "2026-09-09T02:13:35+00:00",
       "stats": {
-        "occurrences": 3,
-        "sec_pass": 3,
+        "occurrences": 5,
+        "sec_pass": 5,
         "sec_fail": 0,
         "inconclusive": 0,
-        "advantage_sum": 1.3967049903304432,
-        "advantage_n": 1,
-        "score_delta_sum": 0.10360996197007193,
-        "score_delta_n": 1,
+        "advantage_sum": 2.766699071489424,
+        "advantage_n": 2,
+        "score_delta_sum": 0.009092027113597176,
+        "score_delta_n": 2,
         "designs": [
           "mac_chain"
         ],
-        "iterations": 3
+        "iterations": 5
       },
       "last_seen": {
         "design": "mac_chain",
         "iteration": 1,
-        "at": "2026-09-09T02:13:35+00:00"
+        "at": "2026-09-09T16:20:09+00:00"
       },
-      "confidence": 0.0288,
-      "mean_advantage": 1.3967049903304432,
+      "confidence": 0.037,
+      "mean_advantage": 1.383349535744712,
       "status": "candidate",
-      "updated_at": "2026-09-09T16:09:00+00:00"
+      "updated_at": "2026-09-09T16:20:09+00:00"
     },
     {
       "id": "sign-extension-through-intermediate-wires-in-add::inline-sign-extension-expressions-to-reduce-inte",

@@ -1651,6 +1651,13 @@ class TestPortfolioBudget(unittest.TestCase):
     def _args(self, *argv):
         return portfolio.build_parser().parse_args(["mac_chain", *argv])
 
+    def test_the_default_ceiling_allows_four_iterations(self):
+        """A four-iteration ceiling is only reachable if patience allows it:
+        at patience 2 the loop stopped at three whatever --iters said."""
+        a = self._args()
+        self.assertGreaterEqual(a.iters, 4)
+        self.assertGreaterEqual(a.patience, a.iters - 1)
+
     def test_the_documented_formula(self):
         a = self._args()
         self.assertEqual(portfolio.call_budget(a),
