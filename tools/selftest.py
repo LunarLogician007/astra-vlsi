@@ -862,32 +862,198 @@ class TestPathSelValue(unittest.TestCase):
         return [pathsel.path_features(p, i, nl, rtl, 2.0)
                 for i, p in enumerate(paths)]
 
-    def test_mass_shares_sum_to_one(self):
+    def test_severity_is_strictly_monotone_across_the_whole_range(self):
+        """Both halves matter. A met design must be rankable (the old gate
+        zeroed it), and so must a violating one (clipping at the constraint
+        would flatten it)."""
+        sev = [pathsel.severity(sl, 2.0)
+               for sl in (2.0, 0.9, 0.5, 0.1, 0.0, -0.1, -0.5, -2.0)]
+        self.assertTrue(all(x < y for x, y in zip(sev, sev[1:])),
+                        f"not strictly increasing as slack falls: {sev}")
+        self.assertEqual(sev[0], 0.0, "a full period of headroom")
+        self.assertEqual(sev[-1], 1.0, "a full period over the constraint")
+
+    def test_severity_puts_the_constraint_at_the_midpoint(self):
+        self.assertAlmostEqual(pathsel.severity(0.0, 2.0), 0.5)
+
+    def test_a_passing_path_still_has_a_severity(self):
+        """alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old
+        gate this scored 0.0 and was indistinguishable from a path with a full
+        period of headroom."""
+        sev = pathsel.severity(0.3701, 2.5)
+        self.assertGreater(sev, 0.0)
+        self.assertLess(sev, 0.5, "it meets timing, so it sits below the "
+                                  "constraint midpoint")
+        self.assertGreater(sev, pathsel.severity(1.5, 2.5),
+                           "and above a path with far more headroom")
+
+    def test_severity_saturates_at_one_period(self):
+        self.assertEqual(pathsel.severity(-9.0, 2.0), 1.0)
+        self.assertEqual(pathsel.severity(2.0, 2.0), 0.0)
+
+    def test_tns_shares_sum_to_one_when_violating(self):
         feats = self._feats([_path("a", "x", -0.4, ["XOR2_X1"] * 5),
                              _path("b", "y", -0.2, ["MUX2_X1"] * 5),
                              _path("c", "z", -0.1, ["AND2_X1"] * 5)])
         clusters, _ = pathsel.cluster(feats, 0.99)
         total = sum(pathsel.cluster_value([feats[i] for i in c], feats, 2.0)
-                    ["terms"]["mass"] for c in clusters)
+                    ["tns_share"] for c in clusters)
         self.assertAlmostEqual(total, 1.0)
-
-    def test_a_passing_path_has_zero_criticality(self):
-        feats = self._feats([_path("a", "x", 0.4, ["XOR2_X1"] * 5)])
-        v = pathsel.cluster_value(feats, feats, 2.0)
-        self.assertEqual(v["terms"]["criticality"], 0.0,
-                         "a path that meets timing is not a target")
 
     def test_a_fully_passing_design_does_not_divide_by_zero(self):
         feats = self._feats([_path("a", "x", 0.4, ["XOR2_X1"] * 5),
                              _path("b", "y", 0.9, ["MUX2_X1"] * 5)])
         for c in ([feats[0]], [feats[1]]):
             v = pathsel.cluster_value(c, feats, 2.0)
-            self.assertTrue(0.0 <= v["terms"]["mass"] <= 1.0)
+            self.assertTrue(0.0 <= v["terms"]["impact"] <= 1.0)
+            self.assertTrue(0.0 <= v["terms"]["severity"] <= 1.0)
 
-    def test_criticality_saturates_at_one_period(self):
-        feats = self._feats([_path("a", "x", -9.0, ["XOR2_X1"] * 5)])
-        v = pathsel.cluster_value(feats, feats, 2.0)
-        self.assertEqual(v["terms"]["criticality"], 1.0)
+    def test_impact_uses_the_probability_when_one_is_given(self):
+        feats = self._feats([_path("a", "x", -0.4, ["XOR2_X1"] * 5)])
+        v = pathsel.cluster_value(feats, feats, 2.0, p_crit=0.42)
+        self.assertAlmostEqual(v["terms"]["impact"], 0.42)
+        self.assertAlmostEqual(v["p_critical"], 0.42)
+
+
+class TestPathSelCriticality(unittest.TestCase):
+    """P(this path is the one limiting the clock).
+
+    Static timing analysis is deterministic, so this is NOT a probability that
+    the design fails and NOT statistical STA over process variation. It says
+    how much the post-synthesis ordering of near-tied paths can be trusted
+    before layout has put any real wire delay in the report.
+    """
+
+    def _feats(self, paths):
+        nl, rtl = _empty_index(), _NoRtl()
+        return [pathsel.path_features(p, i, nl, rtl, 2.0)
+                for i, p in enumerate(paths)]
+
+    def _two_cones(self, sa, sb):
+        return self._feats(
+            [_path("a", f"x[{i}]", sa, ["XOR2_X1", "AOI21_X1"] * 5)
+             for i in range(3)]
+            + [_path("b", f"y[{i}]", sb, ["MUX2_X1", "AND2_X1"] * 5)
+               for i in range(3)])
+
+    def test_probabilities_sum_to_one(self):
+        feats = self._two_cones(-0.30, -0.28)
+        clusters, _ = pathsel.cluster(feats)
+        per_path, per_cone = pathsel.criticality(feats, clusters, 2.0)
+        self.assertAlmostEqual(sum(per_path), 1.0, places=6)
+        self.assertAlmostEqual(sum(per_cone), 1.0, places=6)
+
+    def test_zero_sigma_is_the_deterministic_answer(self):
+        feats = self._two_cones(-0.30, -0.10)
+        clusters, _ = pathsel.cluster(feats)
+        _, per_cone = pathsel.criticality(feats, clusters, 2.0, sigma=0.0)
+        self.assertAlmostEqual(max(per_cone), 1.0)
+        self.assertAlmostEqual(min(per_cone), 0.0)
+
+    def test_more_uncertainty_spreads_the_distribution(self):
+        feats = self._two_cones(-0.30, -0.28)
+        clusters, _ = pathsel.cluster(feats)
+        spreads = []
+        for sigma in (0.001, 0.02, 0.20):
+            _, per_cone = pathsel.criticality(feats, clusters, 2.0, sigma=sigma)
+            spreads.append(max(per_cone) - min(per_cone))
+        self.assertEqual(spreads, sorted(spreads, reverse=True),
+                         "more delay uncertainty must mean less certainty "
+                         "about which cone is the limiter")
+
+    def test_a_clearly_worse_cone_keeps_the_weight(self):
+        feats = self._two_cones(-0.90, -0.05)
+        clusters, _ = pathsel.cluster(feats)
+        _, per_cone = pathsel.criticality(feats, clusters, 2.0)
+        self.assertGreater(max(per_cone), 0.98,
+                           "0.85 ns apart is far outside the noise")
+
+    def test_a_cone_holds_its_weight_against_its_own_bit_slices(self):
+        """Without the shared-cone term, twenty bit-slices of one bottleneck
+        would each take 1/20 of the criticality and the cone that owns all of
+        it would look unimportant."""
+        feats = self._feats(
+            [_path("bank", f"acc[{i}]", -0.30, ["XOR2_X1", "AOI21_X1"] * 8)
+             for i in range(20)]
+            + [_path("other", "z[0]", -0.29, ["MUX2_X1", "AND2_X1"] * 8)])
+        clusters, _ = pathsel.cluster(feats)
+        self.assertEqual(len(clusters), 2)
+        per_path, per_cone = pathsel.criticality(feats, clusters, 2.0)
+        big = max(range(2), key=lambda c: len(clusters[c]))
+        self.assertGreater(per_cone[big], 0.4,
+                           "the cone must not be diluted by its own members")
+        self.assertLess(max(per_path[i] for i in clusters[big]), per_cone[big],
+                        "no single bit-slice owns the cone's whole weight")
+
+    def test_it_works_with_no_violation_at_all(self):
+        """The case that motivates the whole distribution: minimising delay
+        against a constraint the design already meets."""
+        feats = self._two_cones(0.05, 0.30)
+        clusters, _ = pathsel.cluster(feats)
+        _, per_cone = pathsel.criticality(feats, clusters, 2.0)
+        self.assertAlmostEqual(sum(per_cone), 1.0, places=6)
+        tight = min(range(len(clusters)),
+                    key=lambda c: min(feats[i].slack_ns for i in clusters[c]))
+        self.assertGreater(per_cone[tight], 0.9,
+                           "the path with the least headroom still limits the "
+                           "clock, violation or not")
+
+    def test_it_is_reproducible(self):
+        feats = self._two_cones(-0.30, -0.29)
+        clusters, _ = pathsel.cluster(feats)
+        a = pathsel.criticality(feats, clusters, 2.0)
+        b = pathsel.criticality(feats, clusters, 2.0)
+        self.assertEqual(a, b, "a fixed seed, like the rest of the pipeline")
+
+    def test_a_path_with_no_slack_reported_cannot_win(self):
+        paths = [_path("a", "x", -0.3, ["XOR2_X1"] * 6),
+                 _path("b", "y", -0.2, ["MUX2_X1"] * 6)]
+        paths[1]["slack_ns"] = None
+        feats = self._feats(paths)
+        clusters, _ = pathsel.cluster(feats)
+        per_path, _ = pathsel.criticality(feats, clusters, 2.0)
+        self.assertGreater(per_path[0], 0.99)
+        self.assertLess(per_path[1], 0.01)
+
+    def test_a_met_design_ranks_cones_that_the_old_gate_could_not(self):
+        """Regression guard on the bug this replaced: criticality used to be
+        hard-zeroed for any path with positive slack, so every target in a
+        design that met timing scored identically and could not be ordered.
+
+        Both cones meet timing, and they are close enough that neither is
+        dismissed -- which is the situation where the ranking has to work."""
+        nl, rtl = _empty_index(), _NoRtl()
+        paths = ([_path("tight", f"x[{i}]", 0.05, ["XOR2_X1", "AOI21_X1"] * 8)
+                  for i in range(4)]
+                 + [_path("loose", f"y[{i}]", 0.12, ["MUX2_X1", "AND2_X1"] * 8)
+                    for i in range(4)])
+        sel = pathsel.build_targets(
+            {"summary": {"wns_ns": 0.05, "tns_ns": 0.0}, "critical_paths": paths},
+            nl, rtl, 2.0, k=2)
+        self.assertEqual(sel["cluster_count"], 2)
+        cones = {t.id: t for t in sel["targets"] if t.kind == "cone"}
+        self.assertEqual(len(cones), 2, "both cones must clear the floor")
+        vals = [t.value for t in sel["targets"]]
+        self.assertGreater(vals[0], vals[1],
+                           "the cone with less headroom must rank first")
+        self.assertGreater(sel["targets"][0].p_critical,
+                           sel["targets"][1].p_critical)
+
+    def test_a_dominated_cone_falls_below_the_floor(self):
+        """The other side of it: a cone that is nowhere near limiting the
+        clock is not worth an agent, and k drops rather than padding."""
+        nl, rtl = _empty_index(), _NoRtl()
+        paths = ([_path("tight", f"x[{i}]", 0.05, ["XOR2_X1", "AOI21_X1"] * 8)
+                  for i in range(4)]
+                 + [_path("loose", f"y[{i}]", 0.90, ["MUX2_X1", "AND2_X1"] * 8)
+                    for i in range(4)])
+        sel = pathsel.build_targets(
+            {"summary": {"wns_ns": 0.05, "tns_ns": 0.0}, "critical_paths": paths},
+            nl, rtl, 2.0, k=2)
+        self.assertEqual(sel["cluster_count"], 2)
+        self.assertTrue(sel["collapsed"],
+                        "one viable cone means segments, not a padded second "
+                        "cone that cannot limit the clock")
 
 
 class TestPathSelMMR(unittest.TestCase):

@@ -305,14 +305,76 @@ combined.
 ### The three changes
 
 **1. `pathsel` picks *distinct* targets.** Paths are clustered into logic cones
-by how much RTL, which cone-origin nets and which cell mix they share; clusters
-are scored on the share of TNS they own, how far short they are, and whether
-anything can actually be done about them; and selection is
-maximal-marginal-relevance, so the second target is the best one that is also
-*different* from the first.
+by how much RTL, which cone-origin nets and which cell mix they share, and
+selection is maximal-marginal-relevance, so the second target is the best one
+that is also *different* from the first. Each cone is scored on three terms:
+
+| term | what it is |
+|---|---|
+| **impact** | P(this cone holds the path that limits the clock) — see below |
+| **severity** | how close its worst path is to the constraint: 0 = a full period of headroom, 0.5 = exactly at it, 1.0 = a period over |
+| **tractability** | localisation coverage × whether a structural finding fired × whether the library knows this shape |
+
+Neither term is gated on a violation, deliberately. **The target here is a
+timing constraint, not a violation** — a design that already meets timing is
+still worth speeding up if you want a tighter period, and that is the case
+where "which path is worst" still matters but "which path is failing" has no
+answer at all.
 
 `k` is a ceiling, not a quota. On `mac_chain` the twenty paths correctly
 collapse to **one** cone, and the selector says so rather than padding.
+
+### Which path limits the clock
+
+STA is deterministic: a slack is computed, not estimated, and the worst path is
+known exactly. So the distribution below is **not** a probability that the
+design fails, and it is not statistical STA over process variation.
+
+It answers a question that *is* open before layout. Post-synthesis timing
+contains no real wire delay, so two paths a few picoseconds apart are not yet
+reliably ordered — and committing three agents to the nominally-worst one is a
+bet on an ordering the flow has not established. Each path delay is treated as
+`-slack + noise` and the noise is sampled:
+
+```
+noise_i = sigma · ( sqrt(rho)·z_cone(i)  +  sqrt(1-rho)·z_i )
+```
+
+`sigma` is a fraction of the clock period (`--delay-sigma`, default 0.05) and
+`rho` is how much of that uncertainty a whole cone shares (`--cone-rho`,
+default 0.7). The cone term matters: without it, twenty bit-slices of one
+bottleneck would each be assigned 1/20 of the criticality and the cone that
+owns all of it would look unimportant.
+
+```
+Which cone limits the clock (delay sigma 5% of the period, correlation 0.70):
+  cone 0   100.0%    20 path(s)   worst slack -0.3573
+
+Per path, most likely first:
+   13.3%  slack -0.3573  (VIOLATED)  cone 0  -> acc_out[33]_DFF_X1_Q
+   13.2%  slack -0.3573  (VIOLATED)  cone 0  -> acc_out[35]_DFF_X1_Q
+   ...
+```
+
+Two properties worth knowing. `--delay-sigma 0` collapses it to the
+deterministic answer exactly — all the weight on the worst path's cone. And it
+works unchanged on a design that **meets** timing, because it ranks by slack
+rather than by violation: two cones with +0.05 ns and +0.30 ns of headroom come
+out at 97% and 3%, where the old violation-gated score could not separate them
+at all.
+
+Sensitivity is what you would want it to be — two cones 15 ps apart:
+
+| `--delay-sigma` | cone A (+0.100) | cone B (+0.115) |
+|---|---|---|
+| 0 (deterministic) | 100% | 0% |
+| 0.01 | 71% | 29% |
+| 0.05 (default) | 55% | 45% |
+| 0.20 | 51% | 49% |
+
+The numbers are only as good as `sigma`, which is an assumption about how much
+the estimate can move before layout, not a measurement. Set it to 0 if you want
+the report taken at face value.
 
 **When a design has fewer cones than agents, the cone's path is cut into
 segments instead.** A long path is not homogeneous, and the cut is made where

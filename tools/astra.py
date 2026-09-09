@@ -578,7 +578,7 @@ def cmd_paths(args: argparse.Namespace) -> int:
     try:
         sel = pathsel.from_run(rdir, cfg["_dir"], k=args.top_k, stage=args.stage,
                                lam=args.mmr_lambda, cluster_at=args.cluster_at,
-                               lib=lib)
+                               lib=lib, sigma=args.delay_sigma, rho=args.cone_rho)
     except (FileNotFoundError, ValueError) as e:
         die(str(e))
     if args.json:
@@ -778,6 +778,11 @@ def build_parser() -> argparse.ArgumentParser:
                     help="diversity weight in the selection")
     sp.add_argument("--cluster-at", type=float, default=0.65,
                     help="similarity at which two paths are one bottleneck")
+    sp.add_argument("--delay-sigma", type=float, default=0.05,
+                    help="delay uncertainty as a fraction of the clock period; "
+                         "0 gives the deterministic answer")
+    sp.add_argument("--cone-rho", type=float, default=0.7,
+                    help="share of that uncertainty common to a whole cone")
     sp.add_argument("--no-skills", action="store_true",
                     help="do not consult the skill library for tractability")
     sp.add_argument("--json", action="store_true")

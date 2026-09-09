@@ -36,6 +36,7 @@ so it is unit-testable against synthetic path dicts.
 from __future__ import annotations
 
 import json
+import math
 import sys
 from collections import Counter
 from dataclasses import dataclass, field
@@ -68,8 +69,22 @@ CLUSTER_AT = 0.65
 
 # Value weights. Mass leads: the cluster that owns most of the failure is the
 # one worth fixing, whatever its worst path's slack happens to be.
-VALUE_WEIGHTS: dict[str, float] = {"mass": 0.45, "criticality": 0.35,
+VALUE_WEIGHTS: dict[str, float] = {"mass": 0.45,          # impact
+                                   "criticality": 0.35,   # severity
                                    "tractability": 0.20}
+
+# Delay uncertainty used to turn a deterministic report into a criticality
+# distribution, as a fraction of the clock period. Post-synthesis STA has no
+# real wire delay in it, so the reported ordering of two near-tied paths is
+# not yet settled -- this is how much they are assumed able to move before
+# layout. Set it to 0 to recover the deterministic answer exactly.
+DELAY_SIGMA = 0.05
+# Share of that uncertainty common to a whole cone. Paths through one cone
+# traverse mostly the same cells, so their errors move together; paths in
+# different cones are near-independent.
+CONE_RHO = 0.7
+MC_SAMPLES = 20000
+MC_SEED = 20260908       # fixed: the whole pipeline is reproducible
 
 MMR_LAMBDA = 0.5      # diversity weight in the marginal-relevance selection
 MASS_FLOOR = 0.02     # a cluster owning under 2% of the failure is not a target
@@ -277,6 +292,110 @@ def cluster_similarity(ca: list[int], cb: list[int],
 
 
 # --------------------------------------------------------------------------
+# criticality distribution
+# --------------------------------------------------------------------------
+
+
+def criticality(feats: list[PathFeatures], clusters: list[list[int]],
+                period_ns: float | None, sigma: float = DELAY_SIGMA,
+                rho: float = CONE_RHO, samples: int = MC_SAMPLES,
+                seed: int = MC_SEED) -> tuple[list[float], list[float]]:
+    """P(each path -- and each cluster -- is the one limiting the clock).
+
+    Static timing analysis is deterministic: a slack is computed, not
+    estimated, and the worst path is known exactly. So this is NOT a
+    probability that the design fails, and it is not statistical STA over
+    process variation.
+
+    It answers a different and, before layout, better-posed question: the
+    post-synthesis report contains no real wire delay, so two paths a few
+    picoseconds apart are not yet reliably ordered, and committing three
+    agents to the nominally-worst one is a bet on an ordering the flow has
+    not established. Each path delay is therefore treated as
+    ``-slack_i + noise`` and the noise is sampled:
+
+        noise_i = sigma * (sqrt(rho) * z_cone(i) + sqrt(1 - rho) * z_i)
+
+    with ``sigma`` a fraction of the clock period. The cone term is shared,
+    because paths through one cone traverse mostly the same cells and their
+    errors move together -- without it, twenty bit-slices of one bottleneck
+    would each be assigned 1/20 of the criticality and the cone that owns all
+    of it would look unimportant.
+
+    Slack is used rather than arrival so that paths in different clock groups
+    are compared on the same scale, and so that this works unchanged on a
+    design that MEETS timing: "which path limits the clock" is a live question
+    whether or not it is currently being violated, which is the case for any
+    design being pushed to a tighter period.
+
+    sigma = 0 collapses to the deterministic answer -- all the weight on the
+    worst path's cluster, split evenly across exact ties.
+    """
+    import random
+
+    n = len(feats)
+    if n == 0:
+        return [], []
+    of_cluster = {i: c for c, members in enumerate(clusters) for i in members}
+    # Worse slack = closer to limiting. A path with no slack reported cannot
+    # be ranked, so it is parked far below anything that can.
+    slacks = [f.slack_ns for f in feats]
+    known = [s for s in slacks if s is not None]
+    floor = (max(known) + 1.0) if known else 0.0
+    base = [-(s if s is not None else floor) for s in slacks]
+
+    scale = abs(sigma) * abs(period_ns or 1.0)
+    if scale <= 0 or n == 1:
+        best = max(base)
+        tied = [i for i, b in enumerate(base) if b >= best - 1e-12]
+        per_path = [1.0 / len(tied) if i in tied else 0.0 for i in range(n)]
+        return per_path, _by_cluster(per_path, clusters)
+
+    rho = min(max(rho, 0.0), 1.0)
+    s_cone = scale * math.sqrt(rho)
+    s_ind = scale * math.sqrt(1.0 - rho)
+    rng = random.Random(seed)
+    wins = [0] * n
+
+    for _ in range(samples):
+        cone_z = [rng.gauss(0.0, 1.0) for _ in clusters]
+        best_i, best_v = 0, float("-inf")
+        for i in range(n):
+            v = (base[i] + s_cone * cone_z[of_cluster[i]]
+                 + s_ind * rng.gauss(0.0, 1.0))
+            if v > best_v:
+                best_i, best_v = i, v
+        wins[best_i] += 1
+
+    per_path = [w / samples for w in wins]
+    return per_path, _by_cluster(per_path, clusters)
+
+
+def _by_cluster(per_path: list[float], clusters: list[list[int]]) -> list[float]:
+    return [sum(per_path[i] for i in members) for members in clusters]
+
+
+def severity(slack_ns: float | None, period_ns: float | None) -> float:
+    """How close this path is to the timing constraint, in [0, 1].
+
+        0.0   a full period of headroom
+        0.5   exactly at the constraint
+        1.0   a full period over it
+
+    Monotone in delay across the whole range, which both halves of the old
+    behaviour got wrong in opposite directions. Gating on "is it violated"
+    scored every path in a design that meets timing identically, so a design
+    being pushed to a tighter period could not be ranked at all. Simply
+    clipping arrival/period at 1.0 then scored every *violating* path
+    identically, which loses the ordering exactly where a failing design
+    needs it.
+    """
+    if slack_ns is None or not period_ns:
+        return 0.0
+    return min(1.0, max(0.0, (1.0 - slack_ns / abs(period_ns)) / 2.0))
+
+
+# --------------------------------------------------------------------------
 # value
 # --------------------------------------------------------------------------
 
@@ -313,8 +432,18 @@ def skill_term(feats: list[PathFeatures], lib: Any) -> tuple[float, list[dict]]:
 
 def cluster_value(feats: list[PathFeatures], pool: list[PathFeatures],
                   period_ns: float | None, lib: Any = None,
-                  tns_total: float | None = None) -> dict[str, Any]:
-    """Grounded worth of attacking one cluster. Every term lands in [0, 1]."""
+                  tns_total: float | None = None,
+                  p_crit: float | None = None) -> dict[str, Any]:
+    """Grounded worth of attacking one cluster. Every term lands in [0, 1].
+
+    Three terms, and none of them assumes the design is failing:
+
+      impact        P(this cluster holds the path that limits the clock).
+                    Well-posed whether or not anything is violated, which is
+                    the case that matters when the goal is a tighter period.
+      severity      how much of the cycle its worst path consumes.
+      tractability  whether anything can actually be done about it.
+    """
     rep = min(feats, key=lambda f: (f.slack_ns if f.slack_ns is not None else 0.0))
 
     pool_viol = sum(_violation(f) for f in pool)
@@ -340,10 +469,11 @@ def cluster_value(feats: list[PathFeatures], pool: list[PathFeatures],
         else:
             mass = len(feats) / len(pool) if pool else 0.0
 
-    worst = rep.slack_ns
-    crit = 0.0
-    if worst is not None and worst < 0 and period_ns:
-        crit = min(1.0, abs(worst) / abs(period_ns))
+    # Impact is the criticality probability when it has been computed. The
+    # TNS share is kept alongside it as reported evidence -- it is meaningful
+    # only while something is violated, so it cannot be the primary term.
+    impact = mass if p_crit is None else p_crit
+    sev = severity(rep.slack_ns, period_ns)
 
     structural = [fi for fi in (rep.diagnosis.get("findings") or [])
                   if fi.get("pattern") != "slack gap"]
@@ -354,8 +484,10 @@ def cluster_value(feats: list[PathFeatures], pool: list[PathFeatures],
 
     w = VALUE_WEIGHTS
     return {
-        "value": w["mass"] * mass + w["criticality"] * crit + w["tractability"] * tract,
-        "terms": {"mass": mass, "criticality": crit, "tractability": tract},
+        "value": (w["mass"] * impact + w["criticality"] * sev
+                  + w["tractability"] * tract),
+        "terms": {"impact": impact, "severity": sev, "tractability": tract},
+        "p_critical": p_crit,
         "mass_ns": own_viol,
         "tns_share": mass,
         "tns_share_truncated": truncated,
@@ -372,7 +504,8 @@ def cluster_value(feats: list[PathFeatures], pool: list[PathFeatures],
 def select_clusters(clusters: list[list[int]], feats: list[PathFeatures],
                     sim: list[list[float]], period_ns: float | None,
                     k: int, lam: float = MMR_LAMBDA, lib: Any = None,
-                    tns_total: float | None = None) -> list[dict[str, Any]]:
+                    tns_total: float | None = None,
+                    p_clusters: list[float] | None = None) -> list[dict[str, Any]]:
     """Maximal Marginal Relevance over the clusters.
 
         argmax [ (1 - lam) * value(C) - lam * max_{S selected} sim(C, S) ]
@@ -383,10 +516,11 @@ def select_clusters(clusters: list[list[int]], feats: list[PathFeatures],
     by difference gets an irrelevant path that happens to look unusual.
     """
     scored = []
-    for c in clusters:
+    for idx, c in enumerate(clusters):
         members = [feats[i] for i in c]
-        v = cluster_value(members, feats, period_ns, lib, tns_total)
-        if v["terms"]["mass"] >= MASS_FLOOR:
+        pc = p_clusters[idx] if p_clusters else None
+        v = cluster_value(members, feats, period_ns, lib, tns_total, pc)
+        if v["terms"]["impact"] >= MASS_FLOOR:
             scored.append({"members": c, **v})
     if not scored:
         return []
@@ -499,6 +633,7 @@ class PathTarget:
     slack_ns: float | None
     value: float
     value_terms: dict[str, float]
+    p_critical: float | None
     tns_share: float
     tns_share_truncated: bool
     mass_ns: float
@@ -652,13 +787,13 @@ def _make_target(tid: str, kind: str, rank: int, sel: dict[str, Any],
         seg_cov = (sum(1 for st in sub
                        if rtl_map.resolve(rtl_map.split_pin(st.get("pin") or "")[0],
                                           nl, rtl)) / len(sub)) if sub else 0.0
-        terms = {"mass": delay_share,
-                 "criticality": sel["terms"]["criticality"],
+        terms = {"impact": sel["terms"]["impact"] * delay_share,
+                 "severity": sel["terms"]["severity"],
                  "tractability": (0.50 * seg_cov
                                   + 0.30 * min(1.0, len(findings) / 2.0)
                                   + 0.20 * seg_skill)}
         w = VALUE_WEIGHTS
-        value = (w["mass"] * terms["mass"] + w["criticality"] * terms["criticality"]
+        value = (w["mass"] * terms["impact"] + w["criticality"] * terms["severity"]
                  + w["tractability"] * terms["tractability"])
         # Share of the *design's* failure attributable to this span: the cone
         # owns `sel["tns_share"]` of it, and this span owns `delay_share` of
@@ -670,6 +805,7 @@ def _make_target(tid: str, kind: str, rank: int, sel: dict[str, Any],
         id=tid, kind=kind, rank=rank,
         slack_ns=rep_f.slack_ns,
         value=value, value_terms=terms,
+        p_critical=sel.get("p_critical"),
         tns_share=share,
         tns_share_truncated=sel["tns_share_truncated"],
         mass_ns=mass_ns,
@@ -698,18 +834,21 @@ def build_targets(timing: dict[str, Any], nl: dict[str, Any],
                   rtl: rtl_map.RtlIndex, period_ns: float | None = None,
                   k: int = 3, lam: float = MMR_LAMBDA,
                   cluster_at: float = CLUSTER_AT,
-                  lib: Any = None) -> dict[str, Any]:
+                  lib: Any = None, sigma: float = DELAY_SIGMA,
+                  rho: float = CONE_RHO) -> dict[str, Any]:
     """The portfolio: at most k distinct targets, plus how they were chosen."""
     paths = [p for p in (timing.get("critical_paths") or []) if p.get("stages")]
     if not paths:
         return {"targets": [], "k_requested": k, "k_effective": 0,
-                "clusters": [], "collapsed": False,
+                "clusters": [], "collapsed": False, "distribution": [],
                 "pool": {"paths": 0, "violating": 0}}
 
     feats = [path_features(p, i, nl, rtl, period_ns) for i, p in enumerate(paths)]
     clusters, sim = cluster(feats, cluster_at)
     tns_total = (timing.get("summary") or {}).get("tns_ns")
-    picked = select_clusters(clusters, feats, sim, period_ns, k, lam, lib, tns_total)
+    p_paths, p_clusters = criticality(feats, clusters, period_ns, sigma, rho)
+    picked = select_clusters(clusters, feats, sim, period_ns, k, lam, lib,
+                             tns_total, p_clusters)
     for p in picked:
         p["_paths"] = paths
 
@@ -746,9 +885,24 @@ def build_targets(timing: dict[str, Any], nl: dict[str, Any],
         "k_effective": len(targets),
         "collapsed": collapsed,
         "clusters": [{"members": c["members"], "value": c["value"],
-                      "terms": c["terms"], "tns_share": c["tns_share"]}
+                      "terms": c["terms"], "tns_share": c["tns_share"],
+                      "p_critical": c.get("p_critical")}
                      for c in picked],
         "cluster_count": len(clusters),
+        "distribution": sorted(
+            ({"rank": i + 1, "p_critical": p_paths[i],
+              "slack_ns": feats[i].slack_ns, "status": feats[i].status,
+              "startpoint": feats[i].startpoint, "endpoint": feats[i].endpoint,
+              "cone": next(ci for ci, mem in enumerate(clusters) if i in mem)}
+             for i in range(len(feats))),
+            key=lambda d: -d["p_critical"]),
+        "cone_distribution": [
+            {"cone": ci, "p_critical": p_clusters[ci], "paths": len(mem),
+             "worst_slack_ns": min((feats[i].slack_ns for i in mem
+                                    if feats[i].slack_ns is not None),
+                                   default=None)}
+            for ci, mem in enumerate(clusters)],
+        "sigma": sigma, "rho": rho,
         "pool": {"paths": len(paths), "violating": violating,
                  "tns_ns": tns_total,
                  "truncated": any(t.tns_share_truncated for t in targets)},
@@ -771,13 +925,24 @@ def _walk(cells: list[str], limit: int = 40) -> str:
 def render_brief(t: PathTarget, period_ns: float | None = None) -> str:
     """The focus brief one specialist agent receives in place of the whole report."""
     L: list[str] = []
-    share = f"{t.tns_share:.0%}" + (" (of reported TNS)" if t.tns_share_truncated else "")
-    L.append(f"## Target {t.id} -- {t.kind}, {share} of the design's timing failure")
+    violating = t.slack_ns is not None and t.slack_ns < 0
+    if violating:
+        share = f"{t.tns_share:.0%}" + (" of reported TNS" if t.tns_share_truncated
+                                        else " of the design's timing failure")
+    else:
+        share = (f"{t.p_critical:.0%} likely to be what limits the clock"
+                 if t.p_critical is not None else "no violation")
+    L.append(f"## Target {t.id} -- {t.kind}, {share}")
     L.append("")
     p = t.representative
     slack = t.slack_ns
-    frac = (f" ({abs(slack) / period_ns:.0%} of a {period_ns:g} ns cycle)"
-            if slack is not None and slack < 0 and period_ns else "")
+    if slack is None or not period_ns:
+        frac = ""
+    elif slack < 0:
+        frac = f" ({abs(slack) / period_ns:.0%} short of a {period_ns:g} ns cycle)"
+    else:
+        frac = (f" (meets timing; the path uses "
+                f"{severity(slack, period_ns):.0%} of a {period_ns:g} ns cycle)")
     L.append(f"representative  {p.get('startpoint')} -> {p.get('endpoint')}")
     L.append(f"slack           {slack} ns{frac}")
     if t.kind == "cone":
@@ -788,8 +953,13 @@ def render_brief(t: PathTarget, period_ns: float | None = None) -> str:
                  f"{len(p.get('stages') or [])} on the worst path")
         L.append(f"                {t.delay_ns:.4f} ns, {t.delay_share:.0%} "
                  f"of the path's delay")
-    L.append(f"value           {t.value:.3f}  (mass {t.value_terms['mass']:.2f}, "
-             f"criticality {t.value_terms['criticality']:.2f}, "
+    if t.p_critical is not None:
+        what = ("the path this segment sits on limits" if t.kind == "segment"
+                else "this cone limits")
+        L.append(f"criticality     {what} the clock {t.p_critical:.0%} of the "
+                 f"time under the delay-uncertainty model")
+    L.append(f"value           {t.value:.3f}  (impact {t.value_terms['impact']:.2f}, "
+             f"severity {t.value_terms['severity']:.2f}, "
              f"tractability {t.value_terms['tractability']:.2f})")
     if t.similarity_to_selected:
         L.append(f"distinctness    similarity {t.similarity_to_selected:.2f} "
@@ -854,6 +1024,26 @@ def render(sel: dict[str, Any]) -> str:
         L.append("NOTE: the reported path pool does not cover every violating "
                  "endpoint; shares are normalised against reported TNS.")
     L.append("")
+
+    cones = sel.get("cone_distribution") or []
+    if cones:
+        L.append(f"Which cone limits the clock (delay sigma "
+                 f"{sel.get('sigma', 0):.0%} of the period, "
+                 f"within-cone correlation {sel.get('rho', 0):.2f}):")
+        for c in sorted(cones, key=lambda d: -d["p_critical"]):
+            if c["p_critical"] < 0.001:
+                continue
+            L.append(f"  cone {c['cone']}   {c['p_critical']:6.1%}   "
+                     f"{c['paths']:3d} path(s)   worst slack "
+                     f"{c['worst_slack_ns']}")
+        L.append("")
+    dist = [d for d in (sel.get("distribution") or []) if d["p_critical"] >= 0.005]
+    if dist:
+        L.append("Per path, most likely first:")
+        for d in dist[:8]:
+            L.append(f"  {d['p_critical']:6.1%}  slack {d['slack_ns']:>9}  "
+                     f"({d['status']})  cone {d['cone']}  -> {d['endpoint']}")
+        L.append("")
     for t in sel.get("targets", []):
         L.append(t.brief)
         L.append("")
@@ -868,7 +1058,8 @@ def render(sel: dict[str, Any]) -> str:
 def from_run(rdir: Path, design_dir: Path | None = None,
              period_ns: float | None = None, k: int = 3,
              stage: str = "sta", lam: float = MMR_LAMBDA,
-             cluster_at: float = CLUSTER_AT, lib: Any = None) -> dict[str, Any]:
+             cluster_at: float = CLUSTER_AT, lib: Any = None,
+             sigma: float = DELAY_SIGMA, rho: float = CONE_RHO) -> dict[str, Any]:
     """Build the portfolio from a finished run directory."""
     if stage not in _STAGE_DIRS:
         raise ValueError(f"unknown stage {stage!r}; expected one of "
@@ -891,7 +1082,7 @@ def from_run(rdir: Path, design_dir: Path | None = None,
         if m.is_file():
             period_ns = (json.loads(m.read_text()).get("clock") or {}).get("period_ns")
     return build_targets(timing, nl, rtl_map.RtlIndex(srcs), period_ns,
-                         k, lam, cluster_at, lib)
+                         k, lam, cluster_at, lib, sigma, rho)
 
 
 def main(argv: list[str]) -> int:
@@ -905,6 +1096,11 @@ def main(argv: list[str]) -> int:
     ap.add_argument("-k", "--top-k", type=int, default=3)
     ap.add_argument("--mmr-lambda", type=float, default=MMR_LAMBDA)
     ap.add_argument("--cluster-at", type=float, default=CLUSTER_AT)
+    ap.add_argument("--delay-sigma", type=float, default=DELAY_SIGMA,
+                    help="delay uncertainty as a fraction of the clock period; "
+                         "0 gives the deterministic answer")
+    ap.add_argument("--cone-rho", type=float, default=CONE_RHO,
+                    help="share of that uncertainty common to a whole cone")
     ap.add_argument("--no-skills", action="store_true")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv[1:])
@@ -925,7 +1121,8 @@ def main(argv: list[str]) -> int:
 
     try:
         sel = from_run(rdir, design_dir, k=args.top_k, stage=args.stage,
-                       lam=args.mmr_lambda, cluster_at=args.cluster_at, lib=lib)
+                       lam=args.mmr_lambda, cluster_at=args.cluster_at, lib=lib,
+                       sigma=args.delay_sigma, rho=args.cone_rho)
     except (FileNotFoundError, ValueError) as e:
         print(f"[pathsel] ERROR: {e}", file=sys.stderr)
         return 1

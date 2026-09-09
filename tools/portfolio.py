@@ -469,6 +469,8 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
             "targets_per_iteration": args.top_k,
             "mmr_lambda": args.mmr_lambda,
             "cluster_at": args.cluster_at,
+            "delay_sigma": args.delay_sigma,
+            "cone_rho": args.cone_rho,
             "cleanup_candidates": args.clean,
             "merge_agent": not args.no_merge_agent,
             "stage": args.stage,
@@ -600,7 +602,8 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
             sel = pathsel.from_run(parent_dir, self.cfg["_dir"], self.period,
                                    self.args.top_k, self.args.stage,
                                    self.args.mmr_lambda, self.args.cluster_at,
-                                   self.lib)
+                                   self.lib, self.args.delay_sigma,
+                                   self.args.cone_rho)
         except (FileNotFoundError, ValueError) as e:
             die(str(e))
         targets: list[pathsel.PathTarget] = sel["targets"]
@@ -622,8 +625,10 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
              + ("  [one cone, cut into segments]" if sel["collapsed"] else ""))
         for tgt in targets:
             info(f"  {tgt.id} [{tgt.kind}] value {tgt.value:.3f}  "
-                 f"{tgt.delay_share:.0%} of path delay  "
-                 f"{', '.join(p for p in list(tgt.cell_families)[:3])}")
+                 + (f"P(limits clock) {tgt.p_critical:.0%}  "
+                    if tgt.p_critical is not None else "")
+                 + f"{tgt.delay_share:.0%} of path delay  "
+                 + f"{', '.join(p for p in list(tgt.cell_families)[:3])}")
 
         ctx = self._ctx(t, parent_rtl, {**parent_metrics,
                                         "_score": parent_metrics.get("_score", 0.0)},
@@ -1051,13 +1056,16 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
                      f"target(s) from {pf.get('cluster_count', 0)} distinct cone(s)"
                      + ("; one cone, cut into segments" if pf.get("collapsed") else ""))
             L.append("")
-            L.append("| target | kind | value | mass | delay share | cell mix |")
-            L.append("|---|---|---|---|---|---|")
+            L.append("| target | kind | value | P(limits clock) | severity "
+                     "| delay share | cell mix |")
+            L.append("|---|---|---|---|---|---|---|")
             for tg in pf.get("targets", []):
                 mix = ", ".join(f"{n}x {f}" for f, n
                                 in list((tg.get("cell_families") or {}).items())[:3])
+                pc = tg.get("p_critical")
                 L.append(f"| {tg['id']} | {tg['kind']} | {tg['value']:.3f} | "
-                         f"{tg['value_terms']['mass']:.2f} | "
+                         f"{f'{pc:.0%}' if pc is not None else '-'} | "
+                         f"{tg['value_terms']['severity']:.2f} | "
                          f"{tg['delay_share']:.0%} | {mix} |")
             L.append("")
             L.append("| candidate | pattern -> strategy | SEC | WNS | area | score |")
@@ -1158,6 +1166,12 @@ def build_parser() -> argparse.ArgumentParser:
                    help="diversity weight when selecting targets")
     g.add_argument("--cluster-at", type=float, default=pathsel.CLUSTER_AT,
                    help="similarity at which two paths are the same bottleneck")
+    g.add_argument("--delay-sigma", type=float, default=pathsel.DELAY_SIGMA,
+                   help="delay uncertainty as a fraction of the clock period, "
+                        "used to rank targets by how likely each is to be what "
+                        "limits the clock; 0 gives the deterministic answer")
+    g.add_argument("--cone-rho", type=float, default=pathsel.CONE_RHO,
+                   help="share of that uncertainty common to a whole cone")
     g.add_argument("--stage", choices=("sta", "pnr"), default="sta",
                    help="which timing report to select targets from")
     g.add_argument("--clean", type=int, default=1,
