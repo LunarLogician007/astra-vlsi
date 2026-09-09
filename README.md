@@ -133,7 +133,7 @@ Both take `--dry-run`, which writes the prompts and skips the model calls — bu
 **Verify without any tools or a model:**
 
 ```bash
-python3 tools/selftest.py         # 207 tests: no EDA install, no model, no network
+python3 tools/selftest.py         # 223 tests: no EDA install, no model, no network
 make selftest                     # the same, inside the container
 ```
 
@@ -588,7 +588,8 @@ tools/sec.py             SEC driver (eqy, else the Yosys miter)
 tools/skills.py          the confidence-aware skill library
 tools/llm.py             `claude -p` wrapper shared by the agents
 tools/toolenv.py         dispatch EDA calls into the container
-tools/selftest.py        207 tests over the above (needs no EDA tools, no model)
+tools/protect.py         regions the optimiser may not touch, and the gate
+tools/selftest.py        223 tests over the above (needs no EDA tools, no model)
 
 docs/multi-clock.md      the clock model, and what it deliberately gives up
 docs/equivalence-contract.md   what "equivalent" means, and where it stops
@@ -705,6 +706,16 @@ Three SDC placeholders:
 
 Placeholders inside `#` comments are left alone, so documenting them in a
 header is safe.
+
+Declare anything the optimiser must not touch — clock domain crossings and
+clock generation, which the equivalence check cannot see:
+
+```json
+"protected": ["cdc_*", "clk_*_div*"]
+```
+
+A candidate that adds, removes or alters any line mentioning a matching
+identifier is rejected mechanically, **before** synthesis.
 
 Then `astra run <design>`, and check the per-clock-group slack in
 `02_sta/timing.json` under `clock_groups`. Each path is ranked against the

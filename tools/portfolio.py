@@ -44,10 +44,12 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clocks                # noqa: E402
 import drrtl                 # noqa: E402
 import llm                   # noqa: E402
 import merge as merge_mod    # noqa: E402
 import pathsel               # noqa: E402
+import protect               # noqa: E402
 import rtlscan               # noqa: E402
 import score as scoring      # noqa: E402
 import skillgen              # noqa: E402
@@ -132,11 +134,14 @@ class RtlCleanupAgent(drrtl.RtlOptimizationAgent):
     def _prompt(self, ctx: dict[str, Any], index: int) -> str:
         return f"""# Pre-synthesis cleanup -- {ctx['design']}
 
-target clock {ctx['period']:g} ns  ({ctx['pdk']})
+{ctx['clock_context']}  ({ctx['pdk']})
 
 ## Invariants this design declares (from config.json)
 
 {ctx['invariants']}
+## Off limits -- do not edit (checked mechanically, before synthesis)
+
+{ctx['protected']}
 
 ## Mechanical scan of the source
 
@@ -270,7 +275,7 @@ class PathSpecialistAgent(drrtl.RtlOptimizationAgent):
             for o in ctx["targets"] if o.id != target.id)
         return f"""# Design: {ctx['design']}
 
-target clock  {ctx['period']:g} ns   ({ctx['pdk']})
+{ctx['clock_context']}   ({ctx['pdk']})
 current WNS   {fmt(ctx['metrics'].get('wns_ns'))} ns
 current TNS   {fmt(ctx['metrics'].get('tns_ns'))} ns
 current area  {fmt(ctx['metrics'].get('area_um2'))} um^2
@@ -280,6 +285,9 @@ stage         {ctx['stage_label']}
 ## Invariants this design declares (from config.json)
 
 {ctx['invariants']}
+## Off limits -- do not edit (checked mechanically, before synthesis)
+
+{ctx['protected']}
 
 ## YOUR TARGET
 
@@ -422,7 +430,9 @@ class MergeAgent:
                 f"\n  built from: {', '.join(mech.get('union_members') or [])}")
         return f"""# Merge -- {ctx['design']}, iteration {ctx['iteration']}
 
-target clock {ctx['period']:g} ns.  Eq. 3 score is relative to the ORIGINAL
+{ctx['clock_context']}
+
+Eq. 3 score is relative to the ORIGINAL
 design, which scores 0.0, and LOWER IS BETTER. The parent you are merging onto
 scores {fmt(ctx.get('parent_score'))}.
 
@@ -514,6 +524,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
             "design": self.design,
             "pdk": self.cfg["pdk"],
             "period": self.period,
+            "clock_context": clocks.render_context(self.clocks),
             "iteration": t,
             "max_iters": self.args.iters,
             "stage_label": ("post-synthesis" if self.args.stage == "sta"
@@ -521,6 +532,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
             "metrics": metrics,
             "targets": targets,
             "invariants": json.dumps(notes, indent=2) if notes else "<none declared>",
+            "protected": protect.describe(self.protected),
             "history_text": self._history(),
             "rtl_text": self._rtl_text(rtl),
             "rtl_names": [p.name for p in rtl],
@@ -550,7 +562,9 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
             return rtl, {"adopted": False, "reason": "no scan findings"}
 
         ctx = {"design": self.design, "period": self.period,
+               "clock_context": clocks.render_context(self.clocks),
                "pdk": self.cfg["pdk"],
+               "protected": protect.describe(self.protected),
                "invariants": json.dumps(self.cfg.get("notes") or {}, indent=2)
                             or "<none declared>",
                "scan_text": rtlscan.render(report),
@@ -574,7 +588,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
                           group))
 
         base = self.state["baseline"]["metrics"]
-        scoring.score_group(group, base, self.weights, self._score_period(base))
+        base = self._score(group, base)
         for c in group:
             m = c.get("metrics") or {}
             info(f"  {c['id']}: SEC {'pass' if scoring.sec_passed(c) else 'FAIL'}  "
@@ -666,7 +680,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
                                                              gold=gold), group))
 
         base = self.state["baseline"]["metrics"]
-        scoring.score_group(group, base, self.weights, self._score_period(base))
+        base = self._score(group, base)
         for c, tgt in zip(group, targets):
             self._scope_check(c, tgt, parent_rtl)
             m = c.get("metrics") or {}
@@ -902,7 +916,11 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
         if m.get("wns_ns") is None and m.get("area_um2") is None:
             cand["score"] = cand["score_detail"] = None
         else:
-            detail = scoring.score(m, base, self.weights, self._score_period(base))
+            base_c = scoring.with_cycles(base, self.clocks)
+            m = scoring.with_cycles(m, self.clocks)
+            period = 1.0 if scoring.cycles_available(m, base_c) \
+                else self._score_period(base)
+            detail = scoring.score(m, base_c, self.weights, period)
             cand["score"] = detail["score"]
             cand["score_detail"] = detail
         cand["advantage"] = None
@@ -1028,7 +1046,7 @@ class PortfolioOrchestrator(drrtl.Orchestrator):
             f"# Path-portfolio optimisation -- {self.design}",
             "",
             f"run           {self.outdir.name}",
-            f"target clock  {self.period:g} ns",
+            f"{clocks.render_context(self.clocks)}",
             f"stage         {self.args.stage}",
             f"iterations    {len(self.state['iterations'])} "
             f"(converged at {self.state.get('convergence_steps') or 'n/a'})",

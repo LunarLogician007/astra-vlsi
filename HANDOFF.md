@@ -2,7 +2,7 @@
 
 Context for whoever picks this up next, including me in a later session.
 
-Branch `path-portfolio`, 8 commits ahead of `main`. 207 tests, all passing,
+Branch `path-portfolio`, 12 commits ahead of `main`. 223 tests, all passing,
 none needing an EDA install or a model. `make opt` is unchanged and tested to
 be so.
 
@@ -65,7 +65,8 @@ flowchart LR
 | `tools/score.py` | 354 | Eq. 1/3/4/5, plus `sec_tally` and `critical_period` |
 | `tools/skills.py` | 555 | the confidence-weighted library |
 | `tools/rtl_map.py` | 611 | path → RTL localisation, structural diagnosis |
-| `tools/selftest.py` | 2219 | 207 tests, no EDA, no model |
+| `tools/protect.py` | 170 | what the optimiser may not touch, and the gate that enforces it **before** SEC |
+| `tools/selftest.py` | 2409 | 223 tests, no EDA, no model |
 
 Reuse rule: `portfolio.py` subclasses `drrtl.Orchestrator`, so evaluation, SEC,
 scoring, skill learning, the trajectory log and the reply parsers all come
@@ -269,38 +270,44 @@ synthesised**. It is not a substitute for this.
 
 ### 6.4 What the benchmark still needs from the framework
 
-**New, and the most interesting thing the benchmark found: `criticality()`
-compares slacks across asynchronous domains as though there were one clock.**
+**All six multi-clock gaps found by the benchmark are now fixed.** They are
+listed here because the reasoning matters more than the diff, and because two
+of them changed published behaviour and had to be shown not to.
 
-On `soc_bench` the selector puts 100% of the criticality on one path — the aux
-serial XOR chain, slack −6.5126 on a 10 ns clock — and gives nothing to
-`clk_sys`, which owns **68% of the design's TNS** (−44.59 ns across 36
-violating endpoints on a 2 ns clock). Ranking by raw slack says the aux path is
-"what limits the clock", but *which* clock? It limits `clk_aux_div2`. The
-clk_sys paths limit `clk_sys`. Those are different clocks with no phase
-relationship, so "the one path limiting the clock" is not a well-posed question
-across them — the same objection §6.3 makes about cycle-by-cycle equivalence.
+| # | gap | fix |
+|---|---|---|
+| 1 | `criticality()` compared slack across async domains — "which path limits *the* clock" presupposes one | it works in **cycles of each path's own clock** now |
+| 2 | Eq. 3's TNS **summed nanoseconds** across domains, so a slow domain counted 16x its worth | `score.timing_in_cycles`; WNS is the worst *fractional* slack, TNS a sum of cycles |
+| 3 | `astra score` compared only the *primary* clock between runs | `_clock_deltas` reports every changed, added or dropped clock |
+| 4 | hold slack was design-wide only | `astra_group_summary` runs for `min` as well as `max` |
+| 5 | **nothing in the flow knew what CDC was** | `tools/protect.py` — a declared-off-limits gate that runs *before* SEC |
+| 6 | agent prompts said "target clock \<X\> ns", contradicting the per-target brief | `clocks.render_context` lists every domain |
 
-`pathsel.criticality()`'s docstring still argues "slack is used rather than
-arrival so that paths in different clock groups are compared on the same
-scale". That was written for a single-clock world and does not survive
-genuinely async domains.
+**#1 and #2 changed the published single-clock path, and both are safe for the
+same reason.** Each is a *uniform division by one period*: criticality's argmax
+is invariant under it, and `norm_timing` is a ratio, so value and baseline
+cancel. That is proved rather than asserted — `TestCriticalityUnitsAreCycles`
+pins a design and its 5x-scaled twin to identical rankings,
+`test_one_clock_scores_identically_in_either_unit` pins Eq. 3 to twelve decimal
+places, and a portfolio dry run against the pushed commit reproduces mac_chain
+byte for byte (same cones, same three targets, same 0.537/0.502/0.538).
 
-`severity()` is already correct (it divides by each path's own period, and
-reports 0.83 for that aux path rather than the clamped 1.0 the old model gave).
-It is the *impact* term that still mixes domains. Options, in rough order of
-appeal:
+On `soc_bench` the fix moves the portfolio where it belongs: off the single aux
+endpoint (−6.5126 ns, but only 0.65 of a 10 ns cycle) and onto the clk_sys MAC
+chain — 33 paths at −2.0384 ns on a 2 ns clock, a full cycle over budget, and
+68% of the design's TNS.
 
-1. Rank criticality by severity (slack / own period) rather than raw slack.
-   Small change, and on a single-clock design it is a uniform rescale, so the
-   published behaviour should be unaffected — but that needs measuring, not
-   assuming.
-2. Run selection per clock group and merge, budgeting agents across domains.
-3. Leave it and document that the portfolio targets the worst *domain*.
-
-This is a change to the novelty, so it wants a decision and a measurement, not
-a quiet edit. **Until it is resolved, a portfolio run on `soc_bench` will spend
-its agents on one domain.**
+**#5 is the one worth understanding.** A CDC edit is *unprovable*, not merely
+unproven: the per-domain proof cuts those boundaries, so a collapsed
+synchroniser or a re-encoded gray bus passes every check the loop runs and is
+still wrong silicon. Prompting against it is not enough, so a design declares
+`"protected": ["cdc_*", "clk_*_div*"]` and a candidate that adds, removes or
+alters any line mentioning one is rejected **before synthesis** — ahead of the
+gate that cannot catch it. The rule is deliberately blunt (whole lines,
+whitespace- and comment-insensitive) because a subtle rule invites an agent to
+argue it stayed within the spirit of one, and nothing downstream can check
+whether it did. A protected edit records as *undecided*, never a refutation, so
+it cannot condemn a sound strategy in the skill library.
 
 Two further things are decided but not built, and both block running the loop
 on §6.2 rather than blocking the design itself:
@@ -392,7 +399,7 @@ graphify explain "pathsel"     # a node, its neighbours, and why each edge exist
 graphify path "portfolio.py" "score.py"    # shortest path between two nodes
 ```
 
-Current index: **996 nodes, 1752 edges, 51 communities**, one per module. Line
+Current index: **1067 nodes, 1862 edges, 57 communities**, one per module. Line
 numbers were spot-checked against the tree and are exact. `runs/` is not
 indexed, so the 92 MB of run artifacts add no noise.
 
@@ -429,7 +436,7 @@ applies to every project on this machine, not just this repo.
 ## 9. Verify without tools or a model
 
 ```bash
-python3 tools/selftest.py                    # 207 tests
+python3 tools/selftest.py                    # 223 tests
 python3 tools/pathsel.py runs/mac_chain/opt-20260901-025558-run1/baseline -k 3
 python3 tools/rtlscan.py designs/mac_chain/rtl/mac_chain.v
 python3 tools/skills.py consolidate          # repairs a fragmented library

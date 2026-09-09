@@ -83,10 +83,20 @@ The cut is where the proof stops, and three things live in the cut:
    silently re-encoded so two bits can change in one destination cycle.
 
 None of these are timing bottlenecks and none of them should ever be edited to
-recover slack. So they are handled the same way pipelining is — **out of
-scope for the optimiser, structurally, rather than checked after the fact.**
-CDC logic is excluded from every agent's editable scope. A rewrite that
-touches it is rejected by the scope check, not argued about by the SEC.
+recover slack. So they are handled the same way pipelining is — **out of scope
+for the optimiser, structurally, rather than checked after the fact.**
+
+This is enforced, not merely requested. A design declares what is off limits:
+
+```json
+"protected": ["cdc_*", "clk_*_div*"]
+```
+
+and `tools/protect.py` rejects any candidate that added, removed or altered a
+line mentioning a matching identifier. It runs **before** synthesis and before
+SEC — deliberately ahead of the gate that cannot catch it. A rejection records
+as *undecided*, never a refutation, so it cannot teach the skill library that a
+sound transformation breaks equivalence.
 
 ---
 

@@ -133,6 +133,28 @@ def load_design(name: str) -> dict[str, Any]:
     return cfg
 
 
+def _clock_deltas(base: Any, cand: Any) -> list[tuple[str, str, str]]:
+    """Every clock that differs between two runs: (name, baseline, candidate).
+
+    Covers appearing and disappearing clocks as well as changed periods, since
+    a run that dropped a domain entirely is no more comparable than one that
+    retimed it.
+    """
+    if base is None or cand is None:
+        return []
+    b = {c.name: c.period_ns for c in base}
+    c = {c.name: c.period_ns for c in cand}
+    out = []
+    for name in sorted(set(b) | set(c)):
+        was, now = b.get(name), c.get(name)
+        if was is None or now is None:
+            out.append((name, "absent" if was is None else f"{was:g} ns",
+                        "absent" if now is None else f"{now:g} ns"))
+        elif abs(was - now) > 1e-9:
+            out.append((name, f"{was:g} ns", f"{now:g} ns"))
+    return out
+
+
 def design_clocks(cfg: dict[str, Any], period: float | None = None):
     """The design's ClockSet, with a --period override applied if given."""
     cs = cfg.get("_clocks") or clocks_mod.ClockSet.from_config(cfg)
@@ -673,22 +695,36 @@ def cmd_score(args: argparse.Namespace) -> int:
         return {"wns_ns": m.get("sta", {}).get("wns_ns"),
                 "tns_ns": m.get("sta", {}).get("tns_ns"),
                 "area_um2": m.get("synth", {}).get("area_um2"),
+                "clock_groups": m.get("sta", {}).get("clock_groups"),
                 "_period": (m.get("clock") or {}).get("period_ns"),
+                "_clocks": clocks_mod.from_metrics(m),
                 "_run": rdir.name}
 
     cand = ppa(find_run(args.design, args.run))
     base = ppa(find_run(args.design, args.baseline))
-    if cand["_period"] and base["_period"] and \
-            abs(float(cand["_period"]) - float(base["_period"])) > 1e-9:
-        warn(f"clock periods differ ({base['_period']} vs {cand['_period']} ns) "
-             f"— the normalised score compares two different problems")
+
+    # Compare EVERY clock, not just the primary. Checking one period lets a run
+    # whose secondary domains were retimed pass as comparable, and the score
+    # then silently compares two different problems -- the failure the single
+    # warning below was written to prevent, reintroduced by multi-clock.
+    for name, was, now in _clock_deltas(base["_clocks"], cand["_clocks"]):
+        warn(f"clock {name}: {was} vs {now} — the normalised score compares "
+             f"two different problems")
 
     weights = dict(scoring.DEFAULT_WEIGHTS)
     for k in ("alpha", "beta", "gamma"):
         v = getattr(args, k, None)
         if v is not None:
             weights[k] = v
-    period = float(cand["_period"] or 1.0)
+
+    # Cycle-normalised where the per-group data exists, because TNS in
+    # nanoseconds sums across domains of different worth. See score.py.
+    cs = cand["_clocks"]
+    cand_s, base_s = scoring.with_cycles(cand, cs), scoring.with_cycles(base, cs)
+    if scoring.cycles_available(cand_s, base_s):
+        cand, base, period = cand_s, base_s, 1.0
+    else:
+        period = float(cand["_period"] or 1.0)
     detail = scoring.score(cand, base, weights, period)
 
     if args.json:

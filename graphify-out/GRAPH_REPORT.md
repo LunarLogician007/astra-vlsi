@@ -1,16 +1,16 @@
 # Graph Report - astra  (2026-09-10)
 
 ## Corpus Check
-- 33 files · ~73,351 words
+- 34 files · ~78,143 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 996 nodes · 1752 edges · 51 communities (39 shown, 12 thin omitted)
+- 1067 nodes · 1862 edges · 57 communities (43 shown, 13 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ad76a160`
+- Built from commit: `a0b03c56`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -28,7 +28,7 @@
 - parse_sta.py
 - ASTRA — shared VLSI container
 - skillgen.py
-- TestClockSdc
+- ._cs
 - sec.py
 - TestRtlMap
 - TestClockSet
@@ -39,7 +39,7 @@
 - HANDOFF — ASTRA path-portfolio addon
 - TestEq3
 - astra_advise.py
-- ._feats
+- TestMultiClockRanking
 - TestSkills
 - TestEquivalenceContract
 - TestPathSelCriticality
@@ -50,14 +50,14 @@
 - TestSkillMerging
 - TestPathSelSegments
 - TestEq5
-- TestPathSelValue
+- _path
 - TestClockGroupParsing
 - TestReplyParsing
-- _path
+- ._setup
 - TestInconclusiveSec
 - TestPathSelOnRealRun
 - TestEq4
-- TestClockResolution
+- protect.py
 - TestStageParameterisation
 - TestPortfolioAgents
 - TestPathSelMetrics
@@ -66,18 +66,23 @@
 - mac_chain.v
 - soc_bench.v
 - entrypoint.sh
+- TestProtectedRegions
+- The equivalence contract
+- Path-portfolio mode
+- Dr. RTL optimisation loop
+- Setup
 
 ## God Nodes (most connected - your core abstractions)
-1. `_path()` - 27 edges
-2. `ClockSet` - 25 edges
+1. `_path()` - 30 edges
+2. `ClockSet` - 26 edges
 3. `TestRtlMap` - 22 edges
 4. `build_parser()` - 18 edges
 5. `SkillLibrary` - 18 edges
 6. `RtlIndex` - 16 edges
 7. `scan()` - 16 edges
-8. `TestClockSet` - 15 edges
-9. `TestSkillDoc` - 15 edges
-10. `die()` - 14 edges
+8. `Orchestrator` - 15 edges
+9. `TestClockSet` - 15 edges
+10. `TestSkillDoc` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `render_doc()` --references--> `SkillLibrary`  [EXTRACTED]
@@ -94,7 +99,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (51 total, 12 thin omitted)
+## Communities (57 total, 13 thin omitted)
 
 ### Community 0 - "pathsel.py"
 Cohesion: 0.06
@@ -102,19 +107,19 @@ Nodes (62): Counter, build_targets(), _by_cluster(), _cell_count(), _clock_cover
 
 ### Community 1 - "drrtl.py"
 Cohesion: 0.09
-Nodes (27): build_parser(), die(), EvaluationAgent, extract_json(), extract_verilog(), fmt(), info(), main() (+19 more)
+Nodes (28): build_parser(), die(), EvaluationAgent, extract_json(), extract_verilog(), fmt(), info(), main() (+20 more)
 
 ### Community 2 - "rtlscan.py"
 Cohesion: 0.08
 Nodes (50): Assign, assignments(), blank_for_headers(), dead_comparisons(), Decl, declarations(), deep_expressions(), expr_depth() (+42 more)
 
 ### Community 3 - "astra.py"
-Cohesion: 0.15
-Nodes (49): base_env(), build_parser(), _c(), cmd_doctor(), cmd_list(), cmd_localise(), cmd_opt(), cmd_paths() (+41 more)
+Cohesion: 0.14
+Nodes (51): base_env(), build_parser(), _c(), _clock_deltas(), cmd_doctor(), cmd_list(), cmd_localise(), cmd_opt() (+43 more)
 
 ### Community 4 - "ClockSet"
 Cohesion: 0.06
-Nodes (30): Clock, ClockError, ClockSet, from_metrics(), _is_comment(), Any, ValueError, Resolve every clock's period, following generated-from chains. A generated… (+22 more)
+Nodes (32): Clock, ClockError, ClockSet, from_metrics(), _is_comment(), Any, ValueError, Resolve every clock's period, following generated-from chains. A generated… (+24 more)
 
 ### Community 5 - "skills.py"
 Cohesion: 0.09
@@ -129,8 +134,8 @@ Cohesion: 0.09
 Nodes (34): analyse(), base_ident(), diagnose(), _family(), from_run(), is_mangled(), load_netlist_index(), main() (+26 more)
 
 ### Community 8 - "score.py"
-Cohesion: 0.10
-Nodes (32): advantages(), critical_period(), group_stats(), norm_area(), norm_timing(), normalize(), Any, ValueError (+24 more)
+Cohesion: 0.09
+Nodes (38): advantages(), critical_period(), cycles_available(), group_stats(), norm_area(), norm_timing(), normalize(), Any (+30 more)
 
 ### Community 9 - "merge.py"
 Cohesion: 0.11
@@ -141,16 +146,16 @@ Cohesion: 0.13
 Nodes (28): clock_groups(), _coerce(), _group_agreement(), _header_columns(), _labeled_value(), _logic_depth(), main(), _nest() (+20 more)
 
 ### Community 11 - "ASTRA — shared VLSI container"
-Cohesion: 0.07
-Nodes (27): A pre-synthesis pass, Adding a design, ASTRA — shared VLSI container, Cost, Dr. RTL optimisation loop, For a head-to-head, Honest differences from the paper, Layout (+19 more)
+Cohesion: 0.18
+Nodes (11): Adding a design, ASTRA — shared VLSI container, Every command, Layout, More than one clock, The example designs, Timing advisor (optional), Use (+3 more)
 
 ### Community 12 - "skillgen.py"
 Cohesion: 0.09
 Nodes (24): RuntimeError, call(), LLMError, Any, Thin wrapper around the `claude` CLI, shared by the agent implementations.…, Run one prompt and return the model's text. Retries only on transport-level…, usage(), ensure_seeds() (+16 more)
 
-### Community 13 - "TestClockSdc"
-Cohesion: 0.10
-Nodes (12): SDC generation. One substitution cannot express five clocks., The three shipped designs use it and must render unchanged., Without this every crossing is analysed as a setup path between clocks with no…, One clock cannot be asynchronous to itself, and emitting the command anyway…, A master clock arrives on a port; a generated clock's source is an internal…, SDC is line-oriented and the clock block is many lines, so expanding it inside…, Only lines that *start* with # are comments; a trailing comment must not stop…, Left in the file it reaches OpenSTA as a syntax error that says nothing about… (+4 more)
+### Community 13 - "._cs"
+Cohesion: 0.07
+Nodes (19): SDC generation. One substitution cannot express five clocks., The three shipped designs use it and must render unchanged., Without this every crossing is analysed as a setup path between clocks with no…, One clock cannot be asynchronous to itself, and emitting the command anyway…, A master clock arrives on a port; a generated clock's source is an internal…, SDC is line-oriented and the clock block is many lines, so expanding it inside…, Only lines that *start* with # are comments; a trailing comment must not stop…, Left in the file it reaches OpenSTA as a syntax error that says nothing about… (+11 more)
 
 ### Community 14 - "sec.py"
 Cohesion: 0.15
@@ -165,8 +170,8 @@ Cohesion: 0.09
 Nodes (9): The data model. A design used to carry one clock; every consumer divided by it., Every design shipped before multi-clock support uses `clock`. Dropping that…, A divider states a ratio, not a period. Making the author restate the product…, A ripple divider generates each stage from the one above it, so the source of a…, A divided clock is synchronous to what it divides. Only independent masters are…, Yosys maps in one pass and takes one delay target, so it must be the one that…, --period on a multi-clock design is ambiguous. Collapsing every clock onto one…, A reader predating multi-clock support reads `clock` and must not get None. (+1 more)
 
 ### Community 17 - "Multi-clock support"
-Cohesion: 0.10
-Nodes (19): 1. The claim, on a single-clock design, 2. The claim, on a multi-clock design, 3. What the code does today, 4. Scale, 5. Related constraints, Adopted: per-domain SEC with the CDC boundaries cut, Rejected: bounded equivalence with `set_clock_groups -asynchronous`, The equivalence contract (+11 more)
+Cohesion: 0.18
+Nodes (11): 1. `abc -D` targets the tightest period, 2. Eq. 3 needs one scalar, so it uses cycles, Multi-clock support, Per-clock-group WNS/TNS, SDC, The model, Two deliberate losses of information, What is not done (+3 more)
 
 ### Community 18 - "TestSkillDoc"
 Cohesion: 0.10
@@ -177,7 +182,7 @@ Cohesion: 0.12
 Nodes (6): Self-tests for the Dr. RTL layer: the paper's equations, the RTL mapper, the…, TestEvaluationFailures, TestExploration, TestRtlScanDepth, TestSkillLearning, TestToolEnv
 
 ### Community 20 - "_NoRtl"
-Cohesion: 0.22
+Cohesion: 0.21
 Nodes (6): _empty_index(), _NoRtl, Regression guard on the bug this replaced: criticality used to be hard-zeroed…, The other side of it: a cone that is nowhere near limiting the clock is not…, A register bank produces many paths and one bottleneck., TestPathSelClustering
 
 ### Community 21 - "HANDOFF — ASTRA path-portfolio addon"
@@ -192,17 +197,17 @@ Nodes (6): The published weights and the published normalisation., While the bas
 Cohesion: 0.30
 Nodes (14): build_prompt(), call_claude(), die(), endpoint_summary(), find_run(), info(), load_json(), main() (+6 more)
 
-### Community 24 - "._feats"
-Cohesion: 0.23
-Nodes (7): The trap: paths normalised against a period that is not their own. Nothing…, Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a…, Pinning the bug this replaced: with one period both paths score identically, so…, Back-compat: every single-clock caller passes a float and must get exactly the…, sigma is a fraction of a period, so 5% of 10 ns is five times the absolute slop…, A path ranked against a period that is not its own is the exact silent failure.…, TestMultiClockRanking
+### Community 24 - "TestMultiClockRanking"
+Cohesion: 0.14
+Nodes (9): Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls…, The failure mode being guarded: falling back to the primary period is sometimes…, The trap: paths normalised against a period that is not their own. Nothing…, Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a…, Raw slack cannot order paths in different domains. Here the slow path has the…, The uncertainty model must survive the change of units: two paths a few…, A path ranked against a period that is not its own is the exact silent failure.…, TestClockResolution (+1 more)
 
 ### Community 26 - "TestEquivalenceContract"
 Cohesion: 0.27
 Nodes (6): docs/equivalence-contract.md, enforced. Both SEC engines build a miter over one…, It must never promote a candidate through Eq. 4., The distinction that keeps the skill library honest: recording 'this…, The guard must not disturb the case that already works., Declining on clocks must not mask an ordinary failure., TestEquivalenceContract
 
 ### Community 27 - "TestPathSelCriticality"
-Cohesion: 0.23
-Nodes (4): P(this path is the one limiting the clock). Static timing analysis is…, Without the shared-cone term, twenty bit-slices of one bottleneck would each…, The case that motivates the whole distribution: minimising delay against a…, TestPathSelCriticality
+Cohesion: 0.33
+Nodes (3): P(this path is the one limiting the clock). Static timing analysis is…, The case that motivates the whole distribution: minimising delay against a…, TestPathSelCriticality
 
 ### Community 28 - "RTL timing optimisation"
 Cohesion: 0.17
@@ -228,17 +233,13 @@ Nodes (4): When a design has one cone, its path is cut into disjoint spans., Wit
 Cohesion: 0.29
 Nodes (3): Scores are minimised, so the winner is the one below the mean., A z-score must not care that one design's slacks are 10x another's., TestEq5
 
-### Community 35 - "TestPathSelValue"
-Cohesion: 0.20
-Nodes (3): Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, TestPathSelValue
+### Community 35 - "_path"
+Cohesion: 0.13
+Nodes (10): _path(), Pinning the bug this replaced: with one period both paths score identically, so…, Back-compat: every single-clock caller passes a float and must get exactly the…, criticality() works in cycles of each path's own clock. On a single-clock…, A synthetic OpenSTA path, in the shape parse_sta produces. Paths through one…, Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, Without the shared-cone term, twenty bit-slices of one bottleneck would each… (+2 more)
 
 ### Community 36 - "TestClockGroupParsing"
 Cohesion: 0.22
 Nodes (5): Per-group slack, from the Tcl side or derived from the report., The parser has always captured Path Group per path and nothing has ever read…, The unit trap. `get_property <path> slack` is in library units, unlike…, The worst slack over all groups IS the design's worst slack. They come from…, TestClockGroupParsing
-
-### Community 38 - "_path"
-Cohesion: 0.43
-Nodes (4): _path(), One cone must yield one cone-target, never three padded ones., A synthetic OpenSTA path, in the shape parse_sta produces. Paths through one…, TestPathSelMMR
 
 ### Community 39 - "TestInconclusiveSec"
 Cohesion: 0.25
@@ -248,29 +249,49 @@ Nodes (3): A solver timeout is not evidence that a rewrite is wrong. Regression 
 Cohesion: 0.29
 Nodes (3): The honesty guard, pinned to a committed artifact. If a weight tweak ever makes…, The design declares three bottlenecks by hand in config.json. The selector…, TestPathSelOnRealRun
 
-### Community 42 - "TestClockResolution"
-Cohesion: 0.29
-Nodes (3): Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls…, The failure mode being guarded: falling back to the primary period is sometimes…, TestClockResolution
+### Community 42 - "protect.py"
+Cohesion: 0.16
+Nodes (17): check_files(), describe(), _identifiers(), matches(), _normalise(), protected_lines(), Any, Run the check across a whole design, keyed by file name. A file the candidate… (+9 more)
+
+### Community 51 - "TestProtectedRegions"
+Cohesion: 0.12
+Nodes (9): CDC and clock generation sit on the far side of the cut the equivalence proof…, The whole point is to permit the optimisation, not to freeze the file., Two flops to one. Passes SEC, and is broken silicon., A rule that fires on whitespace teaches the loop to avoid the file entirely,…, An easy way past a per-file check., Every existing single-clock design declares no protected patterns and must…, A protected list that matches nothing is worse than none -- it reads as…, It says nothing about whether the transformation is sound, so it must not… (+1 more)
+
+### Community 52 - "The equivalence contract"
+Cohesion: 0.22
+Nodes (9): 1. The claim, on a single-clock design, 2. The claim, on a multi-clock design, 3. What the code does today, 4. Scale, 5. Related constraints, Adopted: per-domain SEC with the CDC boundaries cut, Rejected: bounded equivalence with `set_clock_groups -asynchronous`, The equivalence contract (+1 more)
+
+### Community 53 - "Path-portfolio mode"
+Cohesion: 0.22
+Nodes (9): A pre-synthesis pass, Cost, For a head-to-head, Path-portfolio mode, The skill document, The three changes, What this does not yet show, Which path limits the clock (+1 more)
+
+### Community 54 - "Dr. RTL optimisation loop"
+Cohesion: 0.40
+Nodes (5): Dr. RTL optimisation loop, Honest differences from the paper, The equations, The skill library, Where it runs
+
+### Community 55 - "Setup"
+Cohesion: 0.50
+Nodes (4): Linux, macOS, Setup, Windows (WSL2) — x86
 
 ## Knowledge Gaps
-- **64 isolated node(s):** `alu32`, `dual_path`, `mac_chain`, `soc_bench`, `entrypoint.sh script` (+59 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 450 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **65 isolated node(s):** `alu32`, `dual_path`, `mac_chain`, `soc_bench`, `entrypoint.sh script` (+60 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 481 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TestRtlMap` connect `TestRtlMap` to `selftest.py`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
-- **Why does `TestClockSet` connect `TestClockSet` to `selftest.py`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **Why does `ClockSet` connect `ClockSet` to `sec.py`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+- **Why does `TestSkillMerging` connect `TestSkillMerging` to `selftest.py`?**
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **Why does `TestMultiClockRanking` connect `TestMultiClockRanking` to `_path`, `selftest.py`, `_NoRtl`?**
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **What connects `alu32`, `dual_path`, `mac_chain` to the rest of the system?**
-  _64 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _65 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `pathsel.py` be split into smaller, more focused modules?**
   _Cohesion score 0.06321334503950835 - nodes in this community are weakly interconnected._
 - **Should `drrtl.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.09071117561683599 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08686868686868687 - nodes in this community are weakly interconnected._
 - **Should `rtlscan.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08392156862745098 - nodes in this community are weakly interconnected._

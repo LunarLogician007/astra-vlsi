@@ -43,6 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import astra          # noqa: E402  flow driver: synthesis + STA
 import clocks         # noqa: E402
 import llm            # noqa: E402
+import protect        # noqa: E402
 import rtl_map        # noqa: E402
 import score as scoring  # noqa: E402
 import sec as sec_mod    # noqa: E402
@@ -319,7 +320,7 @@ class TimingAnalysisAgent:
         self.timeout = timeout
         self.top_k = top_k
 
-    def analyse(self, run_dir: Path, design_dir: Path, period: float,
+    def analyse(self, run_dir: Path, design_dir: Path, period: Any,
                 dry_run: bool = False) -> dict[str, Any]:
         """Mechanical localisation first, then optional LLM root-causing.
 
@@ -396,9 +397,12 @@ class TimingAnalysisAgent:
                 run_dir: Path, period: float) -> str:
         rtl = "\n\n".join(f"----- {p.name} -----\n{p.read_text()}"
                           for p in sorted((run_dir / "00_inputs").glob("*.v")))
+        clock_context = clocks.render_context(
+            period if hasattr(period, "is_multi") else None,
+            period if isinstance(period, (int, float)) else None)
         return f"""# Timing analysis request
 
-target clock period: {period:g} ns
+{clock_context}
 
 ## Mechanical path-to-RTL mapping (computed, not inferred)
 
@@ -552,7 +556,7 @@ class RtlOptimizationAgent:
     def _prompt(self, ctx: dict[str, Any], index: int) -> str:
         return f"""# Design: {ctx['design']}   (candidate {index + 1} of {ctx['n']})
 
-target clock  {ctx['period']:g} ns
+{ctx['clock_context']}
 current WNS   {fmt(ctx['metrics'].get('wns_ns'))} ns
 current TNS   {fmt(ctx['metrics'].get('tns_ns'))} ns
 current area  {fmt(ctx['metrics'].get('area_um2'))} um^2
@@ -561,6 +565,9 @@ iteration     {ctx['iteration']} of {ctx['max_iters']}
 ## Invariants this design declares (from config.json)
 
 {ctx['invariants']}
+## Off limits -- do not edit (checked mechanically, before synthesis)
+
+{ctx['protected']}
 
 ## Timing analysis
 
@@ -773,6 +780,10 @@ class Orchestrator:
         self.period = float(args.period if args.period is not None
                             else self.cfg["clock"]["period_ns"])
         self.clocks = astra.design_clocks(self.cfg, args.period)
+        # Identifier globs the optimiser may not touch -- CDC and clock
+        # generation, which the equivalence proof cuts and therefore cannot
+        # check. See tools/protect.py.
+        self.protected = list(self.cfg.get("protected") or [])
         self.design = args.design
 
         self.weights = dict(scoring.DEFAULT_WEIGHTS)
@@ -835,6 +846,29 @@ class Orchestrator:
         groups = (base_metrics or {}).get("clock_groups")
         return scoring.critical_period(groups, self.clocks, self.period)
 
+    def _score(self, group: list[dict[str, Any]],
+               base: dict[str, Any]) -> dict[str, Any]:
+        """Eq. 3 over a candidate group, in whichever unit is well defined.
+
+        Cycle-normalised WNS/TNS where the per-group data exists, because the
+        nanosecond scalars sum across domains of different worth; nanoseconds
+        against the critical group's period otherwise. Both sides are converted
+        together or neither is -- comparing a candidate in cycles against a
+        baseline in nanoseconds would be worse than not converting at all.
+
+        Returns the baseline actually used, since the caller needs the same one
+        for any per-candidate scoring it does afterwards.
+        """
+        base_c = scoring.with_cycles(base, self.clocks)
+        for c in group:
+            if c.get("metrics"):
+                c["metrics"] = scoring.with_cycles(c["metrics"], self.clocks)
+        sides = [c["metrics"] for c in group if c.get("metrics")] + [base_c]
+        period = 1.0 if scoring.cycles_available(*sides) \
+            else self._score_period(base)
+        scoring.score_group(group, base_c, self.weights, period)
+        return base_c
+
     def _rtl_paths(self, d: Path) -> list[Path]:
         return sorted(p for p in d.glob("*.v")) + sorted(p for p in d.glob("*.sv"))
 
@@ -865,8 +899,10 @@ class Orchestrator:
         info(f"--- iteration {t} " + "-" * 50)
 
         # 1. Timing Analysis Agent
+        # The ClockSet, not the scalar period: rtl_map resolves each path's
+        # own clock from it, and the prompt renders every domain.
         analysis = self.analyst.analyse(parent_dir, self.cfg["_dir"],
-                                        self.period, self.args.dry_run)
+                                        self.clocks, self.args.dry_run)
         (idir / "analysis.txt").write_text(analysis["text"] + "\n")
         (idir / "analysis.json").write_text(
             json.dumps({k: v for k, v in analysis.items() if k != "prompt"},
@@ -899,8 +935,7 @@ class Orchestrator:
 
         # 4. Eq. 3 / Eq. 5 -- score the group and compute relative advantage
         baseline_metrics = self.state["baseline"]["metrics"]
-        scoring.score_group(group, baseline_metrics, self.weights,
-                            self._score_period(baseline_metrics))
+        self._score(group, baseline_metrics)
         stats = scoring.group_stats(group)
 
         for c in group:
@@ -998,6 +1033,25 @@ class Orchestrator:
         cand["rtl"] = [str(p) for p in files]
         cand["changed_files"] = sorted(cand["files"].keys())
 
+        # Protected regions before anything else. CDC and clock-generation
+        # logic sits on the far side of the cut the equivalence proof makes,
+        # so SEC cannot refute a change to it -- it would pass, and be wrong
+        # silicon. This is the only gate that can catch it, so it runs before
+        # the gate that cannot.
+        guard = protect.check_files(
+            {p.name: p.read_text() for p in parent_rtl},
+            {p.name: p.read_text() for p in files},
+            self.protected)
+        cand["protected"] = guard
+        if not guard["ok"]:
+            (cdir / "protected.json").write_text(
+                json.dumps(guard, indent=2) + "\n")
+            reason = protect.render(guard)
+            cand["metrics"] = {"status": "protected_edit", "reason": reason}
+            cand["sec"] = {"equivalent": False, "method": "skipped",
+                           "reason": reason, "engine": "none"}
+            return
+
         # SEC first: a broken rewrite's timing numbers are not worth the
         # synthesis time, and reporting them at all invites reading them.
         # Gold is D_0, not the parent -- equivalence has to hold against the
@@ -1047,8 +1101,10 @@ class Orchestrator:
             "iteration": t,
             "max_iters": self.args.iters,
             "period": self.period,
+            "clock_context": clocks.render_context(self.clocks),
             "metrics": metrics,
             "invariants": json.dumps(notes, indent=2) if notes else "<none declared>",
+            "protected": protect.describe(self.protected),
             "analysis_summary": analysis.get("summary")
                                 or "(no narrative summary; see the mapping below)",
             "bottleneck_text": "\n".join(bl) or "(none identified)",
@@ -1168,7 +1224,7 @@ class Orchestrator:
             f"# Dr. RTL optimisation -- {self.design}",
             "",
             f"run           {self.outdir.name}",
-            f"target clock  {self.period:g} ns",
+            f"{clocks.render_context(self.clocks)}",
             f"iterations    {len(self.state['iterations'])} "
             f"(converged at {self.state.get('convergence_steps') or 'n/a'})",
             f"candidates    {self.args.n} per iteration",

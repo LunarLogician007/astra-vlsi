@@ -377,21 +377,37 @@ def criticality(feats: list[PathFeatures], clusters: list[list[int]],
     if n == 0:
         return [], []
     of_cluster = {i: c for c, members in enumerate(clusters) for i in members}
-    # Worse slack = closer to limiting. A path with no slack reported cannot
-    # be ranked, so it is parked far below anything that can.
-    slacks = [f.slack_ns for f in feats]
-    known = [s for s in slacks if s is not None]
-    floor = (max(known) + 1.0) if known else 0.0
-    base = [-(s if s is not None else floor) for s in slacks]
 
-    # sigma is a fraction of *a* clock period, so the absolute slop differs per
-    # domain: 5% of a 10 ns cycle is 500 ps, of a 2 ns cycle 100 ps. Scaling
-    # every path by one period would hand the slow domain's uncertainty to the
-    # fast one and let it win ties it should lose.
+    # Everything below is in CYCLES of each path's own clock, not nanoseconds.
+    #
+    # Raw slack cannot be compared across asynchronous domains. "Which path
+    # limits the clock" presupposes one clock; with five masters there are
+    # five, and a path 0.5 ns short of a 2 ns cycle is in far more trouble than
+    # one 0.5 ns short of a 32 ns cycle even though the second has the worse
+    # number. Dividing by each path's own period makes the question well posed
+    # again -- it becomes "which path consumes most of its own budget".
+    #
+    # For a single-clock design this is a uniform division of every base and
+    # every scale by the same period. argmax is invariant under that, so the
+    # answer is arithmetically identical to the nanosecond form it replaces --
+    # see TestCriticalityUnitsAreCycles.
     book = period_book(period_ns)
     fallback = book.primary_period if hasattr(book, "primary_period") else period_ns
-    scales = [abs(sigma) * abs(f.period_ns or fallback or 1.0) for f in feats]
-    if max(scales) <= 0 or n == 1:
+    periods = [abs(f.period_ns or fallback or 1.0) for f in feats]
+
+    # Worse slack = closer to limiting. A path with no slack reported cannot
+    # be ranked, so it is parked far below anything that can.
+    frac = [(-f.slack_ns / p) if f.slack_ns is not None else None
+            for f, p in zip(feats, periods)]
+    known = [x for x in frac if x is not None]
+    floor = (min(known) - 1.0) if known else 0.0
+    base = [x if x is not None else floor for x in frac]
+
+    # sigma is already a fraction of a period, so in cycle units it IS the
+    # scale -- the per-domain difference is now carried by base rather than
+    # applied here.
+    scale = abs(sigma)
+    if scale <= 0 or n == 1:
         best = max(base)
         tied = [i for i, b in enumerate(base) if b >= best - 1e-12]
         per_path = [1.0 / len(tied) if i in tied else 0.0 for i in range(n)]
@@ -399,8 +415,8 @@ def criticality(feats: list[PathFeatures], clusters: list[list[int]],
 
     rho = min(max(rho, 0.0), 1.0)
     root_rho, root_ind = math.sqrt(rho), math.sqrt(1.0 - rho)
-    s_cone = [s * root_rho for s in scales]
-    s_ind = [s * root_ind for s in scales]
+    s_cone = [scale * root_rho] * n
+    s_ind = [scale * root_ind] * n
     rng = random.Random(seed)
     wins = [0] * n
 

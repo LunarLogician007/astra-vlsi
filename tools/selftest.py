@@ -25,6 +25,7 @@ import merge        # noqa: E402
 import parse_sta    # noqa: E402
 import pathsel      # noqa: E402
 import portfolio    # noqa: E402
+import protect      # noqa: E402
 import rtl_map      # noqa: E402
 import rtlscan      # noqa: E402
 import score        # noqa: E402
@@ -1410,21 +1411,34 @@ class TestMultiClockRanking(unittest.TestCase):
         self.assertEqual(feats[0].period_ns, 2.0)
         self.assertTrue(feats[0].period_exact)
 
-    def test_uncertainty_scales_with_each_paths_own_period(self):
-        """sigma is a fraction of a period, so 5% of 10 ns is five times the
-        absolute slop of 5% of 2 ns. Using one period hands the slow domain's
-        uncertainty to the fast one."""
+    def test_criticality_ranks_by_share_of_each_paths_own_budget(self):
+        """Raw slack cannot order paths in different domains. Here the slow
+        path has the WORSE nanosecond figure (-0.90 against -0.50) and is the
+        less critical of the two: it eats 9% of its 10 ns cycle where the fast
+        path eats 25% of its 2 ns one. Ranking by nanoseconds gets this exactly
+        backwards, and would send every agent to the wrong domain."""
         book = self._two()
         feats = self._feats(
             [_path("a", "x", -0.50, ["XOR2_X1"] * 5, group="fast"),
-             _path("b", "y", -0.44, ["MUX2_X1"] * 5, group="slow")], book)
+             _path("b", "y", -0.90, ["MUX2_X1"] * 5, group="slow")], book)
         clusters, _ = pathsel.cluster(feats, 0.99)
         per_path, _ = pathsel.criticality(feats, clusters, book, samples=4000)
-        # The slow path is nominally better by 60 ps, but 5% of its own 10 ns
-        # cycle is 500 ps of slop, so it takes a real share of the wins.
-        self.assertGreater(per_path[1], 0.10,
-                           "the wide-uncertainty domain must not be dismissed")
+        self.assertGreater(per_path[0], per_path[1])
         self.assertEqual(round(sum(per_path), 6), 1.0)
+
+    def test_a_near_tie_within_one_domain_still_splits(self):
+        """The uncertainty model must survive the change of units: two paths a
+        few picoseconds apart on the SAME clock are still not reliably
+        ordered."""
+        book = self._two()
+        feats = self._feats(
+            [_path("a", "x", -0.50, ["XOR2_X1"] * 5, group="fast"),
+             _path("b", "y", -0.48, ["XOR2_X1"] * 5, group="fast")], book)
+        clusters, _ = pathsel.cluster(feats, 0.99)
+        per_path, _ = pathsel.criticality(feats, clusters, book, samples=4000)
+        self.assertGreater(min(per_path), 0.15,
+                           "a 20 ps gap on a 2 ns clock is not a settled order")
+
 
     def test_an_unresolved_group_is_reported_in_the_selection(self):
         """A path ranked against a period that is not its own is the exact
@@ -1437,6 +1451,40 @@ class TestMultiClockRanking(unittest.TestCase):
         self.assertFalse(cov["all_resolved"])
         self.assertEqual(cov["unresolved"], ["mystery"])
 
+class TestCriticalityUnitsAreCycles(unittest.TestCase):
+    """criticality() works in cycles of each path's own clock. On a
+    single-clock design that is a uniform division of every base and every
+    scale by one number, and argmax is invariant under it -- so the published
+    behaviour must be reproduced exactly, not merely closely."""
+
+    def _feats(self, paths, book):
+        nl, rtl = _empty_index(), _NoRtl()
+        return [pathsel.path_features(p, i, nl, rtl, book)
+                for i, p in enumerate(paths)]
+
+    def test_one_clock_is_unaffected_by_the_change_of_units(self):
+        paths = [_path("a", f"acc[{i}]", -0.30 + 0.02 * i, ["XOR2_X1"] * 6)
+                 for i in range(8)]
+        clusters, _ = pathsel.cluster(self._feats(paths, 2.0), 0.99)
+
+        # The same comparison at two periods. Under cycle units the answer can
+        # only depend on slack-over-period, and every path here scales
+        # together, so both must agree exactly.
+        a, _ = pathsel.criticality(self._feats(paths, 2.0), clusters, 2.0,
+                                   samples=6000)
+        scaled = [_path("a", f"acc[{i}]", (-0.30 + 0.02 * i) * 5,
+                        ["XOR2_X1"] * 6) for i in range(8)]
+        b, _ = pathsel.criticality(self._feats(scaled, 10.0), clusters, 10.0,
+                                   samples=6000)
+        self.assertEqual(a, b, "a design and its 5x-scaled twin rank identically")
+
+    def test_sigma_zero_still_collapses_to_the_deterministic_answer(self):
+        paths = [_path("a", "x", -0.5, ["XOR2_X1"] * 5),
+                 _path("b", "y", -0.1, ["MUX2_X1"] * 5)]
+        feats = self._feats(paths, 2.0)
+        clusters, _ = pathsel.cluster(feats, 0.99)
+        per_path, _ = pathsel.criticality(feats, clusters, 2.0, sigma=0.0)
+        self.assertEqual(per_path, [1.0, 0.0])
 
 class TestClockSdc(unittest.TestCase):
     """SDC generation. One substitution cannot express five clocks."""
@@ -1617,6 +1665,148 @@ class TestCriticalPeriod(unittest.TestCase):
     def test_an_unknown_group_name_does_not_crash_the_score(self):
         groups = {"groups": {"ghost": {"wns_ns": -1.0}}}
         self.assertEqual(score.critical_period(groups, self._cs()), 2.0)
+
+
+class TestTimingInCycles(unittest.TestCase):
+    """Eq. 3's inputs, on a design with more than one clock.
+
+    WNS and TNS arrive as design-wide nanosecond scalars. TNS is a *sum*, so
+    it adds nanoseconds from domains where a nanosecond is worth wildly
+    different amounts.
+    """
+
+    def _cs(self):
+        return clocks.ClockSet.from_config({"clocks": [
+            {"name": "fast", "period_ns": 2.0},
+            {"name": "slow", "period_ns": 32.0},
+        ]})
+
+    def _m(self, fast_wns, fast_tns, slow_wns, slow_tns):
+        return {"clock_groups": {"groups": {
+            "fast": {"wns_ns": fast_wns, "tns_ns": fast_tns},
+            "slow": {"wns_ns": slow_wns, "tns_ns": slow_tns}}}}
+
+    def test_wns_is_the_worst_fractional_slack_not_the_worst_nanoseconds(self):
+        """-1.0 ns on a 2 ns clock is half a cycle gone. -4.0 ns on a 32 ns
+        clock is an eighth. The second is the worse number and the better
+        design."""
+        wns, _ = score.timing_in_cycles(
+            self._m(-1.0, -1.0, -4.0, -4.0), self._cs())
+        self.assertAlmostEqual(wns, -0.5, msg="the fast domain owns it")
+
+    def test_tns_sums_cycles_so_a_slow_domain_cannot_drown_a_fast_one(self):
+        """The failure this fixes: in nanoseconds the slow domain contributes
+        32x its true weight, so a candidate can trade a real regression in the
+        fast domain for a meaningless gain in the slow one and score even."""
+        _, tns = score.timing_in_cycles(
+            self._m(-1.0, -2.0, -1.0, -32.0), self._cs())
+        raw_ns_sum = -2.0 + -32.0
+        self.assertAlmostEqual(tns, (-2.0 / 2.0) + (-32.0 / 32.0))
+        self.assertAlmostEqual(tns, -2.0)
+        self.assertNotAlmostEqual(tns, raw_ns_sum,
+                                  msg="cycles and nanoseconds must not agree here")
+
+    def test_it_declines_when_there_is_no_per_group_data(self):
+        """An older run, or an STA build that emitted no groups. Returning a
+        number here would be inventing one."""
+        self.assertIsNone(score.timing_in_cycles({}, self._cs()))
+        self.assertIsNone(score.timing_in_cycles(self._m(-1, -1, -1, -1), None))
+
+    def test_both_sides_must_carry_cycles_or_neither_is_used(self):
+        """Scoring a candidate in cycles against a baseline in nanoseconds
+        would be worse than not converting at all."""
+        with_c = score.with_cycles(self._m(-1.0, -1.0, -1.0, -1.0), self._cs())
+        without = score.with_cycles({}, self._cs())
+        self.assertTrue(score.cycles_available(with_c, with_c))
+        self.assertFalse(score.cycles_available(with_c, without))
+
+    def test_one_clock_scores_identically_in_either_unit(self):
+        """Scale invariance, which is why this change is safe to apply to the
+        published single-clock behaviour: norm_timing is a ratio, so dividing
+        the value and the baseline by the same period cancels."""
+        cs = clocks.ClockSet.from_config(
+            {"clock": {"name": "clk", "period_ns": 2.0}})
+        cand = {"wns_ns": -0.2, "tns_ns": -2.0, "area_um2": 1000.0,
+                "clock_groups": {"groups": {"clk": {"wns_ns": -0.2,
+                                                    "tns_ns": -2.0}}}}
+        base = {"wns_ns": -0.5, "tns_ns": -5.0, "area_um2": 1000.0,
+                "clock_groups": {"groups": {"clk": {"wns_ns": -0.5,
+                                                    "tns_ns": -5.0}}}}
+        in_ns = score.score(cand, base, None, 2.0)["score"]
+        in_cycles = score.score(score.with_cycles(cand, cs),
+                                score.with_cycles(base, cs), None, 1.0)["score"]
+        self.assertAlmostEqual(in_ns, in_cycles, places=12)
+
+
+class TestProtectedRegions(unittest.TestCase):
+    """CDC and clock generation sit on the far side of the cut the equivalence
+    proof makes, so SEC cannot refute a change to them. This is the only gate
+    that can, which is why it runs before the one that cannot."""
+
+    PATS = ["cdc_*", "clk_*_div*"]
+    SRC = (
+        "module m;\n"
+        "  reg [1:0] cdc_sync;\n"
+        "  reg clk_a_div2_r;\n"
+        "  always @(posedge clk) cdc_sync <= {cdc_sync[0], flag};\n"
+        "  always @(posedge clk) clk_a_div2_r <= ~clk_a_div2_r;\n"
+        "  wire [7:0] sum = a + b + c + d;\n"
+        "endmodule\n")
+
+    def test_a_datapath_rewrite_is_allowed(self):
+        """The whole point is to permit the optimisation, not to freeze the
+        file."""
+        cand = self.SRC.replace("a + b + c + d", "(a + b) + (c + d)")
+        self.assertEqual(protect.violations(self.SRC, cand, self.PATS), [])
+
+    def test_collapsing_a_synchroniser_is_caught(self):
+        """Two flops to one. Passes SEC, and is broken silicon."""
+        cand = self.SRC.replace("{cdc_sync[0], flag}", "{1'b0, flag}")
+        self.assertTrue(protect.violations(self.SRC, cand, self.PATS))
+
+    def test_deleting_a_protected_line_is_caught(self):
+        cand = "\n".join(l for l in self.SRC.splitlines()
+                         if "clk_a_div2_r <=" not in l)
+        v = protect.violations(self.SRC, cand, self.PATS)
+        self.assertTrue(any("removed" in x for x in v))
+
+    def test_reindenting_and_recommenting_are_not_edits(self):
+        """A rule that fires on whitespace teaches the loop to avoid the file
+        entirely, which is worse than the thing it prevents."""
+        cand = self.SRC.replace(
+            "  always @(posedge clk) cdc_sync <= {cdc_sync[0], flag};",
+            "      always @(posedge clk)   cdc_sync <= {cdc_sync[0], flag};  // 2ff")
+        self.assertEqual(protect.violations(self.SRC, cand, self.PATS), [])
+
+    def test_deleting_the_whole_file_does_not_slip_through(self):
+        """An easy way past a per-file check."""
+        r = protect.check_files({"m.v": self.SRC}, {}, self.PATS)
+        self.assertFalse(r["ok"])
+
+    def test_a_design_declaring_nothing_is_unconstrained(self):
+        """Every existing single-clock design declares no protected patterns
+        and must behave exactly as before."""
+        self.assertEqual(protect.violations(self.SRC, "totally different", []), [])
+        self.assertTrue(protect.check_files({"m.v": self.SRC}, {}, [])["ok"])
+
+    def test_the_benchmark_declares_patterns_that_match_its_own_cdc(self):
+        """A protected list that matches nothing is worse than none -- it reads
+        as protection and provides none."""
+        cfg = json.loads((ROOT / "designs" / "soc_bench"
+                          / "config.json").read_text())
+        rtl = (ROOT / "designs" / "soc_bench" / "rtl" / "soc_bench.v").read_text()
+        pats = cfg.get("protected") or []
+        self.assertTrue(pats, "soc_bench must declare protected patterns")
+        self.assertGreater(len(protect.protected_lines(rtl, pats)), 20)
+
+    def test_a_protected_edit_is_undecided_not_a_refutation(self):
+        """It says nothing about whether the transformation is sound, so it
+        must not condemn the strategy in the skill library."""
+        cand = {"metrics": {"status": "protected_edit"},
+                "sec": {"equivalent": False, "method": "skipped",
+                        "reason": "protected regions edited", "engine": "none"}}
+        self.assertFalse(score.sec_passed(cand))
+        self.assertFalse(score.sec_decided(cand))
 
 
 class TestEquivalenceContract(unittest.TestCase):

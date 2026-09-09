@@ -170,6 +170,11 @@ proc astra_timing_report {tag {npaths 20}} {
     astra_slack_summary $tag max
     astra_slack_summary "${tag}.hold" min
     astra_group_summary $tag max
+    # Hold is grouped too. A design-wide hold number is even less meaningful
+    # than a design-wide setup one: hold is checked against the capture clock's
+    # own edge, so summarising it across domains with no phase relationship
+    # says nothing about any of them.
+    astra_group_summary "${tag}.hold" min
     astra_report_paths $tag $npaths
     astra_report_checks_extra $tag
 }

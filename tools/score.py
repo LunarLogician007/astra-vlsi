@@ -107,6 +107,67 @@ def critical_period(clock_groups: dict[str, Any] | None,
     return clock_set.tightest.period_ns
 
 
+def timing_in_cycles(metrics: dict[str, Any] | None,
+                     clock_set: Any = None) -> tuple[float, float] | None:
+    """WNS and TNS measured in cycles of each group's OWN clock.
+
+    WNS and TNS arrive from OpenSTA as design-wide nanosecond scalars, and on a
+    multi-clock design that quietly mixes units of different value. TNS is a
+    *sum*: a nanosecond of violation in a 2 ns domain and a nanosecond in a
+    32 ns domain contribute equally to it, when the first consumes half a cycle
+    and the second a thirty-second of one. Optimising against that sum lets a
+    candidate trade a real regression in a fast domain for a meaningless gain
+    in a slow one and score neutral.
+
+    Dividing each group's numbers by its own period fixes the unit. WNS becomes
+    the worst *fractional* slack over the groups; TNS becomes total violation
+    in cycles.
+
+    Returns None when there is no per-group data to work from -- an older run,
+    or an STA build that could not emit groups -- so the caller keeps the
+    nanosecond path rather than inventing numbers.
+    """
+    groups = ((metrics or {}).get("clock_groups") or {}).get("groups") or {}
+    if not groups or clock_set is None:
+        return None
+    wns: float | None = None
+    tns = 0.0
+    for name, g in groups.items():
+        clk = clock_set.by_name(name)
+        if clk is None or not clk.period_ns:
+            continue
+        w, t = (g or {}).get("wns_ns"), (g or {}).get("tns_ns")
+        if w is not None:
+            frac = float(w) / clk.period_ns
+            wns = frac if wns is None else min(wns, frac)
+        if t is not None:
+            tns += float(t) / clk.period_ns
+    return None if wns is None else (wns, tns)
+
+
+def with_cycles(metrics: dict[str, Any] | None,
+                clock_set: Any = None) -> dict[str, Any]:
+    """``metrics`` plus ``wns_cycles``/``tns_cycles`` when they can be derived.
+
+    Returned unchanged when they cannot, so every caller can apply this
+    unconditionally and the nanosecond path stays the fallback.
+    """
+    out = dict(metrics or {})
+    got = timing_in_cycles(out, clock_set)
+    if got is not None:
+        out["wns_cycles"], out["tns_cycles"] = got
+    return out
+
+
+def cycles_available(*sides: dict[str, Any]) -> bool:
+    """True when every side carries cycle metrics, so Eq. 3 can use them.
+
+    Both sides must, or the candidate and the baseline would be measured in
+    different units and the comparison would be meaningless.
+    """
+    return all("wns_cycles" in (s or {}) for s in sides)
+
+
 def norm_area(value: float, baseline: float) -> float:
     """Normalised area delta. Positive = the candidate got bigger."""
     if baseline is None or abs(baseline) < 1e-12:
@@ -128,10 +189,14 @@ def normalize(metrics: dict[str, Any], baseline: dict[str, Any],
                 return float(v)
         return None
 
+    # Cycle-normalised values win where present: on a multi-clock design the
+    # nanosecond scalars sum across domains of different worth. See
+    # `timing_in_cycles`. Both sides carry them or neither does -- `score_group`
+    # checks that with `cycles_available` before passing period_ns=1.0.
     out: dict[str, float] = {}
     for key, names, fn in (
-        ("wns", ("wns_ns", "wns"), norm_timing),
-        ("tns", ("tns_ns", "tns"), norm_timing),
+        ("wns", ("wns_cycles", "wns_ns", "wns"), norm_timing),
+        ("tns", ("tns_cycles", "tns_ns", "tns"), norm_timing),
     ):
         v, b = pick(metrics, *names), pick(baseline, *names)
         out[key] = 0.0 if v is None or b is None else fn(v, b, period_ns)

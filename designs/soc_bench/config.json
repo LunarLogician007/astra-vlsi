@@ -31,13 +31,14 @@
     { "name": "clk_io_div2",  "generated_from": "clk_io",  "divide_by": 2,
       "port": "clk_io_div2_r_DFFR_X1_Q/Q" }
   ],
+  "protected": ["cdc_*", "clk_*_div*", "*_div_cnt", "dsp_div_cnt", "mem_div_cnt"],
   "notes": {
     "latency_cycles": {
       "sys": 3, "dsp": 3, "io": 2, "mem": 3, "aux": 2
     },
     "known_bottlenecks": [
-      "sys: serial accumulate chain over 8 unpipelined 16x16 multipliers, with the 40-bit saturation compare at the end of the chain rather than beside it",
-      "dsp: 8-tap correlator whose products are summed serially instead of in a tree",
+      "sys: serial accumulate chain over 12 unpipelined 16x16 multipliers, with the 40-bit saturation compare at the end of the chain rather than beside it",
+      "dsp: 12-tap correlator whose products are summed serially instead of in a tree",
       "io: 64-way priority select written as a serial mux cascade, so bit 63 waits on all 63 below it",
       "mem: 32-entry CAM where the hit index is resolved by a serial priority cascade over the match vector",
       "aux: 256-bit parity written as a serial XOR chain (depth 256 instead of 8), and a bit-serial CRC32 update"

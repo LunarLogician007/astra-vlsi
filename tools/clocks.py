@@ -358,6 +358,29 @@ def _is_comment(line: str) -> bool:
     return line.lstrip().startswith("#")
 
 
+def render_context(cs: ClockSet | None, fallback: float | None = None) -> str:
+    """How the clocks are described to an agent, and in a run summary.
+
+    A single-clock design reads exactly as it did before. A multi-clock design
+    gets every clock listed with its period, because "target clock 2 ns" on a
+    thirteen-clock design is not merely incomplete -- it contradicts the
+    per-target brief, which names the clock that actually captures the path.
+    An agent given both will believe one of them, and there is no reason it
+    should pick the right one.
+    """
+    if cs is None:
+        return f"target clock  {fallback:g} ns" if fallback else "target clock  n/a"
+    if not cs.is_multi:
+        return f"target clock  {cs.primary.period_ns:g} ns"
+    rows = [f"  {c.name:<16} {c.period_ns:>7.3g} ns"
+            + (f"   (÷{c.divide_by} of {c.generated_from})"
+               if c.is_generated else "")
+            for c in cs]
+    return ("clocks ({} independent domains) -- each path is timed against ITS\n"
+            "OWN clock, so a target's brief names which:\n{}".format(
+                len(cs.async_groups()), "\n".join(rows)))
+
+
 def substitute(text: str, cs: ClockSet) -> str:
     """Fill the clock placeholders in an SDC template.
 
