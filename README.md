@@ -12,6 +12,12 @@ RTL + SDC  ──►  Yosys  ──►  netlist  ──►  OpenSTA  ──►  
 On top of that flow, `make opt` runs the [Dr. RTL](#dr-rtl-optimisation-loop)
 closed loop: analyse the critical path, write N rewrites in parallel, verify
 each for equivalence, keep the best, and learn from the comparison.
+`make portfolio` runs the [path-portfolio](#path-portfolio-mode) addon, which
+splits the design into *k* disjoint bottlenecks and scopes one agent to each.
+
+Designs may declare [more than one clock](#more-than-one-clock), including
+generated and divided ones. Every path is then ranked against the period of the
+clock that actually captured it.
 
 Image is **1.1 GB** and builds natively on arm64 and x86 — no emulation.
 
@@ -88,6 +94,47 @@ Real output:
 [astra] post-synthesis timing: VIOLATED
     WNS = -0.3573 ns    TNS = -3.7438 ns    violating endpoints = 15
     worst path: _14637_ -> _14515_  (logic depth 86)
+```
+
+### Every command
+
+Inside the container (`make shell`), or from the host via the `make` target on
+the right. `DESIGN=` defaults to `mac_chain`.
+
+**Flow — no model, no API key.**
+
+| command | make | what it does |
+|---|---|---|
+| `astra doctor` | `make doctor` | check tools, PDKs and that every design resolves |
+| `astra list` | `make list` | designs and past runs, with each design's clocks |
+| `astra syn <d>` | `make syn` | Yosys synthesis only |
+| `astra sta <d>` | — | OpenSTA timing only, on the last synthesis |
+| `astra run <d>` | `make run` | synthesis + timing |
+| `astra run <d> --pnr` | `make pnr` | + OpenROAD place & route (needs the ORFS image) |
+| `astra report <d>` | — | print `metrics.json`; `--timing` for the report |
+| `astra localise <d>` | `make localise` | critical path → RTL lines + structural root causes |
+| `astra score <d>` | `make score` | Eq. 3 for one run against a baseline run |
+| `astra sec <top>` | `make sec` | sequential equivalence between two designs |
+| `astra scan <d>` | `make scan` | pre-synthesis structural smells, lexical — runs with no tools at all |
+| `astra paths <d>` | `make paths` | the distinct critical-path targets worth an agent call |
+| `astra skills` | `make skills` | inspect the learned skill library |
+| `astra skilldoc` | `make skilldoc` | rebuild the RTL timing-optimisation skill document |
+
+**Loops — these call a model and cost tokens.**
+
+| command | make | what it does |
+|---|---|---|
+| `astra opt <d>` | `make opt` | Dr. RTL: analyse → N rewrites → verify → keep the best |
+| `astra portfolio <d>` | `make portfolio` | the addon: k scoped specialists, then a merge |
+
+Both take `--dry-run`, which writes the prompts and skips the model calls — but
+**still needs the container**, because it evaluates the baseline for real.
+
+**Verify without any tools or a model:**
+
+```bash
+python3 tools/selftest.py         # 207 tests: no EDA install, no model, no network
+make selftest                     # the same, inside the container
 ```
 
 ---
@@ -516,27 +563,42 @@ is not wired up.
 designs/<name>/          inputs
     rtl/*.v
     constraints/*.sdc
-    config.json          top module, clock, PDK
+    config.json          top module, clock(s), PDK
 
 flow/config/*.tcl        PDK paths (liberty, LEF, site, layers)
 flow/scripts/*.tcl       synth.tcl, sta.tcl, doctor.tcl
+flow/scripts/sta_common.tcl  shared reporting procs, incl. per-clock-group slack
 
 flow/scripts/sec.tcl     equivalence miter, discharged by Yosys's SAT engine
 
 tools/astra.py           the CLI
+tools/clocks.py          the clock model — periods, groups, SDC generation
 tools/parse_sta.py       OpenSTA report text → JSON
 tools/astra_advise.py    run artifacts → Claude → advice.md (host-side)
 
 tools/drrtl.py           the loop: orchestrator + the four agents
+tools/pathsel.py         which distinct bottlenecks are worth an agent call
+tools/portfolio.py       the path-portfolio orchestrator (subclasses drrtl)
+tools/rtlscan.py         pre-synthesis structural smells, lexical
+tools/merge.py           order-independent mechanical union + conflict report
+tools/skillgen.py        renders SKILL.md, routes sections per agent role
 tools/score.py           Eq. 1/3/4/5 — objective, selection, advantage
 tools/rtl_map.py         critical path → RTL lines + structural root causes
 tools/sec.py             SEC driver (eqy, else the Yosys miter)
 tools/skills.py          the confidence-aware skill library
 tools/llm.py             `claude -p` wrapper shared by the agents
 tools/toolenv.py         dispatch EDA calls into the container
-tools/selftest.py        62 tests over the above (needs no EDA tools)
+tools/selftest.py        207 tests over the above (needs no EDA tools, no model)
+
+docs/multi-clock.md      the clock model, and what it deliberately gives up
+docs/equivalence-contract.md   what "equivalent" means, and where it stops
 
 skills/library.json      learned pattern→strategy pairs (persists across runs)
+
+graphify-out/            the code knowledge graph — derived, rebuilt by
+    GRAPH_REPORT.md      `graphify update .`; the report names the commit it
+    graph.json           was built from, so check that before trusting it
+    graph.html
 
 runs/<design>/<timestamp>/       outputs (gitignored)
     00_inputs/           the exact RTL + SDC used
@@ -614,15 +676,66 @@ things about it worth knowing:
 
 Then `astra doctor` to confirm it resolves.
 
+### More than one clock
+
+Replace the singular `clock` with a `clocks` list. The singular form still
+works and is kept as a one-element alias, so nothing below is required for a
+single-clock design.
+
+```json
+"clocks": [
+  { "name": "clk_sys", "port": "clk_sys", "period_ns": 2.0 },
+  { "name": "clk_io",  "port": "clk_io",  "period_ns": 8.0 },
+  { "name": "clk_sys_div2", "generated_from": "clk_sys", "divide_by": 2,
+    "port": "clk_sys_div2_r_DFFR_X1_Q/Q" }
+]
+```
+
+A generated clock states its ratio instead of its period, and the period is
+derived — including along a chain, so a ripple divider's second stage works.
+Its `port` is the post-synthesis **pin** its divider flop drives.
+
+Three SDC placeholders:
+
+| placeholder | expands to |
+|---|---|
+| `@CLK_PERIOD@` | the primary clock's period — what every single-clock design uses |
+| `@CLK_PERIOD:<name>@` | one named clock's period |
+| `@ASTRA_CLOCK_DEFS@` | `create_clock` per master, `create_generated_clock` per divider, and `set_clock_groups -asynchronous` across independent masters |
+
+Placeholders inside `#` comments are left alone, so documenting them in a
+header is safe.
+
+Then `astra run <design>`, and check the per-clock-group slack in
+`02_sta/timing.json` under `clock_groups`. Each path is ranked against the
+period of the clock that captured it, not the design's primary one — see
+[`docs/multi-clock.md`](docs/multi-clock.md) for why that matters and what the
+model deliberately gives up.
+
+> **Sequential equivalence declines on a multi-clock design.** Both engines
+> build a miter over one common clock, so a verdict would not be a statement
+> about the design. `astra sec` returns `method: "unsupported"` — neither a
+> pass nor a refutation — which means **`astra opt` and `astra portfolio`
+> cannot promote any candidate** on such a design until the per-domain
+> partitioner exists. [`docs/equivalence-contract.md`](docs/equivalence-contract.md)
+> is the reasoning.
+
+Four things bite when writing a multi-clock SDC, all of which fail loudly but
+uninformatively. They are indexed by symptom in `HANDOFF.md` §7; the shortest
+version is that OpenSTA cannot parse a bus subscript in a `get_ports` pattern
+(`Error: stoi`), which also means an instance name containing `[` is unusable —
+so write clock dividers as pure toggle flops.
+
 ---
 
 ## The example designs
 
-| design | period | result |
+| design | clocks | result |
 |---|---|---|
 | `alu32` | 2.5 ns | **MET**, WNS +0.3701, 1318 cells, 1871 µm² |
 | `mac_chain` | 2.0 ns | **VIOLATED**, WNS −0.3573, TNS −3.7438, 15 endpoints |
 | `dual_path` | 1.5 ns | not yet run — see [path-portfolio mode](#what-this-does-not-yet-show) |
+| `soc_bench` | 13 clocks, 5 async | **VIOLATED**, WNS −6.5126, TNS −65.1401, 60 endpoints, 49,935 cells |
 
 `alu32` is the sanity check. Its critical path is the 32-bit ripple-carry adder
 Yosys infers — ~70 gates deep, which is why it needs 2.5 ns and not 1.0.
@@ -631,6 +744,22 @@ Yosys produces weaker arithmetic than commercial synthesis; expect that.
 `mac_chain` is the interesting one: a 4-tap 16×16 MAC with a serial accumulate
 chain and a saturation compare at the end of the path, 86 gates deep. It
 violates on purpose, so there's something real in the report to look at.
+
+`soc_bench` is the scale-and-clocks benchmark: five independent asynchronous
+masters (2, 3, 4, 5, 8 ns), eight generated clocks at ratios 2/4/8, six
+two-flop synchronisers plus a gray-coded bus crossing between them, a seven-state
+packet framer, and ~50K cells. Each of its five domains carries one deliberate
+bottleneck that RTL can fix without changing latency. Synthesis takes ~125 s, so
+budget about two minutes per candidate evaluation.
+
+```bash
+astra run soc_bench                        # ~2 min: synthesis + multi-clock STA
+python3 tools/pathsel.py runs/soc_bench/<run> -k 3
+```
+
+Read the caveat in [More than one clock](#more-than-one-clock) before pointing a
+loop at it: SEC declines on multi-clock designs, so no candidate can be
+promoted yet.
 
 ---
 
