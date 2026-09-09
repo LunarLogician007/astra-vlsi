@@ -16,6 +16,13 @@ The Dr. RTL optimisation loop is built on top of those stages:
     astra skills            inspect the learned skill library
     astra opt    <design>   the closed loop: analyse -> rewrite -> evaluate
 
+and the path-portfolio addon on top of that:
+
+    astra scan   <design>   structural smells in the RTL, before any tool runs
+    astra paths  <design>   the distinct critical-path targets worth an agent
+    astra skilldoc          build the RTL timing-optimisation skill document
+    astra portfolio <design>  k scoped specialists, then a merge
+
 Outputs land in runs/<design>/<timestamp>/. Stdlib only.
 """
 
@@ -552,11 +559,60 @@ def cmd_localise(args: argparse.Namespace) -> int:
     import rtl_map
     cfg = load_design(args.design)
     rdir = find_run(args.design, args.run)
-    if not (rdir / "02_sta" / "timing.json").is_file():
-        die(f"no timing.json in {rdir.name}. Run: astra run {args.design}")
-    data = rtl_map.from_run(rdir, cfg["_dir"], top_k=args.top_k)
+    sdir = rtl_map._STAGE_DIRS[args.stage]
+    if not (rdir / sdir / "timing.json").is_file():
+        die(f"no {sdir}/timing.json in {rdir.name}. Run: astra run "
+            f"{args.design}" + (" --pnr" if args.stage == "pnr" else ""))
+    data = rtl_map.from_run(rdir, cfg["_dir"], top_k=args.top_k, stage=args.stage)
     print(json.dumps(data, indent=2) if args.json else rtl_map.render(data))
     return 0
+
+
+def cmd_paths(args: argparse.Namespace) -> int:
+    """The path-portfolio: which distinct bottlenecks are worth an agent call."""
+    import pathsel
+    import skills as skills_mod
+    cfg = load_design(args.design)
+    rdir = find_run(args.design, args.run)
+    lib = None if args.no_skills else skills_mod.SkillLibrary()
+    try:
+        sel = pathsel.from_run(rdir, cfg["_dir"], k=args.top_k, stage=args.stage,
+                               lam=args.mmr_lambda, cluster_at=args.cluster_at,
+                               lib=lib)
+    except (FileNotFoundError, ValueError) as e:
+        die(str(e))
+    if args.json:
+        out = dict(sel)
+        out["targets"] = [t.to_dict() for t in sel["targets"]]
+        print(json.dumps(out, indent=2, default=str))
+    else:
+        print(pathsel.render(sel))
+    return 0
+
+
+def cmd_scan(args: argparse.Namespace) -> int:
+    """Structural smells in the source, before synthesis has run."""
+    import rtlscan
+    cfg = load_design(args.design)
+    files = [(cfg["_dir"] / r).resolve() for r in cfg["rtl"]]
+    missing = [str(f) for f in files if not f.is_file()]
+    if missing:
+        die(f"missing RTL: {', '.join(missing)}")
+    report = rtlscan.scan(files)
+    print(json.dumps(report, indent=2, default=str) if args.json
+          else rtlscan.render(report))
+    return 0
+
+
+def cmd_skilldoc(args: argparse.Namespace) -> int:
+    import skillgen
+    return skillgen.main(["astra-skilldoc", *args.rest])
+
+
+def cmd_portfolio(args: argparse.Namespace) -> int:
+    import portfolio
+    return portfolio.PortfolioOrchestrator(
+        portfolio.build_parser().parse_args(args.rest)).run()
 
 
 def cmd_score(args: argparse.Namespace) -> int:
@@ -682,6 +738,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("design")
     sp.add_argument("--run", default="latest")
     sp.add_argument("--top-k", type=int, default=3)
+    sp.add_argument("--stage", choices=("sta", "pnr"), default="sta",
+                    help="which timing report to read")
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(func=cmd_localise)
 
@@ -707,6 +765,40 @@ def build_parser() -> argparse.ArgumentParser:
                                     "(see: astra opt -h)")
     sp.add_argument("rest", nargs=argparse.REMAINDER)
     sp.set_defaults(func=cmd_opt)
+
+    # --- path-portfolio addon ----------------------------------------------
+    sp = sub.add_parser("paths", help="distinct critical-path targets "
+                                      "worth an agent call")
+    sp.add_argument("design")
+    sp.add_argument("--run", default="latest")
+    sp.add_argument("-k", "--top-k", type=int, default=3,
+                    help="maximum targets to select (a ceiling, not a quota)")
+    sp.add_argument("--stage", choices=("sta", "pnr"), default="sta")
+    sp.add_argument("--mmr-lambda", type=float, default=0.5,
+                    help="diversity weight in the selection")
+    sp.add_argument("--cluster-at", type=float, default=0.65,
+                    help="similarity at which two paths are one bottleneck")
+    sp.add_argument("--no-skills", action="store_true",
+                    help="do not consult the skill library for tractability")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_paths)
+
+    sp = sub.add_parser("scan", help="structural smells in the RTL, "
+                                     "before any tool runs")
+    sp.add_argument("design")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_scan)
+
+    sp = sub.add_parser("skilldoc", help="build the RTL timing-optimisation "
+                                         "skill document")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_skilldoc)
+
+    sp = sub.add_parser("portfolio", help="path-portfolio loop: k scoped "
+                                          "specialists, then a merge "
+                                          "(see: astra portfolio -h)")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_portfolio)
     return p
 
 

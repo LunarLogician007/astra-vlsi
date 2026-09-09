@@ -500,21 +500,28 @@ _DIRECTIVES = [
 
 
 class RtlOptimizationAgent:
-    def __init__(self, model: str, timeout: int) -> None:
+    def __init__(self, model: str, timeout: int,
+                 system: str | None = None,
+                 directives: list[str] | None = None) -> None:
         self.model = model
         self.timeout = timeout
+        # A subclass may swap the mandate without reimplementing the reply
+        # handling, which is the fiddly part and the part worth sharing.
+        self.system = system or OPT_SYSTEM
+        self.directives = directives or _DIRECTIVES
 
     def propose(self, ctx: dict[str, Any], index: int,
                 dry_run: bool = False) -> dict[str, Any]:
         prompt = self._prompt(ctx, index)
-        cand: dict[str, Any] = {"id": f"cand{index}", "directive_index": index,
-                                "directive": _DIRECTIVES[index % len(_DIRECTIVES)]}
+        cand: dict[str, Any] = {
+            "id": f"cand{index}", "directive_index": index,
+            "directive": self.directives[index % len(self.directives)]}
         if dry_run:
             cand["prompt"] = prompt
             return cand
 
         try:
-            reply = llm.call(prompt, OPT_SYSTEM, self.model, self.timeout)
+            reply = llm.call(prompt, self.system, self.model, self.timeout)
         except llm.LLMError as e:
             cand["error"] = str(e)
             return cand
@@ -577,7 +584,7 @@ iteration     {ctx['iteration']} of {ctx['max_iters']}
 
 ## Your directive for this candidate
 
-{_DIRECTIVES[index % len(_DIRECTIVES)]}
+{self.directives[index % len(self.directives)]}
 """
 
 
@@ -745,6 +752,10 @@ group size {stats['n']}, mean score {fmt(stats['mean'])}, sigma {fmt(stats['std'
 
 
 class Orchestrator:
+    # Subclasses running a different loop write to their own run prefix, so a
+    # portfolio run and a base run never collide in runs/<design>/.
+    RUN_PREFIX = "opt-"
+
     def __init__(self, args: argparse.Namespace) -> None:
         self.args = args
         self.cfg = astra.load_design(args.design)
@@ -761,7 +772,7 @@ class Orchestrator:
                 self.weights[k] = float(v)
 
         self.outdir = RUNS / self.design / (
-            "opt-" + datetime.now().strftime("%Y%m%d-%H%M%S")
+            self.RUN_PREFIX + datetime.now().strftime("%Y%m%d-%H%M%S")
             + (f"-{args.tag}" if args.tag else ""))
         self.outdir.mkdir(parents=True, exist_ok=True)
 
@@ -933,7 +944,8 @@ class Orchestrator:
     # -- per-candidate evaluation -------------------------------------------
 
     def _evaluate_candidate(self, cand: dict[str, Any], idir: Path,
-                            parent_rtl: list[Path]) -> None:
+                            parent_rtl: list[Path],
+                            gold: list[Path] | None = None) -> None:
         cdir = idir / cand["id"]
         cdir.mkdir(parents=True, exist_ok=True)
         (cdir / "proposal.json").write_text(json.dumps(
@@ -969,7 +981,11 @@ class Orchestrator:
         # synthesis time, and reporting them at all invites reading them.
         # Gold is D_0, not the parent -- equivalence has to hold against the
         # original design, or it drifts one accepted rewrite at a time.
-        gold = [Path(p) for p in self.state["baseline"]["rtl"]]
+        # Gold defaults to D_0. A caller passes it explicitly when the working
+        # parent is no longer the original design -- a pre-synthesis cleanup
+        # replaces the parent, and equivalence must still hold against what the
+        # user actually wrote, not against an already-rewritten intermediate.
+        gold = [Path(p) for p in (gold or self.state["baseline"]["rtl"])]
         cand["sec"] = self.evaluator.check_equivalence(gold, files, cdir / "sec")
 
         if not cand["sec"]["equivalent"]:

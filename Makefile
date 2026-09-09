@@ -15,6 +15,12 @@
 #   make score DESIGN=x BASELINE=<run>   Eq. 3 score of a run
 #   make opt DESIGN=x          the closed loop: analyse -> rewrite -> evaluate
 #
+# Path-portfolio addon (see README "Path-portfolio mode"):
+#   make scan DESIGN=x         structural smells in the RTL, before any tool
+#   make paths DESIGN=x        the distinct critical-path targets worth an agent
+#   make skilldoc              build the RTL timing-optimisation skill document
+#   make portfolio DESIGN=x    k scoped specialists, then a merge
+#
 # Variants:
 #   make build PDKS="nangate45 sky130hd"        add another PDK
 #   make build PLATFORM=linux/amd64             image for x86 teammates
@@ -41,7 +47,8 @@ RUN_FLAGS = --rm -it $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work
 TOOL_PREFIX = $(DOCKER) run --rm $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work $(IMAGE)
 
 .PHONY: build shell doctor run syn pnr list advise save clean-runs help \
-        selftest localise skills score sec opt clean clean-skills
+        selftest localise skills score sec opt clean clean-skills \
+        scan paths skilldoc portfolio
 
 build:
 	$(DOCKER) buildx build $(PLATFORM_FLAG) --build-arg PDKS="$(PDKS)" \
@@ -120,6 +127,39 @@ sec:
 OPT_ARGS ?=
 opt:
 	ASTRA_TOOL_PREFIX='$(TOOL_PREFIX)' python3 tools/drrtl.py $(DESIGN) $(OPT_ARGS)
+
+# --- path-portfolio addon --------------------------------------------------
+# `scan`, `paths` and `skilldoc` are pure Python over files the flow already
+# wrote, so they run on the host like `make skills` does -- no image needed.
+#
+#   make scan  DESIGN=mac_chain
+#   make paths DESIGN=mac_chain RUN=<run id>
+#   make skilldoc                       rebuild SKILL.md from the library
+#   make skilldoc SKILLDOC_ARGS=--llm   one research call, then rebuild
+PATHS_ARGS    ?=
+SKILLDOC_ARGS ?=
+
+scan:
+	python3 tools/astra.py scan $(DESIGN)
+
+paths:
+	python3 tools/astra.py paths $(DESIGN) --run $(RUN) $(PATHS_ARGS)
+
+skilldoc:
+	python3 tools/skillgen.py build $(SKILLDOC_ARGS)
+
+# Same split as `opt`: claude and its credentials on the host, Yosys/OpenSTA
+# in the image. Note --dry-run still evaluates the baseline, so it still needs
+# the container -- it skips the model calls, not the tools.
+#
+#   make portfolio DESIGN=mac_chain
+#   make portfolio DESIGN=mac_chain PF_ARGS="--model haiku"
+#   make portfolio DESIGN=mac_chain PF_ARGS="-k 2 --iters 1 --clean 0"
+#   make portfolio DESIGN=mac_chain PF_ARGS=--dry-run    prompts only
+PF_ARGS ?=
+
+portfolio:
+	ASTRA_TOOL_PREFIX='$(TOOL_PREFIX)' python3 tools/portfolio.py $(DESIGN) $(PF_ARGS)
 
 save:
 	$(DOCKER) save $(IMAGE) | gzip > astra-image.tar.gz

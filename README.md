@@ -270,6 +270,169 @@ Same method, weaker instruments, and the gaps are worth stating plainly:
   design closes and the sign would otherwise invert. `make selftest` asserts
   the equivalence.
 
+
+---
+
+## Path-portfolio mode
+
+`make portfolio` is an addon to the loop above. It changes three things and
+reuses everything else — `make opt` is untouched.
+
+```bash
+make skilldoc                                   # once: build the skill document
+make portfolio DESIGN=mac_chain
+make portfolio DESIGN=mac_chain PF_ARGS="--model haiku"
+make portfolio DESIGN=mac_chain PF_ARGS="-k 2 --iters 1 --clean 0"
+make portfolio DESIGN=mac_chain PF_ARGS=--dry-run
+```
+
+### Why
+
+The base loop's ceiling is visible in its own artifacts. In the run committed
+under `runs/mac_chain/opt-20260901-025558-run1`, WNS improved 13.5% and TNS
+47.6%, the SEC pass rate was 5/12, and iteration 3 produced four candidates of
+which all four failed. Two structural reasons:
+
+**All N candidates attack the same thing.** They share one analysis and differ
+only by a directive string. The "top 3 critical paths" they are handed are, on
+`mac_chain`, twenty bit-slices of one logic cone — same startpoint, endpoints
+`acc_out[20..39]`, and a pairwise region-set Jaccard of 1.00.
+
+**Whole-file rewrites.** Each candidate risks the whole design's equivalence to
+fix one thing, and two good partial fixes in different candidates can never be
+combined.
+
+### The three changes
+
+**1. `pathsel` picks *distinct* targets.** Paths are clustered into logic cones
+by how much RTL, which cone-origin nets and which cell mix they share; clusters
+are scored on the share of TNS they own, how far short they are, and whether
+anything can actually be done about them; and selection is
+maximal-marginal-relevance, so the second target is the best one that is also
+*different* from the first.
+
+`k` is a ceiling, not a quota. On `mac_chain` the twenty paths correctly
+collapse to **one** cone, and the selector says so rather than padding.
+
+**When a design has fewer cones than agents, the cone's path is cut into
+segments instead.** A long path is not homogeneous, and the cut is made where
+its cell-family signature changes. On `mac_chain` that recovers exactly the
+three bottlenecks `config.json` declares by hand — from the STA report alone,
+without ever reading that field:
+
+| target | stages | delay | signature | declared bottleneck |
+|---|---|---|---|---|
+| T1 | 0–24 | 36% | 18× AND/OR, **fanout 42** | four unpipelined 16×16 multipliers |
+| T2 | 24–50 | 28% | 14× AOI/OAI, 12× XOR | serial adder chain |
+| T3 | 50–91 | 36% | 36× AOI/OAI | 40-bit saturation compare |
+
+Run it yourself against the committed artifact — no tools, no model:
+
+```bash
+python3 tools/pathsel.py runs/mac_chain/opt-20260901-025558-run1/baseline -k 3
+```
+
+**2. One specialist per target, scoped to it.** Each agent is told to change
+only its target's logic and leave every other line byte-identical. Smaller
+edits are likelier to survive the equivalence check, and they are what makes
+step 3 possible at all. Scope is checked mechanically against the diff and
+recorded — never auto-rejected, because discarding good work over an added
+`wire` is worse than the ambiguity.
+
+**3. The fixes are recombined, and measurement picks the winner.** Every subset
+of the surviving candidates that composes by text splicing is assembled and
+evaluated — four extra fully-evaluated designs per iteration for **zero model
+calls**. A merge agent then reconciles the parts that genuinely overlap. Eq. 4
+selects over `{specialists, mechanical unions, agent union, parent}`, so a union
+does not win for being a union: combined fixes can trip the area penalty, or
+expose a fourth path neither agent saw.
+
+The mechanical unions are also the control on the merge agent. `summary.md`
+reports `score(agent union) − score(best mechanical union)` every iteration. If
+that is never negative, the merge call is not paying for itself.
+
+### A pre-synthesis pass
+
+`tools/rtlscan.py` reads the source before any tool has run and flags
+constructs that synthesise into deep logic — serial reduction chains, chains
+elaborated by a `generate` loop, wide operators, comparisons against bounds the
+operand cannot reach. On `mac_chain` it finds the serial chain, the four
+multiplies, and the dead saturation compare; on `alu32` it finds nothing
+serious, which is the negative control.
+
+```bash
+make scan DESIGN=mac_chain
+```
+
+One agent then acts on it, and **it is adopted only if it measurably beats
+D_0** under Eq. 3. This is the blindest step in the pipeline — there is no
+timing report yet — and the [advisor's own recorded failure](#worth-knowing) is
+exactly its failure mode. `--clean 0` skips it.
+
+### The skill document
+
+`.claude/skills/rtl-timing-optimization/SKILL.md` is rendered from the skill
+library plus a written preamble, and concatenated into every agent's system
+prompt. It has to be injected rather than loaded, because these agents run with
+all tools denied — there is no Read tool to load a skill with, and giving one
+back would turn a one-shot call into an agent that greps the repo.
+
+`make skilldoc SKILLDOC_ARGS=--llm` adds one research call that may consult
+public sources. It is the only place in this repo a model is given network
+tools, and it is quarantined in `tools/skillgen.py` for that reason. Whatever
+it finds enters the library as a **seed** — zero occurrences, zero confidence —
+like everything else.
+
+### Cost
+
+| step | calls |
+|---|---|
+| path selection | **0** — it is arithmetic |
+| specialists | k |
+| mechanical unions, and evaluating them | **0** |
+| merge agent | 1 |
+| skill learning | 1 |
+| **per iteration** | **k + 2 = 5** |
+
+Defaults (`-k 3 --iters 3 --clean 1`) are **16 calls**, against `make opt`'s 18
+at its defaults. `--max-calls N` refuses to start over budget; the plan is
+printed before anything runs and written to `budget.json`.
+
+### For a head-to-head
+
+`--model` is plumbed through both loops, so the comparison measures the method
+rather than the model:
+
+```bash
+make opt       DESIGN=mac_chain OPT_ARGS="--model haiku"
+make portfolio DESIGN=mac_chain PF_ARGS="--model haiku"
+```
+
+Compare the two `summary.md` files on WNS/TNS/area, and on SEC pass rate — the
+scoped edits are the change most likely to move that number, and 5/12 is the
+figure to beat.
+
+### What this does not yet show
+
+**The cone-selection half is undemonstrated.** Neither shipped design can
+exercise it: `mac_chain` is one cone and `alu32` meets timing, so on both of
+them the portfolio falls back to segments. `designs/dual_path/` exists for
+this — one module, two unrelated slow datapaths (a serial MAC and a 40-way
+priority cascade) that share no signal and synthesise to different cell mixes.
+Its acceptance criterion is that `astra paths dual_path -k 3` returns **two**
+cone targets whose pairwise similarity is below `--cluster-at`, and that their
+mechanical union applies with no conflicts. That has not been run.
+
+**Segmentation is a heuristic with a validation set of one.** It reproduces
+`mac_chain`'s hand-declared bottlenecks, which is suggestive, not proof.
+
+**Post-place-and-route is not built.** `rtl_map.from_run` and `pathsel.from_run`
+take a `stage` argument and `--stage pnr` reads `03_pnr/timing.json`, which
+`astra run --pnr` already writes in an identical shape. The second pass over it
+is not wired up.
+
+**Yosys remains the ceiling**, exactly as [noted above](#honest-differences-from-the-paper).
+
 ---
 
 ## Layout
@@ -307,6 +470,21 @@ runs/<design>/<timestamp>/       outputs (gitignored)
     logs/                raw tool output
     metrics.json         WNS, TNS, area, cell count, paths to artifacts
     advice.md            `make advise` output, if run
+
+runs/<design>/pf-<timestamp>/    `make portfolio` outputs
+    cleanup/             the pre-synthesis pass and whether it was adopted
+    baseline/            D_0
+    iter_NN/
+        pathsel.json     the targets, with the value breakdown that chose them
+        briefs/TN.md     what each specialist was given
+        tN/              one per target: proposal, rtl, sec, eval
+        merge/
+            diffs/       unified diff per candidate
+            conflicts.json   which regions more than one candidate claimed
+            uNM/         mechanical subset unions (no model call)
+            umerge/      the merge agent's union
+    budget.json          planned vs actual model calls
+    best/  trajectory.json  summary.md
 
 runs/<design>/opt-<timestamp>/   `make opt` outputs
     baseline/            D_0 evaluated — what Eq. 3 is normalised against
@@ -363,12 +541,13 @@ Then `astra doctor` to confirm it resolves.
 
 ---
 
-## The two example designs
+## The example designs
 
 | design | period | result |
 |---|---|---|
 | `alu32` | 2.5 ns | **MET**, WNS +0.3701, 1318 cells, 1871 µm² |
 | `mac_chain` | 2.0 ns | **VIOLATED**, WNS −0.3573, TNS −3.7438, 15 endpoints |
+| `dual_path` | 1.5 ns | not yet run — see [path-portfolio mode](#what-this-does-not-yet-show) |
 
 `alu32` is the sanity check. Its critical path is the 32-bit ripple-carry adder
 Yosys infers — ~70 gates deep, which is why it needs 2.5 ns and not 1.0.

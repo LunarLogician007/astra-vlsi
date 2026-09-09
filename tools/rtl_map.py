@@ -546,10 +546,25 @@ def render(analysis: dict[str, Any]) -> str:
 # ---------------------------------------------------------------------------
 
 
+_STAGE_DIRS = {"sta": "02_sta", "pnr": "03_pnr"}
+
+
 def from_run(rdir: Path, design_dir: Path | None = None,
-             period_ns: float | None = None, top_k: int = 3) -> dict[str, Any]:
-    """Build the analysis from a finished run directory."""
-    timing = json.loads((rdir / "02_sta" / "timing.json").read_text())
+             period_ns: float | None = None, top_k: int = 3,
+             stage: str = "sta") -> dict[str, Any]:
+    """Build the analysis from a finished run directory.
+
+    ``stage`` picks which timing report to read. Both stages parse into the
+    same shape -- ``astra.do_pnr`` runs the parsed output of the same Tcl
+    reporting procs -- so everything downstream is indifferent. The netlist
+    index stays at ``01_synth`` for both, because that JSON is the only
+    structural source there is; post-PnR the localisation is correspondingly
+    weaker, which the coverage fraction reports.
+    """
+    if stage not in _STAGE_DIRS:
+        raise ValueError(f"unknown stage {stage!r}; expected one of "
+                         f"{', '.join(sorted(_STAGE_DIRS))}")
+    timing = json.loads((rdir / _STAGE_DIRS[stage] / "timing.json").read_text())
     nl = load_netlist_index(rdir / "01_synth" / "netlist.json")
     srcs = sorted((rdir / "00_inputs").glob("*.v")) + \
         sorted((rdir / "00_inputs").glob("*.sv"))

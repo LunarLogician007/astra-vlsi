@@ -1,0 +1,18 @@
+{
+  "top": "dual_path",
+  "description": "Two unrelated slow datapaths in one module: a 3-tap serial MAC (carry propagation) and a 40-way serial priority select (mux chain). Exists to test path selection — it is the only design here with two independent bottleneck cones.",
+  "rtl": ["rtl/dual_path.v"],
+  "sdc": "constraints/dual_path.sdc",
+  "pdk": "nangate45",
+  "clock": { "name": "clk", "port": "clk", "period_ns": 1.5 },
+  "notes": {
+    "latency_cycles": 2,
+    "known_bottlenecks": [
+      "datapath A: serial accumulate chain t0->t1->t2 over three 16x16 products",
+      "datapath B: 40-way priority select written as a serial mux cascade",
+      "datapath B: req_q fans out to all 40 select stages at once"
+    ],
+    "invariants": "rewrites must preserve 2-cycle latency and bit-exact outputs on BOTH datapaths; the two paths share no signal and may be rewritten independently",
+    "purpose": "path-selection testbed: a selector that reports one target here, or two that resemble each other, is broken"
+  }
+}

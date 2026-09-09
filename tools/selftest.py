@@ -10,6 +10,7 @@ that decide which rewrite wins should be checkable without a 1 GB container.
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 import tempfile
@@ -19,9 +20,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import drrtl        # noqa: E402
+import merge        # noqa: E402
+import pathsel      # noqa: E402
+import portfolio    # noqa: E402
 import rtl_map      # noqa: E402
+import rtlscan      # noqa: E402
 import score        # noqa: E402
+import skillgen     # noqa: E402
 import skills       # noqa: E402
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 # ===========================================================================
@@ -708,6 +716,687 @@ class TestExploration(unittest.TestCase):
     def test_candidates_get_distinct_directives(self):
         seen = {drrtl._DIRECTIVES[i % len(drrtl._DIRECTIVES)] for i in range(4)}
         self.assertEqual(len(seen), 4)
+
+
+# ===========================================================================
+# path-portfolio selection
+# ===========================================================================
+
+
+def _stage(cell, pin, delay=0.02, fanout=None):
+    return {"cell": cell, "pin": pin, "delay": delay, "time": 0.0,
+            "fanout": fanout, "cap": None, "slew": None,
+            "description": pin, "transition": None}
+
+
+def _path(cone, end, slack, cells, delay=0.02, fanout=None, shared=0.8):
+    """A synthetic OpenSTA path, in the shape parse_sta produces.
+
+    Paths through one logic cone share most of their instances and diverge
+    only near the endpoint, which is what a register bank actually produces --
+    the reference run's twenty paths differ only in their last few stages.
+    A fixture where they shared nothing would make clustering look broken when
+    it is the fixture that is wrong.
+    """
+    k = int(len(cells) * shared)
+    stages = [_stage("DFF_X1", f"{cone}_launch/Q", 0.03)]
+    stages += [_stage(c, f"{cone}_n{i}/ZN", delay, fanout)
+               for i, c in enumerate(cells[:k])]
+    stages += [_stage(c, f"{end}_t{i}/ZN", delay, fanout)
+               for i, c in enumerate(cells[k:])]
+    stages.append(_stage("DFF_X1", f"{end}/D", 0.01))
+    return {"startpoint": f"{cone}_launch/Q", "endpoint": f"{end}/Q",
+            "slack_ns": slack, "status": "VIOLATED" if slack < 0 else "MET",
+            "stages": stages, "logic_depth": len(cells),
+            "arrival_ns": None, "required_ns": None,
+            "path_group": "clk", "path_type": "max"}
+
+
+def _empty_index():
+    return {"cells": {}, "nets": {}, "modules": [], "available": False}
+
+
+class _NoRtl(rtl_map.RtlIndex):
+    def __init__(self):
+        super().__init__([])
+
+
+class TestPathSelMetrics(unittest.TestCase):
+    def test_jaccard(self):
+        self.assertEqual(pathsel.jaccard({"a", "b"}, {"a", "b"}), 1.0)
+        self.assertEqual(pathsel.jaccard({"a"}, {"b"}), 0.0)
+        self.assertEqual(pathsel.jaccard(set(), set()), 0.0,
+                         "two empty sets are unknown, not identical")
+        self.assertAlmostEqual(pathsel.jaccard({"a", "b"}, {"b", "c"}), 1 / 3)
+
+    def test_weighted_jaccard_reduces_to_jaccard_on_indicators(self):
+        a, b = {"x": 1.0, "y": 1.0}, {"y": 1.0, "z": 1.0}
+        self.assertAlmostEqual(pathsel.weighted_jaccard(a, b),
+                               pathsel.jaccard(set(a), set(b)))
+
+    def test_weighted_jaccard_separates_unequal_weights(self):
+        """Two paths both touching one line are not the same path if one
+        spends 90% of its delay there and the other 10%."""
+        heavy, light = {"L": 0.9, "M": 0.1}, {"L": 0.1, "M": 0.9}
+        self.assertLess(pathsel.weighted_jaccard(heavy, light), 0.5)
+
+    def test_hist_similarity_bounds(self):
+        h = {"xor": 0.5, "adder": 0.5}
+        self.assertAlmostEqual(pathsel.hist_similarity(h, h), 1.0)
+        self.assertAlmostEqual(
+            pathsel.hist_similarity({"xor": 1.0}, {"mux": 1.0}), 0.0)
+
+    def test_similarity_is_reflexive_symmetric_and_bounded(self):
+        nl, rtl = _empty_index(), _NoRtl()
+        fa = pathsel.path_features(_path("a", "z", -0.3, ["XOR2_X1"] * 6), 0,
+                                   nl, rtl, 2.0)
+        fb = pathsel.path_features(_path("b", "y", -0.1, ["MUX2_X1"] * 6), 1,
+                                   nl, rtl, 2.0)
+        self.assertAlmostEqual(pathsel.similarity(fa, fa), 1.0, places=6)
+        self.assertAlmostEqual(pathsel.similarity(fa, fb),
+                               pathsel.similarity(fb, fa))
+        for x in (pathsel.similarity(fa, fb), pathsel.similarity(fa, fa)):
+            self.assertGreaterEqual(x, 0.0)
+            self.assertLessEqual(x, 1.0)
+
+
+class TestPathSelClustering(unittest.TestCase):
+    """A register bank produces many paths and one bottleneck."""
+
+    def _bank(self, n=20):
+        return [_path("launch", f"acc_out[{i}]", -0.30 + 0.01 * i,
+                      ["XOR2_X1", "AOI21_X1"] * 8) for i in range(n)]
+
+    def test_one_cone_collapses_to_one_cluster(self):
+        nl, rtl = _empty_index(), _NoRtl()
+        feats = [pathsel.path_features(p, i, nl, rtl, 2.0)
+                 for i, p in enumerate(self._bank())]
+        clusters, _ = pathsel.cluster(feats)
+        self.assertEqual(len(clusters), 1,
+                         "20 bit-slices of one cone are one bottleneck")
+
+    def test_two_independent_cones_stay_apart(self):
+        nl, rtl = _empty_index(), _NoRtl()
+        paths = ([_path("mac", f"acc[{i}]", -0.3, ["XOR2_X1", "AOI21_X1"] * 8)
+                  for i in range(6)]
+                 + [_path("sel", f"out[{i}]", -0.2, ["MUX2_X1", "AND2_X1"] * 8)
+                    for i in range(6)])
+        feats = [pathsel.path_features(p, i, nl, rtl, 2.0)
+                 for i, p in enumerate(paths)]
+        clusters, _ = pathsel.cluster(feats)
+        self.assertEqual(len(clusters), 2)
+        self.assertEqual(sorted(len(c) for c in clusters), [6, 6])
+
+    def test_clustering_is_order_independent(self):
+        import random
+        nl, rtl = _empty_index(), _NoRtl()
+        paths = self._bank(6) + [
+            _path("sel", f"o[{i}]", -0.1, ["MUX2_X1"] * 10) for i in range(4)]
+        partitions = set()
+        for seed in range(4):
+            shuffled = list(paths)
+            random.Random(seed).shuffle(shuffled)
+            feats = [pathsel.path_features(p, i, nl, rtl, 2.0)
+                     for i, p in enumerate(shuffled)]
+            clusters, _ = pathsel.cluster(feats)
+            partitions.add(frozenset(
+                frozenset(shuffled[i]["endpoint"] for i in c) for c in clusters))
+        self.assertEqual(len(partitions), 1,
+                         "the same paths must partition the same way")
+
+    def test_raising_the_threshold_never_merges_more(self):
+        nl, rtl = _empty_index(), _NoRtl()
+        paths = self._bank(4) + [
+            _path("sel", f"o[{i}]", -0.1, ["MUX2_X1"] * 10) for i in range(4)]
+        feats = [pathsel.path_features(p, i, nl, rtl, 2.0)
+                 for i, p in enumerate(paths)]
+        counts = [len(pathsel.cluster(feats, t)[0])
+                  for t in (0.2, 0.4, 0.6, 0.8, 0.95)]
+        self.assertEqual(counts, sorted(counts),
+                         "a stricter threshold cannot produce fewer clusters")
+
+
+class TestPathSelValue(unittest.TestCase):
+    def _feats(self, paths):
+        nl, rtl = _empty_index(), _NoRtl()
+        return [pathsel.path_features(p, i, nl, rtl, 2.0)
+                for i, p in enumerate(paths)]
+
+    def test_mass_shares_sum_to_one(self):
+        feats = self._feats([_path("a", "x", -0.4, ["XOR2_X1"] * 5),
+                             _path("b", "y", -0.2, ["MUX2_X1"] * 5),
+                             _path("c", "z", -0.1, ["AND2_X1"] * 5)])
+        clusters, _ = pathsel.cluster(feats, 0.99)
+        total = sum(pathsel.cluster_value([feats[i] for i in c], feats, 2.0)
+                    ["terms"]["mass"] for c in clusters)
+        self.assertAlmostEqual(total, 1.0)
+
+    def test_a_passing_path_has_zero_criticality(self):
+        feats = self._feats([_path("a", "x", 0.4, ["XOR2_X1"] * 5)])
+        v = pathsel.cluster_value(feats, feats, 2.0)
+        self.assertEqual(v["terms"]["criticality"], 0.0,
+                         "a path that meets timing is not a target")
+
+    def test_a_fully_passing_design_does_not_divide_by_zero(self):
+        feats = self._feats([_path("a", "x", 0.4, ["XOR2_X1"] * 5),
+                             _path("b", "y", 0.9, ["MUX2_X1"] * 5)])
+        for c in ([feats[0]], [feats[1]]):
+            v = pathsel.cluster_value(c, feats, 2.0)
+            self.assertTrue(0.0 <= v["terms"]["mass"] <= 1.0)
+
+    def test_criticality_saturates_at_one_period(self):
+        feats = self._feats([_path("a", "x", -9.0, ["XOR2_X1"] * 5)])
+        v = pathsel.cluster_value(feats, feats, 2.0)
+        self.assertEqual(v["terms"]["criticality"], 1.0)
+
+
+class TestPathSelMMR(unittest.TestCase):
+    def _setup(self, paths):
+        nl, rtl = _empty_index(), _NoRtl()
+        feats = [pathsel.path_features(p, i, nl, rtl, 2.0)
+                 for i, p in enumerate(paths)]
+        clusters, sim = pathsel.cluster(feats, 0.99)
+        return feats, clusters, sim
+
+    def test_lambda_zero_is_pure_value_order(self):
+        feats, clusters, sim = self._setup([
+            _path("a", "x", -0.5, ["XOR2_X1"] * 5),
+            _path("b", "y", -0.2, ["MUX2_X1"] * 5),
+            _path("c", "z", -0.1, ["AND2_X1"] * 5)])
+        picked = pathsel.select_clusters(clusters, feats, sim, 2.0, 3, lam=0.0)
+        vals = [p["value"] for p in picked]
+        self.assertEqual(vals, sorted(vals, reverse=True))
+
+    def test_k_is_a_ceiling_not_a_quota(self):
+        """One cone must yield one cone-target, never three padded ones."""
+        feats, clusters, sim = self._setup([
+            _path("launch", f"acc[{i}]", -0.3, ["XOR2_X1", "AOI21_X1"] * 8)
+            for i in range(12)])
+        picked = pathsel.select_clusters(clusters, feats, sim, 2.0, k=3)
+        self.assertEqual(len(picked), 1)
+
+    def test_a_negligible_cluster_is_not_a_target(self):
+        feats, clusters, sim = self._setup([
+            _path("a", "x", -10.0, ["XOR2_X1"] * 5),
+            _path("b", "y", -0.0001, ["MUX2_X1"] * 5)])
+        picked = pathsel.select_clusters(clusters, feats, sim, 2.0, k=3)
+        self.assertEqual(len(picked), 1,
+                         "a cluster under the mass floor is not worth an agent")
+
+
+class TestPathSelSegments(unittest.TestCase):
+    """When a design has one cone, its path is cut into disjoint spans."""
+
+    def _stages(self):
+        # Three visibly different regions: an AND array, a carry region, a
+        # final reduction -- the shape a MAC actually synthesises to.
+        return ([_stage("AND2_X1", f"a{i}/ZN", 0.03) for i in range(12)]
+                + [_stage("XOR2_X1", f"x{i}/ZN", 0.03) for i in range(12)]
+                + [_stage("OAI21_X1", f"o{i}/ZN", 0.03) for i in range(12)])
+
+    def test_spans_are_disjoint_and_cover_the_path(self):
+        spans = pathsel.split_points(self._stages(), 3)
+        self.assertEqual(len(spans), 3)
+        self.assertEqual(spans[0][0], 0)
+        self.assertEqual(spans[-1][1], 36)
+        for (a0, a1), (b0, b1) in zip(spans, spans[1:]):
+            self.assertEqual(a1, b0, "spans must abut, not overlap or gap")
+
+    def test_cuts_land_on_the_cell_mix_boundaries(self):
+        """Within a cell of the transition. The objective trades purity against
+        which span is worth cutting, so it can settle a cell either side of a
+        boundary; what matters is that each segment is dominated by the family
+        it was cut for."""
+        spans = pathsel.split_points(self._stages(), 3)
+        starts = [sp[0] for sp in spans]
+        self.assertEqual(starts[0], 0)
+        self.assertLessEqual(abs(starts[1] - 12), 1)
+        self.assertLessEqual(abs(starts[2] - 24), 1)
+        stages = self._stages()
+        for span, want in zip(spans, ("and_or", "xor", "aoi_oai")):
+            fam = pathsel._span_families(stages[span[0]:span[1]])
+            self.assertEqual(max(fam, key=fam.get), want)
+
+    def test_delay_shares_sum_to_one(self):
+        stages = self._stages()
+        spans = pathsel.split_points(stages, 3)
+        total = sum(float(s["delay"]) for s in stages)
+        shares = [sum(float(s["delay"]) for s in stages[a:b]) / total
+                  for a, b in spans]
+        self.assertAlmostEqual(sum(shares), 1.0)
+
+    def test_a_short_path_is_not_split(self):
+        short = [_stage("AND2_X1", f"a{i}/ZN", 0.03) for i in range(5)]
+        self.assertEqual(pathsel.split_points(short, 3), [(0, 5)],
+                         "a five-cell path has no three attackable segments")
+
+    def test_k_of_one_never_splits(self):
+        self.assertEqual(pathsel.split_points(self._stages(), 1), [(0, 36)])
+
+
+class TestPathSelOnRealRun(unittest.TestCase):
+    """The honesty guard, pinned to a committed artifact.
+
+    If a weight tweak ever makes the selector report three mutually similar
+    targets on a design that genuinely has one bottleneck, this fails.
+    """
+
+    RUN = ROOT / "runs" / "mac_chain" / "opt-20260901-025558-run1" / "baseline"
+
+    def setUp(self):
+        if not (self.RUN / "02_sta" / "timing.json").is_file():
+            self.skipTest("reference run artifact not present")
+
+    def test_the_reference_design_is_one_cone(self):
+        sel = pathsel.from_run(self.RUN, k=3)
+        self.assertEqual(sel["cluster_count"], 1,
+                         "20 reported paths there are one bottleneck cone")
+        self.assertTrue(sel["collapsed"],
+                        "with one cone the portfolio must fall back to segments")
+
+    def test_segments_are_distinct_and_ordered(self):
+        sel = pathsel.from_run(self.RUN, k=3)
+        targets = sel["targets"]
+        self.assertEqual(len(targets), 3)
+        self.assertTrue(all(t.kind == "segment" for t in targets))
+        spans = [t.stage_span for t in targets]
+        for (a0, a1), (b0, b1) in zip(spans, spans[1:]):
+            self.assertEqual(a1, b0)
+        self.assertAlmostEqual(sum(t.delay_share for t in targets), 1.0, places=2)
+
+    def test_segments_recover_the_declared_bottlenecks(self):
+        """The design declares three bottlenecks by hand in config.json.
+        The selector never reads that field; it should find them anyway."""
+        sel = pathsel.from_run(self.RUN, k=3)
+        fams = [t.cell_families for t in sel["targets"]]
+        self.assertEqual(max(fams[0], key=fams[0].get), "and_or",
+                         "the first segment is the partial-product AND array")
+        self.assertIn("xor", fams[1], "the middle segment is carry propagation")
+        self.assertEqual(max(fams[2], key=fams[2].get), "aoi_oai",
+                         "the last segment is the saturation reduction")
+        self.assertGreaterEqual(sel["targets"][0].max_fanout, 8,
+                                "the multiplicand broadcast is a real hotspot")
+
+
+# ===========================================================================
+# mechanical union
+# ===========================================================================
+
+
+class TestMerge(unittest.TestCase):
+    PARENT = {"m.v": "module m;\nwire a = x + y;\nwire b = p * q;\n"
+                     "wire c = a | b;\nendmodule\n"}
+
+    def _cand(self, old, new):
+        return {"m.v": self.PARENT["m.v"].replace(old, new)}
+
+    def test_disjoint_edits_both_apply(self):
+        merged, rep = merge.mechanical_union(self.PARENT, {
+            "t1": self._cand("x + y", "(x + y) >> 1"),
+            "t2": self._cand("a | b", "a ^ b")})
+        self.assertIn("(x + y) >> 1", merged["m.v"])
+        self.assertIn("a ^ b", merged["m.v"])
+        self.assertEqual(rep["conflicts"], [])
+
+    def test_overlapping_edits_are_dropped_not_arbitrated(self):
+        merged, rep = merge.mechanical_union(self.PARENT, {
+            "t1": self._cand("x + y", "(x + y) >> 1"),
+            "t2": self._cand("x + y", "x - y")})
+        self.assertIn("wire a = x + y;", merged["m.v"],
+                      "a contested region keeps the parent's text")
+        self.assertEqual(len(rep["conflicts"]), 1)
+        self.assertEqual(rep["conflicts"][0]["candidates"], ["t1", "t2"])
+
+    def test_union_is_order_independent(self):
+        import itertools
+        cands = {"t1": self._cand("x + y", "(x + y) >> 1"),
+                 "t2": self._cand("a | b", "a ^ b"),
+                 "t3": self._cand("x + y", "x - y")}
+        results = {merge.mechanical_union(self.PARENT, dict(perm))[0]["m.v"]
+                   for perm in itertools.permutations(cands.items())}
+        self.assertEqual(len(results), 1,
+                         "a control whose result depends on input order is "
+                         "not a control")
+
+    def test_a_reformatted_candidate_is_excluded_with_a_reason(self):
+        reflow = {"m.v": "\n".join("    " + ln for ln
+                                   in self.PARENT["m.v"].splitlines()) + "\n"}
+        _, rep = merge.mechanical_union(self.PARENT, {
+            "t1": self._cand("a | b", "a ^ b"), "t2": reflow})
+        self.assertIn("t2", rep["excluded"])
+        self.assertEqual(rep["applied_candidates"], ["t1"],
+                         "one candidate reformatting must not poison the rest")
+
+    def test_an_unchanged_candidate_contributes_nothing(self):
+        merged, rep = merge.mechanical_union(self.PARENT, {"t1": self.PARENT})
+        self.assertFalse(rep["changed"])
+        self.assertEqual(merge.normalise(merged["m.v"]),
+                         merge.normalise(self.PARENT["m.v"]))
+
+    def test_trailing_whitespace_is_not_a_hunk(self):
+        """A model that re-emits the file with trailing spaces has not edited
+        it, and must not be treated as having rewritten every line."""
+        padded = {"m.v": self.PARENT["m.v"].replace(";", ";   ")
+                                           .replace("\n\n", "\n\n\n")}
+        p = merge.normalise(self.PARENT["m.v"])
+        c = merge.normalise(padded["m.v"])
+        self.assertEqual(merge.hunks(p, c, "t1", "m.v"), [])
+
+    def test_subsets_are_every_combination_of_two_or_more(self):
+        got = merge.subsets(["t1", "t2", "t3"])
+        self.assertEqual(len(got), 4)
+        self.assertEqual(got[0], ("t1", "t2", "t3"))
+        self.assertEqual({merge.union_id(s) for s in got},
+                         {"u123", "u12", "u13", "u23"})
+
+    def test_insertions_claim_the_joint_they_sit_in(self):
+        """Two agents inserting at the same point conflict, even though
+        neither replaced any parent line."""
+        a = {"m.v": self.PARENT["m.v"].replace(
+            "wire b", "wire n1 = x & y;\nwire b")}
+        b = {"m.v": self.PARENT["m.v"].replace(
+            "wire b", "wire n2 = x ^ y;\nwire b")}
+        _, rep = merge.mechanical_union(self.PARENT, {"t1": a, "t2": b})
+        self.assertEqual(len(rep["conflicts"]), 1)
+
+
+# ===========================================================================
+# pre-synthesis scan
+# ===========================================================================
+
+
+class TestRtlScan(unittest.TestCase):
+    CHAIN = """
+    module t(input clk, input signed [15:0] a, b, c, d,
+             output reg signed [39:0] o);
+      wire signed [39:0] s0 = a;
+      wire signed [39:0] s1 = s0 + b;
+      wire signed [39:0] s2 = s1 + c;
+      wire signed [39:0] s3 = s2 + d;
+      always @(posedge clk) o <= s3;
+    endmodule
+    """
+    TREE = """
+    module t(input clk, input signed [15:0] a, b, c, d,
+             output reg signed [39:0] o);
+      wire signed [39:0] l = a + b;
+      wire signed [39:0] r = c + d;
+      wire signed [39:0] s = l + r;
+      always @(posedge clk) o <= s;
+    endmodule
+    """
+
+    def _scan(self, src):
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "t.v"
+            f.write_text(src)
+            return rtlscan.scan([f])
+
+    def _patterns(self, src):
+        return {f["pattern"] for f in self._scan(src)["findings"]}
+
+    def test_finds_a_serial_reduction_chain(self):
+        self.assertIn("serial reduction chain written as a chain, not a tree",
+                      self._patterns(self.CHAIN))
+
+    def test_a_balanced_tree_is_the_negative_control(self):
+        self.assertNotIn("serial reduction chain written as a chain, not a tree",
+                         self._patterns(self.TREE),
+                         "a tree must not be reported as a chain")
+
+    def test_chain_finding_carries_the_depth_it_claims(self):
+        f = next(x for x in self._scan(self.CHAIN)["findings"]
+                 if x["pattern"].startswith("serial reduction"))
+        self.assertEqual(f["metric"]["length"], 3)
+        self.assertEqual(f["metric"]["tree_depth"], 2)
+        self.assertEqual(f["metric"]["op"], "+")
+
+    def test_width_expressions_are_not_arithmetic(self):
+        """`{{(ACC-2*W){p[31]}}, p}` is a sign extension, not a multiply."""
+        src = """
+        module t(input clk, input signed [31:0] p,
+                 output reg signed [39:0] o);
+          parameter integer W = 16;
+          parameter integer ACC = 40;
+          wire signed [39:0] e = {{(ACC-2*W){p[2*W-1]}}, p};
+          always @(posedge clk) o <= e;
+        endmodule
+        """
+        self.assertNotIn("unpipelined multiply in one cycle",
+                         self._patterns(src))
+
+    def test_finds_a_generate_elaborated_chain(self):
+        src = """
+        module t(input clk, input [31:0] r, output reg o);
+          parameter integer N = 32;
+          wire [N:0] h;
+          assign h[N] = 1'b0;
+          genvar i;
+          generate
+            for (i = N-1; i >= 0; i = i - 1) begin : g
+              assign h[i] = r[i] | h[i+1];
+            end
+          endgenerate
+          always @(posedge clk) o <= h[0];
+        endmodule
+        """
+        f = next(x for x in self._scan(src)["findings"]
+                 if x["pattern"] == "serial chain elaborated by a generate loop")
+        self.assertEqual(f["metric"]["trips"], 32)
+        self.assertEqual(f["metric"]["signal"], "h")
+
+    def test_statements_span_lines(self):
+        src = """
+        module t(input clk, input [7:0] a, b, c, d, e,
+                 output reg [7:0] o);
+          wire [7:0] w = a ? b :
+                         c ? d :
+                         b ? c :
+                         d ? e : a;
+          always @(posedge clk) o <= w;
+        endmodule
+        """
+        self.assertIn("cascaded conditional select", self._patterns(src))
+
+    def test_shipped_designs_behave_as_documented(self):
+        """mac_chain declares three bottlenecks; alu32 declares none."""
+        for name, expect in (("mac_chain", True), ("alu32", False)):
+            rtl = ROOT / "designs" / name / "rtl" / f"{name}.v"
+            if not rtl.is_file():
+                self.skipTest(f"{name} not present")
+            high = [f for f in rtlscan.scan([rtl])["findings"]
+                    if f["severity"] == "high"]
+            self.assertEqual(bool(high), expect, f"{name}: {high}")
+
+
+class TestRtlScanDepth(unittest.TestCase):
+    def test_adder_depth_grows_with_width(self):
+        d = [rtlscan.expr_depth("a + b", w)[0] for w in (4, 16, 64)]
+        self.assertEqual(d, sorted(d))
+        self.assertTrue(all(x < y for x, y in zip(d, d[1:])))
+
+    def test_a_constant_shift_is_wiring_a_variable_shift_is_not(self):
+        const, _ = rtlscan.expr_depth("a >> 3", 32)
+        var, _ = rtlscan.expr_depth("a >> b", 32)
+        self.assertLess(const, var)
+
+    def test_an_unparsable_expression_returns_zero_and_does_not_raise(self):
+        self.assertEqual(rtlscan.expr_depth("", 8), (0, []))
+        self.assertEqual(rtlscan.expr_depth("plain_signal", 8), (0, []))
+
+
+# ===========================================================================
+# the skill document
+# ===========================================================================
+
+
+class TestSkillDoc(unittest.TestCase):
+    def setUp(self):
+        if not skillgen.SKILL_PATH.is_file():
+            self.skipTest("no SKILL.md -- run: astra skilldoc build")
+        self.raw = skillgen.SKILL_PATH.read_text()
+
+    def test_has_frontmatter_with_a_name_and_description(self):
+        self.assertTrue(self.raw.startswith("---"))
+        head = self.raw.split("---", 2)[1]
+        self.assertIn("name: rtl-timing-optimization", head)
+        self.assertIn("description:", head)
+
+    def test_makes_no_numeric_evidence_claims(self):
+        """Statistics live in the library, where they are measured. A skill
+        document asserting a success rate would be indistinguishable from a
+        measured one."""
+        import re as _re
+        body = skillgen.load_doc()
+        for pat in (r"\d+\s*%\s*(?:of|success|pass)", r"\bn\s*=\s*\d+",
+                    r"confidence\s+[0-9.]+", r"\d+\s*/\s*\d+\s*trials"):
+            self.assertIsNone(_re.search(pat, body, _re.I),
+                              f"skill document asserts evidence: {pat}")
+
+    def test_frontmatter_is_stripped_before_injection(self):
+        doc = skillgen.load_doc()
+        self.assertFalse(doc.startswith("---"))
+        self.assertTrue(doc)
+
+    def test_injection_truncates_at_a_line_and_says_so(self):
+        out = skillgen.inject("SYS.", skillgen.load_doc(), budget=400)
+        self.assertIn("[skill document truncated", out)
+        self.assertLess(len(out), 700)
+
+    def test_a_missing_document_is_a_no_op_not_a_failure(self):
+        self.assertEqual(skillgen.inject("SYS.", ""), "SYS.")
+        self.assertEqual(skillgen.load_doc(Path("/nonexistent/SKILL.md")), "")
+
+    def test_every_catalogue_entry_is_an_honest_seed(self):
+        lib = skills.SkillLibrary()
+        for e in lib.all(True):
+            if e.get("pattern") in self.raw:
+                st = e.get("stats") or {}
+                self.assertEqual(st.get("occurrences", 0), 0,
+                                 f"{e['id']} is in the document with statistics")
+                self.assertEqual(e.get("confidence", 0.0), 0.0)
+
+
+# ===========================================================================
+# stage parameterisation (post-PnR readiness, without OpenROAD)
+# ===========================================================================
+
+
+class TestStageParameterisation(unittest.TestCase):
+    """Proves the pnr path reads the right file, with no 20 GB image."""
+
+    def _run_dir(self, root: Path) -> Path:
+        r = root / "run"
+        for sub, tag, endpoint in (("02_sta", "post_synth", "synth_ep"),
+                                   ("03_pnr", "post_gr", "pnr_ep")):
+            (r / sub).mkdir(parents=True, exist_ok=True)
+            (r / sub / "timing.json").write_text(json.dumps({
+                "tag": tag, "summary": {"wns_ns": -0.5, "tns_ns": -1.0},
+                "critical_paths": [_path("launch", endpoint, -0.5,
+                                         ["XOR2_X1"] * 6)]}))
+        (r / "00_inputs").mkdir(parents=True, exist_ok=True)
+        (r / "01_synth").mkdir(parents=True, exist_ok=True)
+        return r
+
+    def test_each_stage_reads_its_own_report(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = self._run_dir(Path(d))
+            sta = rtl_map.from_run(r, period_ns=2.0, stage="sta")
+            pnr = rtl_map.from_run(r, period_ns=2.0, stage="pnr")
+            self.assertIn("synth_ep", sta["paths"][0]["endpoint"])
+            self.assertIn("pnr_ep", pnr["paths"][0]["endpoint"])
+
+    def test_the_default_is_post_synthesis(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = self._run_dir(Path(d))
+            self.assertIn("synth_ep",
+                          rtl_map.from_run(r, period_ns=2.0)["paths"][0]["endpoint"])
+
+    def test_an_unknown_stage_raises(self):
+        with self.assertRaises(ValueError):
+            rtl_map.from_run(Path("/tmp"), stage="floorplan")
+
+    def test_pathsel_reports_a_missing_report_clearly(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = Path(d) / "run"
+            (r / "02_sta").mkdir(parents=True)
+            (r / "02_sta" / "timing.json").write_text(
+                json.dumps({"critical_paths": []}))
+            with self.assertRaises(FileNotFoundError) as cm:
+                pathsel.from_run(r, stage="pnr")
+            self.assertIn("--pnr", str(cm.exception))
+
+
+# ===========================================================================
+# the portfolio orchestrator's arithmetic
+# ===========================================================================
+
+
+class TestPortfolioBudget(unittest.TestCase):
+    def _args(self, *argv):
+        return portfolio.build_parser().parse_args(["mac_chain", *argv])
+
+    def test_the_documented_formula(self):
+        a = self._args()
+        self.assertEqual(portfolio.call_budget(a),
+                         a.clean + a.iters * (a.top_k + 2))
+
+    def test_each_switch_removes_one_call_per_iteration(self):
+        base = portfolio.call_budget(self._args())
+        iters = self._args().iters
+        self.assertEqual(portfolio.call_budget(self._args("--no-merge-agent")),
+                         base - iters)
+        self.assertEqual(portfolio.call_budget(self._args("--no-skill-agent")),
+                         base - iters)
+
+    def test_a_dry_run_costs_nothing(self):
+        self.assertEqual(portfolio.call_budget(self._args("--dry-run")), 0)
+
+    def test_the_model_is_selectable_for_a_head_to_head(self):
+        """The addon must be runnable on the same model as the base loop,
+        or a comparison between them measures the model, not the method."""
+        self.assertEqual(self._args("--model", "haiku").model, "haiku")
+        self.assertEqual(
+            drrtl.build_parser().parse_args(["mac_chain", "--model", "haiku"]).model,
+            "haiku")
+
+    def test_the_pool_default_is_widened(self):
+        """20 paths is one per endpoint, which truncates the TNS denominator
+        on anything bigger than the shipped designs."""
+        self.assertGreater(self._args().npaths,
+                           drrtl.build_parser().parse_args(["mac_chain"]).npaths)
+
+    def test_portfolio_runs_write_to_their_own_prefix(self):
+        self.assertNotEqual(portfolio.PortfolioOrchestrator.RUN_PREFIX,
+                            drrtl.Orchestrator.RUN_PREFIX)
+
+
+class TestPortfolioAgents(unittest.TestCase):
+    def test_specialists_are_told_to_stay_in_scope(self):
+        sysmsg = portfolio.SPECIALIST_SYSTEM.lower()
+        self.assertIn("scope", sysmsg)
+        self.assertIn("byte-identical", sysmsg)
+
+    def test_the_merge_agent_may_decline_to_include_everything(self):
+        self.assertIn("not being asked to accept all of them",
+                      portfolio.MERGE_SYSTEM)
+
+    def test_agents_reuse_the_base_reply_parsers(self):
+        for cls in (portfolio.RtlCleanupAgent, portfolio.PathSpecialistAgent):
+            self.assertTrue(issubclass(cls, drrtl.RtlOptimizationAgent))
+
+    def test_the_skill_document_reaches_every_agent(self):
+        doc = "UNIQUE-SKILL-MARKER"
+        for agent in (portfolio.RtlCleanupAgent("m", 1, doc),
+                      portfolio.PathSpecialistAgent("m", 1, doc)):
+            self.assertIn(doc, agent.system)
+        self.assertIn(doc, portfolio.MergeAgent("m", 1, doc).system)
+
+    def test_base_loop_prompts_are_untouched(self):
+        """The addon must not change how `make opt` behaves."""
+        a = drrtl.RtlOptimizationAgent("m", 1)
+        self.assertEqual(a.system, drrtl.OPT_SYSTEM)
+        self.assertEqual(a.directives, drrtl._DIRECTIVES)
 
 
 if __name__ == "__main__":
