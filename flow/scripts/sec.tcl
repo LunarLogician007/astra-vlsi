@@ -40,6 +40,9 @@ set gate  $::env(ASTRA_GATE_FILES)
 set depth [astra_env ASTRA_SEC_DEPTH 20]
 set lib   [astra_env ASTRA_SEC_LIBERTY ""]
 set work  [astra_env ASTRA_SEC_WORKDIR "."]
+# Multi-clock designs need every flop's clock turned into explicit edge-detect
+# logic, so the solver is free to choose any clock waveform -- see below.
+set multiclock [astra_env ASTRA_SEC_MULTICLOCK 0]
 file mkdir $work
 
 puts "###ASTRA_BEGIN sec_config"
@@ -59,6 +62,7 @@ if {[catch {
     yosys design -reset
     foreach f $gold { yosys read_verilog -sv $f }
     yosys prep -flatten -top $top
+    if {$multiclock} { yosys clk2fflogic }
     yosys design -stash gold_design
 } msg]} {
     sec_fail read_gold $msg
@@ -75,6 +79,7 @@ if {[catch {
     if {$lib ne ""} { yosys read_liberty -lib $lib }
     foreach f $gate { yosys read_verilog -sv $f }
     yosys prep -flatten -top $top
+    if {$multiclock} { yosys clk2fflogic }
     yosys design -stash gate_design
 } msg]} {
     sec_fail read_gate $msg
@@ -87,6 +92,25 @@ if {[catch {
     return
 }
 sec_ok read_gate
+
+# --- how a multi-clock design is handled ------------------------------------
+# `sat` turns each $dff into "Q at step t+1 equals D at step t" and ignores the
+# clock, which silently assumes every flop ticks together -- true of one clock,
+# false of five. A verdict under that assumption is not a statement about an
+# asynchronous design.
+#
+# `clk2fflogic` removes the assumption instead of working around it: every
+# clocked flop becomes explicit edge-detection logic over an ordinary input, so
+# the design has no clocks left and the solver chooses each clock's waveform
+# freely. A pass then holds for EVERY interleaving of the five domains, which
+# is what asynchrony means, rather than for the one interleaving the miter
+# happened to assume.
+#
+# The cost is real and is reported rather than hidden. Free clocks mean
+# temporal induction does not converge (measured: it returns neither way), so a
+# multi-clock verdict is always `bounded`. And an edge now takes two steps
+# instead of one, so N steps buy roughly N/2 clock cycles -- the depth is
+# doubled below to keep the cycle count comparable.
 
 # --- miter -----------------------------------------------------------------
 sec_step miter
@@ -132,6 +156,36 @@ proc sec_prove {label file args} {
 }
 
 # --- proof attempt 1: temporal induction (unbounded) -----------------------
+# Skipped under multiclock: with free clocks induction returns neither pass nor
+# fail, so running it only spends the time budget before the bounded check.
+if {$multiclock} {
+    set steps [expr {$depth * 2}]
+    sec_step bounded
+    puts "###ASTRA_BEGIN sec_bounded"
+    set r [sec_prove bounded [file join $work bounded.txt] \
+               -prove-asserts -set-init-zero -seq $steps]
+    puts "###ASTRA_END sec_bounded"
+    sec_kv depth $depth
+    sec_kv steps $steps
+    sec_kv multiclock 1
+    if {$r eq "pass"} {
+        sec_ok bounded
+        sec_kv equivalent 1
+        sec_kv method bounded
+        sec_kv reason "no counterexample in $steps steps (about $depth cycles) with every clock free; bounded, not a proof"
+        return
+    }
+    sec_fail bounded "bounded multiclock check returned $r"
+    sec_kv equivalent 0
+    sec_kv method bounded
+    if {$r eq "fail"} {
+        sec_kv reason "counterexample found within $steps steps: not equivalent under some clock interleaving"
+    } else {
+        sec_kv reason "a $steps-step bounded check with free clocks could not decide"
+    }
+    return
+}
+
 sec_step induction
 puts "###ASTRA_BEGIN sec_induction"
 set r [sec_prove induction [file join $work induction.txt] \

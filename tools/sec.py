@@ -39,6 +39,31 @@ FLOW = ROOT / "flow"
 
 DEFAULT_DEPTH = 20
 
+# A note on depth, because the obvious optimisation here is a trap.
+#
+# Multi-clock checks run through clk2fflogic, where an edge costs two solver
+# steps instead of one and induction is unavailable, so the whole budget goes
+# into a bounded unrolling that copies the design once per step. On anything
+# with unpipelined multipliers that gets expensive fast, and the tempting fix
+# is to cap the depth so the check finishes.
+#
+# Do not. It was measured on dual_clock (four 12x12 multipliers):
+#
+#   depth 8  refutes a broken candidate in 9 s; does not prove a good one in 900 s
+#   depth 3  decides neither within 200 s
+#   depth 2  proves a good candidate in 2 s -- AND "proves" the broken one too
+#
+# Four steps cannot reach the difference, so the shallow check reports
+# equivalent for a design that is not. A bounded pass is only worth what its
+# depth can see, and a cap tuned to make proofs finish is tuned to make them
+# vacuous. Timing out is undecided and promotes nothing, which is the correct
+# failure; passing wrongly promotes a broken candidate, which is not.
+#
+# So the depth stays where the caller put it. The consequence is an asymmetry
+# worth expecting: on a multiplier-heavy multi-clock design the check refutes
+# bad candidates quickly and usually times out rather than confirming good
+# ones. It filters; it does not certify.
+
 
 def _fail(reason: str, engine: str, **extra: Any) -> dict[str, Any]:
     return {"equivalent": False, "method": "error", "reason": reason,
@@ -68,7 +93,10 @@ def _run(cmd: list[str], log: Path, env: dict[str, str] | None = None,
 
 def check_yosys(top: str, gold: list[Path], gate: list[Path], workdir: Path,
                 depth: int = DEFAULT_DEPTH, liberty: Path | None = None,
-                timeout: int = 1800) -> dict[str, Any]:
+                timeout: int = 1800, multiclock: bool = False) -> dict[str, Any]:
+    """The Yosys miter. ``multiclock`` turns every clock into a free input via
+    ``clk2fflogic``, so a verdict holds for any interleaving of the domains --
+    see flow/scripts/sec.tcl and docs/equivalence-contract.md."""
     if not toolenv.have("yosys"):
         return _fail("yosys not on PATH", "yosys")
 
@@ -81,6 +109,7 @@ def check_yosys(top: str, gold: list[Path], gate: list[Path], workdir: Path,
         "ASTRA_SEC_DEPTH": str(depth),
         "ASTRA_SEC_LIBERTY": str(liberty) if liberty else "",
         "ASTRA_SEC_WORKDIR": str(workdir),
+        "ASTRA_SEC_MULTICLOCK": "1" if multiclock else "0",
     }
     log = workdir / "sec.log"
     t0 = time.time()
@@ -105,6 +134,9 @@ def check_yosys(top: str, gold: list[Path], gate: list[Path], workdir: Path,
         "method": kv.get("method", "unknown"),
         "reason": kv.get("reason", ""),
         "depth": kv.get("depth", depth),
+        # Not "steps": that key already carries the per-stage step log below.
+        "sat_steps": kv.get("steps"),
+        "multiclock": bool(kv.get("multiclock")),
         "engine": "yosys",
         "runtime_s": runtime,
         "steps": parse_sta.parse_steps(out),
@@ -207,24 +239,30 @@ def check(top: str, gold: list[Path], gate: list[Path], workdir: Path,
     "not equivalent" is a verdict, and retrying it on a weaker engine until
     one of them agrees would defeat the point of the constraint.
 
-    ``clock_set`` enforces the equivalence contract. Both engines build a
-    miter over a common clock, so on a genuinely multi-clock design the
-    question they answer is not the question that was asked -- see
-    docs/equivalence-contract.md. Rather than return a confident answer to the
-    wrong question, the check declines and says so.
+    ``clock_set`` decides how the question is asked. `sat` models a $dff as
+    "Q at t+1 is D at t" and ignores the clock, which assumes every flop ticks
+    together -- true of one clock, false of five. So on a multi-clock design
+    the Yosys miter runs its ``clk2fflogic`` path instead: every clock becomes
+    a free input with explicit edge detection, and a verdict then holds for
+    every interleaving of the domains rather than for the one the miter
+    happened to assume. See docs/equivalence-contract.md.
+
+    That path is bounded-only -- induction does not converge with free clocks
+    -- and it is reported as such.
     """
     missing = [str(p) for p in (*gold, *gate) if not Path(p).is_file()]
     if missing:
         return _fail(f"missing source file(s): {', '.join(missing)}", engine)
 
-    if clock_set is not None and getattr(clock_set, "is_multi", False):
-        names = ", ".join(getattr(clock_set, "names", lambda: [])())
+    multiclock = bool(clock_set is not None
+                      and getattr(clock_set, "is_multi", False))
+    if multiclock and engine == "eqy":
+        # eqy partitions against a common clock; it has no multiclock mode, so
+        # asking it here would answer the wrong question confidently.
         return unsupported(
-            f"the design has {len(clock_set)} clocks ({names}); both engines "
-            f"build a miter over one common clock, so a verdict here would "
-            f"not be a statement about the design. Cut the CDC boundaries and "
-            f"check each domain separately -- see docs/equivalence-contract.md",
-            engine, clocks=len(clock_set))
+            "eqy cannot check a multi-clock design; the Yosys miter's "
+            "clk2fflogic path can -- use engine=auto",
+            "eqy", clocks=len(clock_set))
 
     # When tools run elsewhere the host cannot see which engines exist, so
     # "auto" resolves to the one that is always present. Ask for eqy by name
@@ -233,9 +271,12 @@ def check(top: str, gold: list[Path], gate: list[Path], workdir: Path,
         if not toolenv.have("eqy"):
             return _fail("eqy requested but not installed", "eqy")
         return check_eqy(top, gold, gate, workdir, depth, timeout)
-    if engine == "auto" and not toolenv.dispatching() and shutil.which("eqy"):
+    if engine == "auto" and not multiclock \
+            and not toolenv.dispatching() and shutil.which("eqy"):
         return check_eqy(top, gold, gate, workdir, depth, timeout)
-    return check_yosys(top, gold, gate, workdir, depth, liberty, timeout)
+
+    return check_yosys(top, gold, gate, workdir, depth, liberty, timeout,
+                       multiclock=multiclock)
 
 
 def available() -> dict[str, bool]:

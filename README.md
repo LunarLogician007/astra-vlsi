@@ -133,7 +133,7 @@ Both take `--dry-run`, which writes the prompts and skips the model calls — bu
 **Verify without any tools or a model:**
 
 ```bash
-python3 tools/selftest.py         # 223 tests: no EDA install, no model, no network
+python3 tools/selftest.py         # 225 tests: no EDA install, no model, no network
 make selftest                     # the same, inside the container
 ```
 
@@ -589,7 +589,7 @@ tools/skills.py          the confidence-aware skill library
 tools/llm.py             `claude -p` wrapper shared by the agents
 tools/toolenv.py         dispatch EDA calls into the container
 tools/protect.py         regions the optimiser may not touch, and the gate
-tools/selftest.py        223 tests over the above (needs no EDA tools, no model)
+tools/selftest.py        225 tests over the above (needs no EDA tools, no model)
 
 docs/multi-clock.md      the clock model, and what it deliberately gives up
 docs/equivalence-contract.md   what "equivalent" means, and where it stops
@@ -723,13 +723,16 @@ period of the clock that captured it, not the design's primary one — see
 [`docs/multi-clock.md`](docs/multi-clock.md) for why that matters and what the
 model deliberately gives up.
 
-> **Sequential equivalence declines on a multi-clock design.** Both engines
-> build a miter over one common clock, so a verdict would not be a statement
-> about the design. `astra sec` returns `method: "unsupported"` — neither a
-> pass nor a refutation — which means **`astra opt` and `astra portfolio`
-> cannot promote any candidate** on such a design until the per-domain
-> partitioner exists. [`docs/equivalence-contract.md`](docs/equivalence-contract.md)
-> is the reasoning.
+> **Sequential equivalence on a multi-clock design is bounded, not proved.**
+> A miter normally assumes every flop ticks together, which is false with five
+> clocks, so these designs are checked through `clk2fflogic`: every clock
+> becomes a free input, and a pass holds for *every* interleaving of the
+> domains. Temporal induction does not converge with free clocks, so the
+> verdict is always `bounded` — a weaker claim than the single-clock path's
+> `induction`, and reported as such.
+> [`docs/equivalence-contract.md`](docs/equivalence-contract.md) is the
+> reasoning. Note `--engine eqy` declines on multi-clock; it has no multiclock
+> mode.
 
 Four things bite when writing a multi-clock SDC, all of which fail loudly but
 uninformatively. They are indexed by symptom in `HANDOFF.md` §7; the shortest
@@ -747,6 +750,7 @@ so write clock dividers as pure toggle flops.
 | `mac_chain` | 2.0 ns | **VIOLATED**, WNS −0.3573, TNS −3.7438, 15 endpoints |
 | `dual_path` | 1.5 ns | not yet run — see [path-portfolio mode](#what-this-does-not-yet-show) |
 | `soc_bench` | 13 clocks, 5 async | **VIOLATED**, WNS −6.5126, TNS −65.1401, 60 endpoints, 49,935 cells |
+| `dual_clock` | 3 clocks, 2 async | **VIOLATED**, WNS −0.0523, TNS −0.6798, 13 endpoints, 1,307 cells |
 
 `alu32` is the sanity check. Its critical path is the 32-bit ripple-carry adder
 Yosys infers — ~70 gates deep, which is why it needs 2.5 ns and not 1.0.
@@ -767,6 +771,14 @@ budget about two minutes per candidate evaluation.
 astra run soc_bench                        # ~2 min: synthesis + multi-clock STA
 python3 tools/pathsel.py runs/soc_bench/<run> -k 3
 ```
+
+`dual_clock` is the small multi-clock design: two asynchronous domains, one
+generated clock, one CDC crossing, ~1.3K cells and **no multipliers**. That
+last part is deliberate — a bounded equivalence check unrolls the design once
+per solver step, and unpipelined multipliers make that intractable, so
+`soc_bench` can have a bad candidate refuted quickly but cannot have a good one
+proved. `dual_clock` exists so the multi-clock loop can be exercised where the
+proof actually closes. It is not a substitute for the benchmark.
 
 Read the caveat in [More than one clock](#more-than-one-clock) before pointing a
 loop at it: SEC declines on multi-clock designs, so no candidate can be

@@ -28,6 +28,46 @@ Two engines produce this, and they do not prove the same thing:
 flattening it. A bounded-only pass is a weaker claim than the paper's, and it
 is labelled as one.
 
+### A bounded pass is worth exactly what its depth can see
+
+This is the sharpest edge in the whole document, it applies to the
+single-clock bounded fallback as much as to the multi-clock path, and nothing
+checks it automatically.
+
+A bounded check says "no counterexample within N". If the difference between
+the two designs cannot be *reached* within N, the check says the same thing it
+would say about two identical designs — **equivalent** — and it is wrong.
+
+Measured on `dual_clock`, a 1,307-cell design whose candidate had a genuine
+functional bug (`acc[g-1] - term[g]` where the gold has `+`):
+
+| depth | steps | broken candidate | equivalent candidate |
+|---|---|---|---|
+| 4 | 8 | **reported equivalent** — false pass, 3 s | proved, 2 s |
+| 6 | 12 | refuted, 3 s | proved, 51 s |
+| 8 | 16 | refuted, 5 s | no verdict in 300 s |
+
+Eight steps cannot propagate the difference to an output, so the shallow check
+passes a broken design in three seconds. Nothing in the tooling can tell that
+apart from a real proof.
+
+Note how narrow the usable window is: one step too shallow and the check is
+vacuous, two too deep and it does not finish. Depth is not a dial to be set
+once and forgotten, which is why a design can record the depth its author
+actually verified (`sec_depth` in `config.json`) instead of inheriting a global
+default that was calibrated on a different design.
+
+Two consequences, both load-bearing:
+
+- **Never tune depth down to make proofs finish.** A depth chosen so that
+  proofs close is a depth chosen so that they are vacuous. `tools/sec.py`
+  carries this measurement in a comment and a test guards against
+  reintroducing the cap that was briefly added and then removed.
+- **`induction` and `bounded` are not two grades of the same claim.** An
+  induction pass holds for all reachable states. A bounded pass holds for a
+  window whose adequacy nobody verified. Read `method` before believing a
+  promotion.
+
 **Latency is part of the contract.** Adding or removing a pipeline stage
 changes the cycle-by-cycle relationship and the check fails by construction.
 This is why pipelining is forbidden in every agent prompt (`drrtl.py`,
@@ -55,73 +95,75 @@ asynchrony is precisely the claim that no ratio is privileged, so a proof at
 one ratio says nothing about the design. This option conflates an STA concept
 with a formal one and is not adopted.
 
-### Adopted: per-domain SEC with the CDC boundaries cut
+### Considered: per-domain SEC with the CDC boundaries cut
 
-The design is partitioned by clock domain. Each partition has exactly one
-clock, which is the case both engines can actually discharge.
+Partition by clock domain so each partition has one clock; at a crossing from
+`X` to `Y`, cut the signal — an observed output on `X`'s side, a free
+unconstrained input on `Y`'s. Sound, and it is what this document originally
+adopted.
 
-At a crossing from domain `X` to domain `Y`, the crossing signal is **cut**:
+It was **superseded during implementation** by something simpler and strictly
+stronger. Recorded here because the reasoning still matters: cutting is the
+right idea, and the adopted method is that idea taken further.
 
-- on `X`'s side it becomes an observed output — so a rewrite that changes what
-  `X` launches is caught;
-- on `Y`'s side it becomes a free input, unconstrained — so `Y` must be proved
-  correct for *every* value and arrival, which is what asynchrony means.
+### Adopted: whole-design equivalence with every clock free
 
-The result is a set of per-domain obligations, each a well-posed single-clock
-SEC. Their conjunction is the design's verdict: every domain equivalent, and
-every crossing launching the same values.
+The reason a miter needs one clock is an assumption buried in the solver, not a
+property of the design. Yosys's `sat` models a flop as "Q at step t+1 is D at
+step t" and ignores the clock entirely — which silently assumes every flop in
+the design ticks together. True of one clock. False of five.
 
-### What this does not prove
+`clk2fflogic` removes the assumption instead of working around it. Every
+clocked flop becomes explicit edge-detection logic over an ordinary input, so
+the design has no clocks left at all and the solver chooses each clock's
+waveform freely. A pass then holds for **every interleaving of the five
+domains**, which is what asynchrony means.
 
-The cut is where the proof stops, and three things live in the cut:
+This is better than partitioning on three counts:
 
-1. **Synchronizer structure.** Flop depth, and that a synchronizer is there at
-   all. Cutting the boundary makes a removed synchronizer invisible.
-2. **Crossing protocol.** Handshakes, request/acknowledge sequencing, FIFO
-   pointer discipline.
-3. **Multi-bit coherence.** Gray coding, and that a multi-bit crossing is not
-   silently re-encoded so two bits can change in one destination cycle.
+- It proves the crossings too, rather than cutting them out of the claim. The
+  three things the cut could not see — synchroniser depth, crossing protocol,
+  multi-bit coherence — are inside the proof, because a design that behaves
+  differently under some interleaving is exactly what a removed synchroniser
+  stage produces.
+- There is nothing to partition, so nothing to get wrong. A partitioner that
+  mis-assigns one register produces a confident, vacuous pass; this has no such
+  failure mode.
+- It is about forty lines of Tcl rather than a new subsystem.
 
-None of these are timing bottlenecks and none of them should ever be edited to
-recover slack. So they are handled the same way pipelining is — **out of scope
-for the optimiser, structurally, rather than checked after the fact.**
-
-This is enforced, not merely requested. A design declares what is off limits:
-
-```json
-"protected": ["cdc_*", "clk_*_div*"]
-```
-
-and `tools/protect.py` rejects any candidate that added, removed or altered a
-line mentioning a matching identifier. It runs **before** synthesis and before
-SEC — deliberately ahead of the gate that cannot catch it. A rejection records
-as *undecided*, never a refutation, so it cannot teach the skill library that a
-sound transformation breaks equivalence.
+**What it still does not model: metastability.** Clock-domain crossings are
+about analogue settling behaviour that no cycle-level model captures. A
+synchroniser removed from a design that is otherwise equivalent under every
+interleaving would likely be caught here, but "likely" is not a guarantee, and
+metastability is not represented at all. So CDC logic stays out of the
+optimiser's editable scope regardless — see below. This check is the second
+line of defence, not the first.
 
 ---
 
 ## 3. What the code does today
 
-`sec.check()` takes the design's `ClockSet`. On a multi-clock design it
-**declines** and returns `method: "unsupported"` with the reason.
+`sec.check()` takes the design's `ClockSet` and routes on it:
 
-This is deliberate and is the whole point of writing the contract down:
+| design | route | strongest verdict |
+|---|---|---|
+| single clock | miter, induction then bounded | `induction` — unbounded |
+| multi clock | miter with `clk2fflogic` | `bounded` |
+| multi clock, `engine="eqy"` | declines (`unsupported`) | — |
 
-- `unsupported` is **not** a refutation. `score.sec_decided()` treats it as
-  undecided, so it never teaches the skill library that a sound transformation
-  breaks equivalence — the failure mode that already cost this codebase a
-  fragmented library once.
-- `unsupported` is **not** a pass. `score.sec_passed()` is False, so Eq. 4
-  cannot promote the candidate.
-- It appears in the SEC tally under `undecided`, so a run on a multi-clock
-  design reports honestly that nothing was proven, instead of reporting a pass
-  rate over checks that did not mean anything.
+**A multi-clock verdict is always bounded.** With free clocks, temporal
+induction converges neither way — measured, not assumed — so it is skipped
+rather than run to burn the time budget. And an edge now takes two solver steps
+instead of one, so the requested depth is doubled into steps to keep the cycle
+count comparable.
 
-The per-domain partitioning of §2 is **not implemented**. Until it is, a
-multi-clock design cannot promote any candidate. That is the correct failure
-mode — it stops rather than over-claims — but it does mean the benchmark of
-HANDOFF §6.2 cannot run the optimisation loop end to end until the partitioner
-exists.
+eqy still declines: it partitions against a common clock and has no multiclock
+mode, so it would answer the wrong question confidently.
+
+Everything the old declining path protected still holds. `unsupported` remains
+neither a pass nor a refutation, and a timeout is still `undecided` rather than
+evidence of inequivalence — which matters more here than anywhere else, because
+of the scale below.
 
 ## 4. Scale
 

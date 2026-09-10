@@ -2,7 +2,7 @@
 
 Context for whoever picks this up next, including me in a later session.
 
-Branch `path-portfolio`, 12 commits ahead of `main`. 223 tests, all passing,
+Branch `path-portfolio`, 13 commits ahead of `main`. 225 tests, all passing,
 none needing an EDA install or a model. `make opt` is unchanged and tested to
 be so.
 
@@ -66,7 +66,7 @@ flowchart LR
 | `tools/skills.py` | 555 | the confidence-weighted library |
 | `tools/rtl_map.py` | 611 | path → RTL localisation, structural diagnosis |
 | `tools/protect.py` | 170 | what the optimiser may not touch, and the gate that enforces it **before** SEC |
-| `tools/selftest.py` | 2409 | 223 tests, no EDA, no model |
+| `tools/selftest.py` | 2475 | 225 tests, no EDA, no model |
 
 Reuse rule: `portfolio.py` subclasses `drrtl.Orchestrator`, so evaluation, SEC,
 scoring, skill learning, the trajectory log and the reply parsers all come
@@ -88,6 +88,27 @@ SEC counted over candidates that reached a verdict.
 | portfolio (ext.) | 3 | 5 | +47.1 % | **+79.8 %** | **−0.5153** | 3/3 |
 | portfolio, 1 iter | 1 | 6 | +52.8 % | +56.0 % | −0.4599 | 3/3 |
 | portfolio, post-fix | 1 | 6 | +53.5 % | +56.7 % | −0.4658 | 3/3 |
+
+**Multi-clock, `dual_clock`, Haiku, 1 iteration** — the run that showed the
+loop closing end to end on more than one clock:
+
+| metric | D_0 | best | change |
+|---|---|---|---|
+| WNS | −0.0523 | **+0.3994** | VIOLATED → **MET** |
+| TNS | −0.6798 | 0.0000 | all violations gone |
+| area | 2620.63 | 2565.30 | −2.1 % |
+| Eq. 3 | 0.0000 | **−3.8139** | |
+
+SEC 3/3 specialists and 1/1 unions, all `bounded` with every clock free.
+
+**Read this one carefully too.** The whole gain came from the **pre-synthesis
+cleanup agent** (`clean0`, adopted at −3.8139). All three specialists returned
+candidates *identical* to that parent — same WNS to fifteen digits — and each
+reported a verdict rather than a transformation ("No safe optimization
+available within constraints"), which the library correctly refused to learn
+from. So this run demonstrates that multi-clock selection, protection, SEC and
+promotion work end to end. It does **not** show the specialists contributing
+anything on this design.
 
 **Read these carefully.** Three things are easy to over-claim:
 
@@ -133,8 +154,8 @@ and prefer the edit tools over heredoc rewrites.
 | 2 | Identify critical paths and violations | done |
 | 3 | GenAI recommends optimizations | **2 of 4** (FSM now has a testbed — `soc_bench`) |
 | 4 | Evaluate timing / area / performance | done |
-| 5 | Formally verify equivalence | done *for single-clock designs*; the multi-clock contract is written and **enforced by refusal** — see §6.3 |
-| 6 | Benchmark: 5 async domains, CDC, dividers, ~50K cells | **design built and timing** (`soc_bench`, 49,935 cells, 13 clocks); the loop cannot run on it until the SEC partitioner exists — see §6.4 |
+| 5 | Formally verify equivalence | **unbounded** (induction) on single-clock; **bounded, refute-biased** on multi-clock via `clk2fflogic` — see §6.3 and the depth warning in §6.4 |
+| 6 | Benchmark: 5 async domains, CDC, dividers, ~50K cells | **design built and timing** (`soc_bench`, 49,935 cells, 13 clocks); the loop runs on it and rejects bad candidates, but at that size a proof does not close — see §6.4 |
 
 Objective 3 detail: logic restructuring ✅, retiming ✅, **pipelining ✗**,
 **FSM optimization ✗**.
@@ -312,15 +333,73 @@ it cannot condemn a sound strategy in the skill library.
 Two further things are decided but not built, and both block running the loop
 on §6.2 rather than blocking the design itself:
 
-**The SEC partitioner.** §6.3's contract says per-domain SEC with the CDC
-boundaries cut. `sec.check()` currently *declines* on a multi-clock design
-instead — correct, but it means no candidate can be promoted. The partitioner
-is the missing piece. **Scale is the second reason to want it:** SEC already
-hit the 1800 s timeout on a **7,343-cell** single-clock design
-(`--sec-timeout`, `drrtl.py`). At 50K cells a timeout is the common case, so
-`sec_decided()`'s refuted/undecided distinction stops being a nicety and starts
-carrying the honesty of every reported pass rate. Read `score.sec_tally()`'s
-`undecided` count before believing any number from a benchmark run.
+**Multi-clock SEC now works — the partitioner was not needed.** §6.3's contract
+originally called for per-domain SEC with the CDC boundaries cut. Implementing
+it turned up something simpler and strictly stronger, and the contract has been
+updated to match rather than the code bent to fit the plan.
+
+The reason a miter needs one clock is an assumption in the *solver*, not a
+property of the design: Yosys's `sat` models a flop as "Q at t+1 is D at t" and
+ignores the clock, which assumes every flop ticks together. `clk2fflogic`
+removes the assumption — every clock becomes a free input with explicit edge
+detection — so a pass holds for **every interleaving** of the domains. That
+also puts the crossings *inside* the proof rather than cutting them out of it,
+and it is ~40 lines of Tcl instead of a new subsystem.
+
+Validated with a 2x2 rather than a smoke test: on a two-domain case, an
+equivalent rewrite passes, a bug in domain A is caught, a bug in domain B is
+caught, and gold-vs-gold passes. The single-clock path is untouched and still
+returns unbounded `induction`.
+
+Two honest limits:
+
+- **Every multi-clock verdict is `bounded`.** With free clocks, temporal
+  induction converges neither way (measured), so it is skipped rather than run
+  to burn the budget. Promoting on bounded is a weaker claim than the paper's,
+  and `method` keeps saying so.
+- **Metastability is not modelled**, by this or any cycle-level check. CDC
+  logic therefore stays outside the optimiser's editable scope
+  (`tools/protect.py`) regardless. Two independent defences, cheap one first.
+
+**Scale is now the binding constraint, and it is asymmetric.** A *refutation*
+is cheap; a *proof* is not. Measured:
+
+| design | broken candidate | equivalent candidate |
+|---|---|---|
+| lab two-domain, no multipliers | refuted 0.3 s | **proved 0.5 s** |
+| a multiplier version of `dual_clock`, depth 8 | refuted 9 s | no verdict in 900 s |
+| `soc_bench`, 24 multipliers | refuted 21 s (d6) / 40 s (d10) | timed out at 1800 s (d3); **OOM-killed** (d5) |
+
+Bounded unrolling copies the design once per step, so unpipelined multipliers
+dominate. Induction would exploit their structural similarity, but with free
+clocks it converges neither way (measured twice, on both designs). Yosys's
+structural `equiv_*` flow was tried as an alternative and could not even
+separate the good candidate from the broken one — both left ~6,800 cells
+unproven — so it is not the answer either.
+
+**The trap, and the most important thing on this page.** The obvious fix is to
+cap the multi-clock depth so proofs finish. It was implemented, measured, and
+**removed**:
+
+    depth 8   refutes the broken candidate in 9 s; no proof in 900 s
+    depth 3   decides neither within 200 s
+    depth 2   proves the good candidate in 2 s -- and "proves" the broken one too
+
+Four solver steps cannot reach the difference, so the shallow check reports
+*equivalent* for a design that is not. A depth tuned until proofs finish is a
+depth tuned until they are vacuous. **A bounded pass is worth exactly what its
+depth can see.** Timing out is undecided and promotes nothing, which is the
+correct failure; passing wrongly promotes a broken candidate, which is not.
+`tools/sec.py` carries the measurement and a test guards against reintroducing
+the cap.
+
+So expect this shape: on a multiplier-heavy multi-clock design the loop
+**filters** bad candidates but does not **certify** good ones. On designs
+without heavy arithmetic it does both, in under a second. `eqy`, which
+partitions, is the documented escape and is **absent from the image** --
+`/etc/astra-tools.txt` records `eqy=unavailable`, so its build failed when the
+image was made and the Dockerfile downgraded rather than failed. `make build
+EQY=1` is the first thing to try.
 
 **Per-domain synthesis targets.** `abc -D` takes the tightest period across all
 clocks, so slow domains are over-constrained and may show inflated area. Fine
@@ -399,7 +478,7 @@ graphify explain "pathsel"     # a node, its neighbours, and why each edge exist
 graphify path "portfolio.py" "score.py"    # shortest path between two nodes
 ```
 
-Current index: **1067 nodes, 1862 edges, 57 communities**, one per module. Line
+Current index: **1076 nodes, 1870 edges, 58 communities**, one per module. Line
 numbers were spot-checked against the tree and are exact. `runs/` is not
 indexed, so the 92 MB of run artifacts add no noise.
 
@@ -436,7 +515,7 @@ applies to every project on this machine, not just this repo.
 ## 9. Verify without tools or a model
 
 ```bash
-python3 tools/selftest.py                    # 223 tests
+python3 tools/selftest.py                    # 225 tests
 python3 tools/pathsel.py runs/mac_chain/opt-20260901-025558-run1/baseline -k 3
 python3 tools/rtlscan.py designs/mac_chain/rtl/mac_chain.v
 python3 tools/skills.py consolidate          # repairs a fragmented library

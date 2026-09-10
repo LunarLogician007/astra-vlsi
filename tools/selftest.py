@@ -15,6 +15,7 @@ import os
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -1812,9 +1813,10 @@ class TestProtectedRegions(unittest.TestCase):
 class TestEquivalenceContract(unittest.TestCase):
     """docs/equivalence-contract.md, enforced.
 
-    Both SEC engines build a miter over one common clock. On a genuinely
-    multi-clock design that answers a different question than the one asked,
-    so the check declines rather than returning a confident wrong answer.
+    `sat` models a flop as "Q at t+1 is D at t" and ignores the clock, which
+    assumes every flop ticks together. That is true of one clock and false of
+    five, so a multi-clock design is checked through clk2fflogic instead --
+    every clock free, every interleaving covered.
     """
 
     def _multi(self):
@@ -1823,50 +1825,114 @@ class TestEquivalenceContract(unittest.TestCase):
             {"name": "clk_io", "period_ns": 8.0},
         ]})
 
+    def _one(self):
+        return clocks.ClockSet.from_config(
+            {"clock": {"name": "clk", "period_ns": 2.0}})
+
     def _files(self):
         d = Path(tempfile.mkdtemp())
         f = d / "top.v"
         f.write_text("module top(); endmodule\n")
         return d, [f]
 
-    def test_a_multi_clock_design_declines_rather_than_guessing(self):
-        d, files = self._files()
-        v = sec.check("top", files, files, d, clock_set=self._multi())
-        self.assertEqual(v["method"], "unsupported")
-        self.assertIn("clock", v["reason"])
+    def test_multi_clock_reaches_the_miter_with_clk2fflogic_asked_for(self):
+        """The behaviour that replaced declining: it is checked, not refused,
+        and the Tcl is told to free the clocks."""
+        seen = {}
 
-    def test_declining_is_not_a_pass(self):
-        """It must never promote a candidate through Eq. 4."""
+        def fake(top, gold, gate, workdir, depth=20, liberty=None,
+                 timeout=1800, multiclock=False):
+            seen["multiclock"] = multiclock
+            return {"equivalent": True, "method": "bounded", "engine": "yosys"}
+
         d, files = self._files()
-        v = sec.check("top", files, files, d, clock_set=self._multi())
+        real = sec.check_yosys
+        try:
+            sec.check_yosys = fake
+            sec.check("top", files, files, d, clock_set=self._multi())
+            self.assertTrue(seen["multiclock"])
+            sec.check("top", files, files, d, clock_set=self._one())
+            self.assertFalse(seen["multiclock"],
+                             "a single-clock design must not pay for it")
+        finally:
+            sec.check_yosys = real
+
+    def test_multi_clock_depth_is_not_reduced(self):
+        """The trap this guards. Capping the depth so multi-clock proofs
+        finish makes them vacuous: measured on dual_clock, depth 2 "proves" a
+        genuinely broken candidate in 2 s because four solver steps cannot
+        reach the difference, while depth 8 refutes it in 9 s. A bounded pass
+        is worth only what its depth can see, so the caller's depth is passed
+        through untouched -- timing out is undecided and promotes nothing,
+        which is the correct failure."""
+        seen = {}
+
+        def fake(top, gold, gate, workdir, depth=20, liberty=None,
+                 timeout=1800, multiclock=False):
+            seen["depth"] = depth
+            return {"equivalent": True, "method": "bounded", "engine": "yosys"}
+
+        d, files = self._files()
+        real = sec.check_yosys
+        try:
+            sec.check_yosys = fake
+            sec.check("top", files, files, d, depth=20, clock_set=self._multi())
+            self.assertEqual(seen["depth"], 20,
+                             "a multi-clock check must not be quietly shallowed")
+            sec.check("top", files, files, d, depth=20, clock_set=self._one())
+            self.assertEqual(seen["depth"], 20)
+        finally:
+            sec.check_yosys = real
+
+    def test_a_design_can_record_the_depth_it_verified(self):
+        """Adequate depth is a property of the design, not a global default:
+        on dual_clock a real bug is invisible at depth 4 and refuted at 6. A
+        design records what its author actually verified; --sec-depth
+        overrides it; neither is silently ignored."""
+        cfg = json.loads((ROOT / "designs" / "dual_clock"
+                          / "config.json").read_text())
+        self.assertEqual(cfg.get("sec_depth"), 6,
+                         "dual_clock's verified depth must survive edits")
+
+        ns = lambda d: SimpleNamespace(sec_depth=d)
+        pick = lambda args, c: int(args.sec_depth if args.sec_depth is not None
+                                   else c.get("sec_depth", 20))
+        self.assertEqual(pick(ns(None), cfg), 6, "the design's own depth")
+        self.assertEqual(pick(ns(12), cfg), 12, "an explicit flag wins")
+        self.assertEqual(pick(ns(None), {}), 20, "fallback when unstated")
+
+    def test_eqy_still_declines_on_multi_clock(self):
+        """eqy partitions against a common clock and has no multiclock mode,
+        so asking it would answer the wrong question confidently."""
+        d, files = self._files()
+        v = sec.check("top", files, files, d, engine="eqy",
+                      clock_set=self._multi())
+        self.assertEqual(v["method"], "unsupported")
+
+    def test_declining_is_neither_a_pass_nor_a_refutation(self):
+        """Wherever `unsupported` is still returned it must not promote a
+        candidate, and must not teach the skill library that a sound
+        transformation breaks equivalence."""
+        v = sec.unsupported("nope", "eqy")
         self.assertFalse(score.sec_passed({"sec": v}))
+        self.assertFalse(score.sec_decided({"sec": v}))
         self.assertIsNone(score.select_best(
             [{"id": "c0", "score": -1.0, "sec": v}]))
-
-    def test_declining_is_not_a_refutation_either(self):
-        """The distinction that keeps the skill library honest: recording
-        'this transformation breaks equivalence' because the checker could not
-        run would condemn a sound strategy on evidence that does not exist."""
-        d, files = self._files()
-        v = sec.check("top", files, files, d, clock_set=self._multi())
-        self.assertFalse(score.sec_decided({"sec": v}),
-                         "an unrun check has not decided anything")
         tally = score.sec_tally([{"id": "c0", "sec": v}])
         self.assertEqual(tally["undecided"], 1)
-        self.assertEqual(tally["decided"], 0)
-        self.assertIsNone(tally["rate"],
-                          "no pass rate can be reported over nothing")
+        self.assertIsNone(tally["rate"])
 
-    def test_a_single_clock_design_is_unaffected(self):
-        """The guard must not disturb the case that already works."""
-        d, files = self._files()
-        one = clocks.ClockSet.from_config({"clock": {"name": "clk",
-                                                     "period_ns": 2.0}})
-        v = sec.check("top", files, files, d, clock_set=one, engine="eqy")
-        self.assertNotEqual(v["method"], "unsupported")
+    def test_a_bounded_multiclock_pass_is_not_an_unbounded_proof(self):
+        """Induction does not converge with free clocks, so every multi-clock
+        verdict is bounded. Promoting on it is a weaker claim than the paper's
+        and the method field has to keep saying so."""
+        v = {"equivalent": True, "method": "bounded", "multiclock": True,
+             "engine": "yosys"}
+        self.assertTrue(score.sec_passed({"sec": v}))
+        self.assertTrue(score.sec_decided({"sec": v}))
+        self.assertNotEqual(v["method"], "induction")
 
     def test_a_missing_file_still_reports_as_an_error(self):
-        """Declining on clocks must not mask an ordinary failure."""
         d, _ = self._files()
         v = sec.check("top", [d / "nope.v"], [d / "nope.v"], d,
                       clock_set=self._multi())

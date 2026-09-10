@@ -138,10 +138,9 @@ period, and `norm_timing` is a ratio, so it cancels exactly.
 ## What is not done
 
 - Per-domain synthesis targets (above).
-- Sequential equivalence across domains — see
-  [`equivalence-contract.md`](equivalence-contract.md). `sec.check()` declines
-  on a multi-clock design rather than returning a confident answer to the
-  wrong question.
+- An *unbounded* proof across domains. Multi-clock equivalence works, but with
+  free clocks induction does not converge, so every multi-clock verdict is
+  `bounded`. See [`equivalence-contract.md`](equivalence-contract.md).
 - Per-domain SEC (above), which is what stops the loop promoting anything on a
   multi-clock design today.
 

@@ -784,6 +784,13 @@ class Orchestrator:
         # generation, which the equivalence proof cuts and therefore cannot
         # check. See tools/protect.py.
         self.protected = list(self.cfg.get("protected") or [])
+        # A bounded check is worth exactly what its depth can see, and the
+        # depth a difference needs to reach an output is a property of the
+        # DESIGN, not a global default -- on dual_clock a genuine bug is
+        # invisible at depth 4 and refuted at 6. So a design may record the
+        # depth its author actually verified, and --sec-depth overrides it.
+        self.sec_depth = int(args.sec_depth if args.sec_depth is not None
+                             else self.cfg.get("sec_depth", 20))
         self.design = args.design
 
         self.weights = dict(scoring.DEFAULT_WEIGHTS)
@@ -799,7 +806,7 @@ class Orchestrator:
 
         self.lib = skills_mod.SkillLibrary(args.skills)
         self.evaluator = EvaluationAgent(
-            self.cfg, self.period, args.npaths, args.sec_depth,
+            self.cfg, self.period, args.npaths, self.sec_depth,
             args.sec_engine, args.sec_timeout, args.no_flatten, quiet=True)
         self.analyst = TimingAnalysisAgent(
             not args.no_llm, args.model, args.timeout, args.top_k)
@@ -820,7 +827,7 @@ class Orchestrator:
                 "candidates_per_iteration": args.n,
                 "max_iterations": args.iters,
                 "top_k_paths": args.top_k,
-                "sec": {"engine": args.sec_engine, "depth": args.sec_depth},
+                "sec": {"engine": args.sec_engine, "depth": self.sec_depth},
                 "model": args.model, "llm": not args.no_llm,
             },
             "created_at": datetime.now().isoformat(timespec="seconds"),
@@ -1320,7 +1327,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--gamma", type=float, help="Eq. 3 area weight (default 0.15)")
 
     p.add_argument("--sec-engine", choices=("auto", "eqy", "yosys"), default="auto")
-    p.add_argument("--sec-depth", type=int, default=20,
+    # Default None, not 20, so a design's own verified sec_depth can be told
+    # apart from the fallback -- see Orchestrator.__init__.
+    p.add_argument("--sec-depth", type=int, default=None,
                    help="cycles for the bounded equivalence check")
     p.add_argument("--sec-timeout", type=int, default=1800)
 

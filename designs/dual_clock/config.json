@@ -1,0 +1,25 @@
+{
+  "top": "dual_clock",
+  "description": "The smallest design on which the multi-clock loop can close: two asynchronous domains, one generated clock, one CDC crossing, one bottleneck per domain. Small enough that clk2fflogic equivalence finishes in seconds, so a candidate can actually be proved and promoted -- which soc_bench is too large to demonstrate.",
+  "rtl": ["rtl/dual_clock.v"],
+  "sdc": "constraints/dual_clock.sdc",
+  "pdk": "nangate45",
+  "clocks": [
+    { "name": "clk_fast", "port": "clk_fast", "period_ns": 1.6 },
+    { "name": "clk_slow", "port": "clk_slow", "period_ns": 5.0 },
+    { "name": "clk_fast_div2", "generated_from": "clk_fast", "divide_by": 2,
+      "port": "clk_fast_div2_r_DFFR_X1_Q/Q" }
+  ],
+  "protected": ["cdc_*", "clk_*_div*"],
+  "sec_depth": 6,
+  "notes": {
+    "latency_cycles": { "fast": 3, "slow": 2 },
+    "known_bottlenecks": [
+      "fast: 8 terms summed by a serial adder chain instead of a balanced tree, so the depth is 8 adders instead of 3",
+      "slow: 24-way priority select written as a serial mux cascade, so bit 23 waits on all 23 below it"
+    ],
+    "invariants": "rewrites must preserve each domain's latency exactly and be bit-exact. The two datapaths share no signal except through the CDC synchroniser, and may be rewritten independently.",
+    "cdc_off_limits": "cdc_* and clk_*_div* -- enforced by tools/protect.py before synthesis. See docs/equivalence-contract.md.",
+    "purpose": "the multi-clock promotion testbed. soc_bench is the objective-6 benchmark and is too large for a bounded proof to close; this one is not."
+  }
+}
