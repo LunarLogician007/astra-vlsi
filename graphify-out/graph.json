@@ -196,7 +196,7 @@
       "file_type": "code",
       "norm_label": "testskilldoc",
       "source_file": "tools/selftest.py",
-      "source_location": "L2245"
+      "source_location": "L2290"
     },
     {
       "id": "tools_selftest_testevaluationfailures",
@@ -235,7 +235,7 @@
       "file_type": "code",
       "norm_label": "testrtlscandepth",
       "source_file": "tools/selftest.py",
-      "source_location": "L2128"
+      "source_location": "L2173"
     },
     {
       "id": "tools_selftest_testskilllearning",
@@ -335,24 +335,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "code",
       "norm_label": "testclockresolution",
       "source_file": "tools/selftest.py",
       "source_location": "L1318"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking",
-      "label": "TestMultiClockRanking",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": "testmulticlockranking",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1349"
     },
     {
       "id": "tools_selftest_testskills",
@@ -378,7 +365,7 @@
       "file_type": "code",
       "norm_label": "testequivalencecontract",
       "source_file": "tools/selftest.py",
-      "source_location": "L1813"
+      "source_location": "L1858"
     },
     {
       "id": "tools_selftest_testpathselcriticality",
@@ -404,7 +391,7 @@
       "file_type": "code",
       "norm_label": "testmerge",
       "source_file": "tools/selftest.py",
-      "source_location": "L1942"
+      "source_location": "L1987"
     },
     {
       "id": "tools_selftest_testrtlscan",
@@ -417,7 +404,7 @@
       "file_type": "code",
       "norm_label": "testrtlscan",
       "source_file": "tools/selftest.py",
-      "source_location": "L2024"
+      "source_location": "L2069"
     },
     {
       "id": "tools_selftest_testportfoliobudget",
@@ -430,7 +417,7 @@
       "file_type": "code",
       "norm_label": "testportfoliobudget",
       "source_file": "tools/selftest.py",
-      "source_location": "L2400"
+      "source_location": "L2445"
     },
     {
       "id": "tools_selftest_testskillmerging",
@@ -443,7 +430,7 @@
       "file_type": "code",
       "norm_label": "testskillmerging",
       "source_file": "tools/selftest.py",
-      "source_location": "L2149"
+      "source_location": "L2194"
     },
     {
       "id": "tools_selftest_testpathselsegments",
@@ -485,17 +472,17 @@
       "source_location": "L1455"
     },
     {
-      "id": "tools_selftest_testpathselvalue",
-      "label": "TestPathSelValue",
+      "id": "tools_selftest_testmulticlockranking",
+      "label": "TestMultiClockRanking",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 35,
       "community_name": "_path",
       "file_type": "code",
-      "norm_label": "testpathselvalue",
+      "norm_label": "testmulticlockranking",
       "source_file": "tools/selftest.py",
-      "source_location": "L865"
+      "source_location": "L1349"
     },
     {
       "id": "tools_selftest_testclockgroupparsing",
@@ -625,7 +612,7 @@
       "file_type": "code",
       "norm_label": "teststageparameterisation",
       "source_file": "tools/selftest.py",
-      "source_location": "L2350"
+      "source_location": "L2395"
     },
     {
       "id": "tools_selftest_testportfolioagents",
@@ -638,7 +625,7 @@
       "file_type": "code",
       "norm_label": "testportfolioagents",
       "source_file": "tools/selftest.py",
-      "source_location": "L2446"
+      "source_location": "L2491"
     },
     {
       "id": "tools_selftest_testpathselmetrics",
@@ -678,6 +665,19 @@
       "norm_label": "testprotectedregions",
       "source_file": "tools/selftest.py",
       "source_location": "L1742"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue",
+      "label": "TestPathSelValue",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": "testpathselvalue",
+      "source_file": "tools/selftest.py",
+      "source_location": "L865"
     },
     {
       "id": "tools_pathsel_pathtarget",
@@ -1537,18 +1537,6 @@
       "norm_label": ".propose()",
       "source_file": "tools/drrtl.py",
       "source_location": "L521"
-    },
-    {
-      "id": "tools_drrtl_skilllearningagent_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "drrtl.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tools/drrtl.py",
-      "source_location": "L655"
     },
     {
       "id": "tools_drrtl_skilllearningagent_learn",
@@ -2820,7 +2808,7 @@
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2246"
+      "source_location": "L2291"
     },
     {
       "id": "tools_selftest_testskilldoc_test_a_missing_document_is_a_no_op_not_a_failure",
@@ -2832,7 +2820,7 @@
       "file_type": "code",
       "norm_label": ".test_a_missing_document_is_a_no_op_not_a_failure()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2318"
+      "source_location": "L2363"
     },
     {
       "id": "tools_selftest_testskilldoc_test_an_unknown_section_goes_to_every_role",
@@ -2844,7 +2832,7 @@
       "file_type": "code",
       "norm_label": ".test_an_unknown_section_goes_to_every_role()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2314"
+      "source_location": "L2359"
     },
     {
       "id": "tools_selftest_testskilldoc_test_an_untagged_document_is_returned_whole",
@@ -2856,7 +2844,7 @@
       "file_type": "code",
       "norm_label": ".test_an_untagged_document_is_returned_whole()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2306"
+      "source_location": "L2351"
     },
     {
       "id": "tools_selftest_testskilldoc_test_each_role_gets_only_what_it_can_act_on",
@@ -2868,7 +2856,7 @@
       "file_type": "code",
       "norm_label": ".test_each_role_gets_only_what_it_can_act_on()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2278"
+      "source_location": "L2323"
     },
     {
       "id": "tools_selftest_testskilldoc_test_frontmatter_is_stripped_before_injection",
@@ -2880,7 +2868,7 @@
       "file_type": "code",
       "norm_label": ".test_frontmatter_is_stripped_before_injection()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2268"
+      "source_location": "L2313"
     },
     {
       "id": "tools_selftest_testskilldoc_test_has_frontmatter_with_a_name_and_description",
@@ -2892,7 +2880,7 @@
       "file_type": "code",
       "norm_label": ".test_has_frontmatter_with_a_name_and_description()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2251"
+      "source_location": "L2296"
     },
     {
       "id": "tools_selftest_testskilldoc_test_injection_truncates_at_a_line_and_says_so",
@@ -2904,7 +2892,7 @@
       "file_type": "code",
       "norm_label": ".test_injection_truncates_at_a_line_and_says_so()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2273"
+      "source_location": "L2318"
     },
     {
       "id": "tools_selftest_testskilldoc_test_makes_no_numeric_evidence_claims",
@@ -2916,7 +2904,7 @@
       "file_type": "code",
       "norm_label": ".test_makes_no_numeric_evidence_claims()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2257"
+      "source_location": "L2302"
     },
     {
       "id": "tools_selftest_testskilldoc_test_role_markers_never_reach_a_prompt",
@@ -2928,7 +2916,7 @@
       "file_type": "code",
       "norm_label": ".test_role_markers_never_reach_a_prompt()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2302"
+      "source_location": "L2347"
     },
     {
       "id": "tools_selftest_testskilldoc_test_seed_entries_carry_no_statistics",
@@ -2940,7 +2928,7 @@
       "file_type": "code",
       "norm_label": ".test_seed_entries_carry_no_statistics()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2322"
+      "source_location": "L2367"
     },
     {
       "id": "tools_selftest_testskilldoc_test_the_cleanup_role_drops_path_reading",
@@ -2952,7 +2940,7 @@
       "file_type": "code",
       "norm_label": ".test_the_cleanup_role_drops_path_reading()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2295"
+      "source_location": "L2340"
     },
     {
       "id": "tools_selftest_testskilldoc_test_the_document_states_no_record_for_any_entry",
@@ -2964,7 +2952,7 @@
       "file_type": "code",
       "norm_label": ".test_the_document_states_no_record_for_any_entry()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2335"
+      "source_location": "L2380"
     },
     {
       "id": "tools_selftest_testskilldoc_test_the_merge_role_keeps_the_rules_a_merge_can_break",
@@ -2976,7 +2964,7 @@
       "file_type": "code",
       "norm_label": ".test_the_merge_role_keeps_the_rules_a_merge_can_break()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2288"
+      "source_location": "L2333"
     },
     {
       "id": "tools_selftest_testevaluationfailures_test_a_failed_stage_produces_an_unscorable_candidate",
@@ -3012,7 +3000,7 @@
       "file_type": "code",
       "norm_label": ".test_a_constant_shift_is_wiring_a_variable_shift_is_not()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2134"
+      "source_location": "L2179"
     },
     {
       "id": "tools_selftest_testrtlscandepth_test_adder_depth_grows_with_width",
@@ -3024,7 +3012,7 @@
       "file_type": "code",
       "norm_label": ".test_adder_depth_grows_with_width()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2129"
+      "source_location": "L2174"
     },
     {
       "id": "tools_selftest_testrtlscandepth_test_an_unparsable_expression_returns_zero_and_does_not_raise",
@@ -3036,7 +3024,7 @@
       "file_type": "code",
       "norm_label": ".test_an_unparsable_expression_returns_zero_and_does_not_raise()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2139"
+      "source_location": "L2184"
     },
     {
       "id": "tools_selftest_testskilllearning_test_records_every_labelled_candidate_with_its_advantage",
@@ -3531,30 +3519,6 @@
       "source_location": "L1024"
     },
     {
-      "id": "tools_selftest_testpathselmetrics_test_similarity_is_reflexive_symmetric_and_bounded",
-      "label": ".test_similarity_is_reflexive_symmetric_and_bounded()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "_NoRtl",
-      "file_type": "code",
-      "norm_label": ".test_similarity_is_reflexive_symmetric_and_bounded()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L795"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_feats",
-      "label": "._feats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "_NoRtl",
-      "file_type": "code",
-      "norm_label": "._feats()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L866"
-    },
-    {
       "id": "tools_selftest_testeq3_test_area_penalty_threshold",
       "label": ".test_area_penalty_threshold()",
       "_callable": true,
@@ -3800,7 +3764,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "code",
       "norm_label": ".test_a_group_resolves_to_its_own_clock()",
       "source_file": "tools/selftest.py",
@@ -3812,7 +3776,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "code",
       "norm_label": ".test_a_single_clock_design_never_reports_a_fallback()",
       "source_file": "tools/selftest.py",
@@ -3824,7 +3788,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "code",
       "norm_label": ".test_an_unknown_group_is_flagged_not_silently_defaulted()",
       "source_file": "tools/selftest.py",
@@ -3836,83 +3800,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "code",
       "norm_label": "._two()",
       "source_file": "tools/selftest.py",
       "source_location": "L1322"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_a_near_tie_within_one_domain_still_splits",
-      "label": ".test_a_near_tie_within_one_domain_still_splits()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": ".test_a_near_tie_within_one_domain_still_splits()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1430"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_an_unresolved_group_is_reported_in_the_selection",
-      "label": ".test_an_unresolved_group_is_reported_in_the_selection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": ".test_an_unresolved_group_is_reported_in_the_selection()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1444"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_criticality_ranks_by_share_of_each_paths_own_budget",
-      "label": ".test_criticality_ranks_by_share_of_each_paths_own_budget()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": ".test_criticality_ranks_by_share_of_each_paths_own_budget()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1415"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_each_path_carries_its_own_clocks_period",
-      "label": ".test_each_path_carries_its_own_clocks_period()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": ".test_each_path_carries_its_own_clocks_period()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1368"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_equal_slack_in_a_slower_domain_is_less_severe",
-      "label": ".test_equal_slack_in_a_slower_domain_is_less_severe()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": ".test_equal_slack_in_a_slower_domain_is_less_severe()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1377"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_two",
-      "label": "._two()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "code",
-      "norm_label": "._two()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1362"
     },
     {
       "id": "tools_selftest_testskills_lib",
@@ -4068,7 +3960,7 @@
       "file_type": "code",
       "norm_label": "._files()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1832"
+      "source_location": "L1877"
     },
     {
       "id": "tools_selftest_testequivalencecontract_multi",
@@ -4080,7 +3972,7 @@
       "file_type": "code",
       "norm_label": "._multi()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1822"
+      "source_location": "L1867"
     },
     {
       "id": "tools_selftest_testequivalencecontract_one",
@@ -4092,7 +3984,7 @@
       "file_type": "code",
       "norm_label": "._one()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1828"
+      "source_location": "L1873"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_a_bounded_multiclock_pass_is_not_an_unbounded_proof",
@@ -4104,7 +3996,7 @@
       "file_type": "code",
       "norm_label": ".test_a_bounded_multiclock_pass_is_not_an_unbounded_proof()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1925"
+      "source_location": "L1970"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_a_design_can_record_the_depth_it_verified",
@@ -4116,7 +4008,7 @@
       "file_type": "code",
       "norm_label": ".test_a_design_can_record_the_depth_it_verified()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1887"
+      "source_location": "L1932"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_a_missing_file_still_reports_as_an_error",
@@ -4128,7 +4020,7 @@
       "file_type": "code",
       "norm_label": ".test_a_missing_file_still_reports_as_an_error()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1935"
+      "source_location": "L1980"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_declining_is_neither_a_pass_nor_a_refutation",
@@ -4140,7 +4032,7 @@
       "file_type": "code",
       "norm_label": ".test_declining_is_neither_a_pass_nor_a_refutation()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1912"
+      "source_location": "L1957"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_eqy_still_declines_on_multi_clock",
@@ -4152,7 +4044,7 @@
       "file_type": "code",
       "norm_label": ".test_eqy_still_declines_on_multi_clock()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1904"
+      "source_location": "L1949"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_multi_clock_depth_is_not_reduced",
@@ -4164,7 +4056,7 @@
       "file_type": "code",
       "norm_label": ".test_multi_clock_depth_is_not_reduced()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1860"
+      "source_location": "L1905"
     },
     {
       "id": "tools_selftest_testequivalencecontract_test_multi_clock_reaches_the_miter_with_clk2fflogic_asked_for",
@@ -4176,7 +4068,7 @@
       "file_type": "code",
       "norm_label": ".test_multi_clock_reaches_the_miter_with_clk2fflogic_asked_for()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1838"
+      "source_location": "L1883"
     },
     {
       "id": "tools_selftest_testpathselcriticality_test_a_clearly_worse_cone_keeps_the_weight",
@@ -4272,7 +4164,7 @@
       "file_type": "code",
       "norm_label": "._cand()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1946"
+      "source_location": "L1991"
     },
     {
       "id": "tools_selftest_testmerge_test_a_reformatted_candidate_is_excluded_with_a_reason",
@@ -4284,7 +4176,7 @@
       "file_type": "code",
       "norm_label": ".test_a_reformatted_candidate_is_excluded_with_a_reason()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1977"
+      "source_location": "L2022"
     },
     {
       "id": "tools_selftest_testmerge_test_an_unchanged_candidate_contributes_nothing",
@@ -4296,7 +4188,7 @@
       "file_type": "code",
       "norm_label": ".test_an_unchanged_candidate_contributes_nothing()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1986"
+      "source_location": "L2031"
     },
     {
       "id": "tools_selftest_testmerge_test_disjoint_edits_both_apply",
@@ -4308,7 +4200,7 @@
       "file_type": "code",
       "norm_label": ".test_disjoint_edits_both_apply()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1949"
+      "source_location": "L1994"
     },
     {
       "id": "tools_selftest_testmerge_test_insertions_claim_the_joint_they_sit_in",
@@ -4320,7 +4212,7 @@
       "file_type": "code",
       "norm_label": ".test_insertions_claim_the_joint_they_sit_in()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2008"
+      "source_location": "L2053"
     },
     {
       "id": "tools_selftest_testmerge_test_overlapping_edits_are_dropped_not_arbitrated",
@@ -4332,7 +4224,7 @@
       "file_type": "code",
       "norm_label": ".test_overlapping_edits_are_dropped_not_arbitrated()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1957"
+      "source_location": "L2002"
     },
     {
       "id": "tools_selftest_testmerge_test_subsets_are_every_combination_of_two_or_more",
@@ -4344,7 +4236,7 @@
       "file_type": "code",
       "norm_label": ".test_subsets_are_every_combination_of_two_or_more()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2001"
+      "source_location": "L2046"
     },
     {
       "id": "tools_selftest_testmerge_test_trailing_whitespace_is_not_a_hunk",
@@ -4356,7 +4248,7 @@
       "file_type": "code",
       "norm_label": ".test_trailing_whitespace_is_not_a_hunk()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1992"
+      "source_location": "L2037"
     },
     {
       "id": "tools_selftest_testmerge_test_union_is_order_independent",
@@ -4368,7 +4260,7 @@
       "file_type": "code",
       "norm_label": ".test_union_is_order_independent()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1966"
+      "source_location": "L2011"
     },
     {
       "id": "tools_astra_base_env",
@@ -4848,7 +4740,7 @@
       "file_type": "code",
       "norm_label": "._patterns()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2051"
+      "source_location": "L2096"
     },
     {
       "id": "tools_selftest_testrtlscan_scan",
@@ -4860,7 +4752,7 @@
       "file_type": "code",
       "norm_label": "._scan()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2045"
+      "source_location": "L2090"
     },
     {
       "id": "tools_selftest_testrtlscan_test_a_balanced_tree_is_the_negative_control",
@@ -4872,7 +4764,7 @@
       "file_type": "code",
       "norm_label": ".test_a_balanced_tree_is_the_negative_control()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2058"
+      "source_location": "L2103"
     },
     {
       "id": "tools_selftest_testrtlscan_test_chain_finding_carries_the_depth_it_claims",
@@ -4884,7 +4776,7 @@
       "file_type": "code",
       "norm_label": ".test_chain_finding_carries_the_depth_it_claims()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2063"
+      "source_location": "L2108"
     },
     {
       "id": "tools_selftest_testrtlscan_test_finds_a_generate_elaborated_chain",
@@ -4896,7 +4788,7 @@
       "file_type": "code",
       "norm_label": ".test_finds_a_generate_elaborated_chain()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2084"
+      "source_location": "L2129"
     },
     {
       "id": "tools_selftest_testrtlscan_test_finds_a_serial_reduction_chain",
@@ -4908,7 +4800,7 @@
       "file_type": "code",
       "norm_label": ".test_finds_a_serial_reduction_chain()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2054"
+      "source_location": "L2099"
     },
     {
       "id": "tools_selftest_testrtlscan_test_shipped_designs_behave_as_documented",
@@ -4920,7 +4812,7 @@
       "file_type": "code",
       "norm_label": ".test_shipped_designs_behave_as_documented()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2117"
+      "source_location": "L2162"
     },
     {
       "id": "tools_selftest_testrtlscan_test_statements_span_lines",
@@ -4932,7 +4824,7 @@
       "file_type": "code",
       "norm_label": ".test_statements_span_lines()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2104"
+      "source_location": "L2149"
     },
     {
       "id": "tools_selftest_testrtlscan_test_width_expressions_are_not_arithmetic",
@@ -4944,7 +4836,7 @@
       "file_type": "code",
       "norm_label": ".test_width_expressions_are_not_arithmetic()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2070"
+      "source_location": "L2115"
     },
     {
       "id": "tools_selftest_testportfoliobudget_args",
@@ -4956,7 +4848,7 @@
       "file_type": "code",
       "norm_label": "._args()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2401"
+      "source_location": "L2446"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_a_dry_run_costs_nothing",
@@ -4968,7 +4860,7 @@
       "file_type": "code",
       "norm_label": ".test_a_dry_run_costs_nothing()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2424"
+      "source_location": "L2469"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_each_switch_removes_one_call_per_iteration",
@@ -4980,7 +4872,7 @@
       "file_type": "code",
       "norm_label": ".test_each_switch_removes_one_call_per_iteration()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2416"
+      "source_location": "L2461"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_portfolio_runs_write_to_their_own_prefix",
@@ -4992,7 +4884,7 @@
       "file_type": "code",
       "norm_label": ".test_portfolio_runs_write_to_their_own_prefix()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2441"
+      "source_location": "L2486"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_the_default_ceiling_allows_four_iterations",
@@ -5004,7 +4896,7 @@
       "file_type": "code",
       "norm_label": ".test_the_default_ceiling_allows_four_iterations()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2404"
+      "source_location": "L2449"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_the_documented_formula",
@@ -5016,7 +4908,7 @@
       "file_type": "code",
       "norm_label": ".test_the_documented_formula()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2411"
+      "source_location": "L2456"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_the_model_is_selectable_for_a_head_to_head",
@@ -5028,7 +4920,7 @@
       "file_type": "code",
       "norm_label": ".test_the_model_is_selectable_for_a_head_to_head()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2427"
+      "source_location": "L2472"
     },
     {
       "id": "tools_selftest_testportfoliobudget_test_the_pool_default_is_widened",
@@ -5040,7 +4932,7 @@
       "file_type": "code",
       "norm_label": ".test_the_pool_default_is_widened()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2435"
+      "source_location": "L2480"
     },
     {
       "id": "tools_selftest_testskillmerging_setup",
@@ -5052,7 +4944,7 @@
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2159"
+      "source_location": "L2204"
     },
     {
       "id": "tools_selftest_testskillmerging_test_a_genuinely_different_strategy_stays_separate",
@@ -5064,7 +4956,7 @@
       "file_type": "code",
       "norm_label": ".test_a_genuinely_different_strategy_stays_separate()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2182"
+      "source_location": "L2227"
     },
     {
       "id": "tools_selftest_testskillmerging_test_a_verdict_is_rendered_as_history_not_as_advice",
@@ -5076,7 +4968,7 @@
       "file_type": "code",
       "norm_label": ".test_a_verdict_is_rendered_as_history_not_as_advice()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2234"
+      "source_location": "L2279"
     },
     {
       "id": "tools_selftest_testskillmerging_test_a_verdict_never_founds_an_entry",
@@ -5088,7 +4980,7 @@
       "file_type": "code",
       "norm_label": ".test_a_verdict_never_founds_an_entry()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2191"
+      "source_location": "L2236"
     },
     {
       "id": "tools_selftest_testskillmerging_test_a_verdict_still_accumulates_against_a_real_entry",
@@ -5100,7 +4992,7 @@
       "file_type": "code",
       "norm_label": ".test_a_verdict_still_accumulates_against_a_real_entry()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2200"
+      "source_location": "L2245"
     },
     {
       "id": "tools_selftest_testskillmerging_test_consolidate_repairs_an_already_fragmented_library",
@@ -5112,7 +5004,7 @@
       "file_type": "code",
       "norm_label": ".test_consolidate_repairs_an_already_fragmented_library()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2212"
+      "source_location": "L2257"
     },
     {
       "id": "tools_selftest_testskillmerging_test_different_words_do_not_match",
@@ -5124,7 +5016,7 @@
       "file_type": "code",
       "norm_label": ".test_different_words_do_not_match()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2167"
+      "source_location": "L2212"
     },
     {
       "id": "tools_selftest_testskillmerging_test_verbose_and_terse_phrasings_of_one_bottleneck_merge",
@@ -5136,7 +5028,7 @@
       "file_type": "code",
       "norm_label": ".test_verbose_and_terse_phrasings_of_one_bottleneck_merge()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2172"
+      "source_location": "L2217"
     },
     {
       "id": "tools_selftest_testskillmerging_test_word_forms_of_one_word_match",
@@ -5148,7 +5040,7 @@
       "file_type": "code",
       "norm_label": ".test_word_forms_of_one_word_match()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2162"
+      "source_location": "L2207"
     },
     {
       "id": "tools_selftest_stage",
@@ -5379,6 +5271,66 @@
       "source_location": "L1408"
     },
     {
+      "id": "tools_selftest_testmulticlockranking_test_a_near_tie_within_one_domain_still_splits",
+      "label": ".test_a_near_tie_within_one_domain_still_splits()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_a_near_tie_within_one_domain_still_splits()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1430"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_test_an_unresolved_group_is_reported_in_the_selection",
+      "label": ".test_an_unresolved_group_is_reported_in_the_selection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_an_unresolved_group_is_reported_in_the_selection()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1444"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_test_criticality_ranks_by_share_of_each_paths_own_budget",
+      "label": ".test_criticality_ranks_by_share_of_each_paths_own_budget()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_criticality_ranks_by_share_of_each_paths_own_budget()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1415"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_test_each_path_carries_its_own_clocks_period",
+      "label": ".test_each_path_carries_its_own_clocks_period()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_each_path_carries_its_own_clocks_period()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1368"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_test_equal_slack_in_a_slower_domain_is_less_severe",
+      "label": ".test_equal_slack_in_a_slower_domain_is_less_severe()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_equal_slack_in_a_slower_domain_is_less_severe()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1377"
+    },
+    {
       "id": "tools_selftest_testmulticlockranking_test_the_old_single_period_behaviour_would_have_tied_them",
       "label": ".test_the_old_single_period_behaviour_would_have_tied_them()",
       "_callable": true,
@@ -5389,6 +5341,18 @@
       "norm_label": ".test_the_old_single_period_behaviour_would_have_tied_them()",
       "source_file": "tools/selftest.py",
       "source_location": "L1396"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_two",
+      "label": "._two()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": "._two()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1362"
     },
     {
       "id": "tools_selftest_testpathselcriticality_test_a_cone_holds_its_weight_against_its_own_bit_slices",
@@ -5413,90 +5377,6 @@
       "norm_label": ".test_a_path_with_no_slack_reported_cannot_win()",
       "source_file": "tools/selftest.py",
       "source_location": "L1014"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_a_fully_passing_design_does_not_divide_by_zero",
-      "label": ".test_a_fully_passing_design_does_not_divide_by_zero()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_a_fully_passing_design_does_not_divide_by_zero()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L909"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_a_passing_path_still_has_a_severity",
-      "label": ".test_a_passing_path_still_has_a_severity()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_a_passing_path_still_has_a_severity()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L885"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_impact_uses_the_probability_when_one_is_given",
-      "label": ".test_impact_uses_the_probability_when_one_is_given()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_impact_uses_the_probability_when_one_is_given()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L917"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_severity_is_strictly_monotone_across_the_whole_range",
-      "label": ".test_severity_is_strictly_monotone_across_the_whole_range()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_severity_is_strictly_monotone_across_the_whole_range()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L871"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_severity_puts_the_constraint_at_the_midpoint",
-      "label": ".test_severity_puts_the_constraint_at_the_midpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_severity_puts_the_constraint_at_the_midpoint()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L882"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_severity_saturates_at_one_period",
-      "label": ".test_severity_saturates_at_one_period()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_severity_saturates_at_one_period()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L896"
-    },
-    {
-      "id": "tools_selftest_testpathselvalue_test_tns_shares_sum_to_one_when_violating",
-      "label": ".test_tns_shares_sum_to_one_when_violating()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_tns_shares_sum_to_one_when_violating()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L900"
     },
     {
       "id": "tools_selftest_testclockgroupparsing_test_a_sub_picosecond_slack_is_not_rescaled",
@@ -6183,6 +6063,18 @@
       "source_location": "L140"
     },
     {
+      "id": "tools_protect_assigns_protected",
+      "label": "_assigns_protected()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "protect.py",
+      "file_type": "code",
+      "norm_label": "_assigns_protected()",
+      "source_file": "tools/protect.py",
+      "source_location": "L88"
+    },
+    {
       "id": "tools_protect_check_files",
       "label": "check_files()",
       "_callable": true,
@@ -6192,7 +6084,7 @@
       "file_type": "code",
       "norm_label": "check_files()",
       "source_file": "tools/protect.py",
-      "source_location": "L121"
+      "source_location": "L174"
     },
     {
       "id": "tools_protect_describe",
@@ -6204,7 +6096,7 @@
       "file_type": "code",
       "norm_label": "describe()",
       "source_file": "tools/protect.py",
-      "source_location": "L144"
+      "source_location": "L197"
     },
     {
       "id": "tools_protect_identifiers",
@@ -6216,7 +6108,7 @@
       "file_type": "code",
       "norm_label": "_identifiers()",
       "source_file": "tools/protect.py",
-      "source_location": "L42"
+      "source_location": "L56"
     },
     {
       "id": "tools_protect_matches",
@@ -6228,7 +6120,7 @@
       "file_type": "code",
       "norm_label": "matches()",
       "source_file": "tools/protect.py",
-      "source_location": "L56"
+      "source_location": "L70"
     },
     {
       "id": "tools_protect_normalise",
@@ -6240,7 +6132,7 @@
       "file_type": "code",
       "norm_label": "_normalise()",
       "source_file": "tools/protect.py",
-      "source_location": "L46"
+      "source_location": "L60"
     },
     {
       "id": "tools_protect_protected_lines",
@@ -6252,7 +6144,19 @@
       "file_type": "code",
       "norm_label": "protected_lines()",
       "source_file": "tools/protect.py",
-      "source_location": "L60"
+      "source_location": "L74"
+    },
+    {
+      "id": "tools_protect_references",
+      "label": "references()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "protect.py",
+      "file_type": "code",
+      "norm_label": "references()",
+      "source_file": "tools/protect.py",
+      "source_location": "L103"
     },
     {
       "id": "tools_protect_regions",
@@ -6264,7 +6168,7 @@
       "file_type": "code",
       "norm_label": "regions()",
       "source_file": "tools/protect.py",
-      "source_location": "L73"
+      "source_location": "L123"
     },
     {
       "id": "tools_protect_render",
@@ -6276,7 +6180,7 @@
       "file_type": "code",
       "norm_label": "render()",
       "source_file": "tools/protect.py",
-      "source_location": "L162"
+      "source_location": "L215"
     },
     {
       "id": "tools_protect_violations",
@@ -6288,7 +6192,7 @@
       "file_type": "code",
       "norm_label": "violations()",
       "source_file": "tools/protect.py",
-      "source_location": "L89"
+      "source_location": "L139"
     },
     {
       "id": "tools_selftest_teststageparameterisation_run_dir",
@@ -6300,7 +6204,7 @@
       "file_type": "code",
       "norm_label": "._run_dir()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2353"
+      "source_location": "L2398"
     },
     {
       "id": "tools_selftest_teststageparameterisation_test_an_unknown_stage_raises",
@@ -6312,7 +6216,7 @@
       "file_type": "code",
       "norm_label": ".test_an_unknown_stage_raises()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2380"
+      "source_location": "L2425"
     },
     {
       "id": "tools_selftest_teststageparameterisation_test_each_stage_reads_its_own_report",
@@ -6324,7 +6228,7 @@
       "file_type": "code",
       "norm_label": ".test_each_stage_reads_its_own_report()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2366"
+      "source_location": "L2411"
     },
     {
       "id": "tools_selftest_teststageparameterisation_test_pathsel_reports_a_missing_report_clearly",
@@ -6336,7 +6240,7 @@
       "file_type": "code",
       "norm_label": ".test_pathsel_reports_a_missing_report_clearly()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2384"
+      "source_location": "L2429"
     },
     {
       "id": "tools_selftest_teststageparameterisation_test_the_default_is_post_synthesis",
@@ -6348,7 +6252,7 @@
       "file_type": "code",
       "norm_label": ".test_the_default_is_post_synthesis()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2374"
+      "source_location": "L2419"
     },
     {
       "id": "tools_selftest_testportfolioagents_test_agents_reuse_the_base_reply_parsers",
@@ -6360,7 +6264,7 @@
       "file_type": "code",
       "norm_label": ".test_agents_reuse_the_base_reply_parsers()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2456"
+      "source_location": "L2501"
     },
     {
       "id": "tools_selftest_testportfolioagents_test_base_loop_prompts_are_untouched",
@@ -6372,7 +6276,7 @@
       "file_type": "code",
       "norm_label": ".test_base_loop_prompts_are_untouched()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2467"
+      "source_location": "L2512"
     },
     {
       "id": "tools_selftest_testportfolioagents_test_specialists_are_told_to_stay_in_scope",
@@ -6384,7 +6288,7 @@
       "file_type": "code",
       "norm_label": ".test_specialists_are_told_to_stay_in_scope()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2447"
+      "source_location": "L2492"
     },
     {
       "id": "tools_selftest_testportfolioagents_test_the_merge_agent_may_decline_to_include_everything",
@@ -6396,7 +6300,7 @@
       "file_type": "code",
       "norm_label": ".test_the_merge_agent_may_decline_to_include_everything()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2452"
+      "source_location": "L2497"
     },
     {
       "id": "tools_selftest_testportfolioagents_test_the_skill_document_reaches_every_agent",
@@ -6408,7 +6312,7 @@
       "file_type": "code",
       "norm_label": ".test_the_skill_document_reaches_every_agent()",
       "source_file": "tools/selftest.py",
-      "source_location": "L2460"
+      "source_location": "L2505"
     },
     {
       "id": "tools_selftest_testpathselmetrics_test_hist_similarity_bounds",
@@ -6435,6 +6339,18 @@
       "source_location": "L771"
     },
     {
+      "id": "tools_selftest_testpathselmetrics_test_similarity_is_reflexive_symmetric_and_bounded",
+      "label": ".test_similarity_is_reflexive_symmetric_and_bounded()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "TestPathSelMetrics",
+      "file_type": "code",
+      "norm_label": ".test_similarity_is_reflexive_symmetric_and_bounded()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L795"
+    },
+    {
       "id": "tools_selftest_testpathselmetrics_test_weighted_jaccard_reduces_to_jaccard_on_indicators",
       "label": ".test_weighted_jaccard_reduces_to_jaccard_on_indicators()",
       "_callable": true,
@@ -6457,6 +6373,18 @@
       "norm_label": ".test_weighted_jaccard_separates_unequal_weights()",
       "source_file": "tools/selftest.py",
       "source_location": "L783"
+    },
+    {
+      "id": "tools_drrtl_skilllearningagent_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "skills.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "tools/drrtl.py",
+      "source_location": "L655"
     },
     {
       "id": "tools_skills_classify",
@@ -6792,7 +6720,19 @@
       "file_type": "code",
       "norm_label": ".test_a_protected_edit_is_undecided_not_a_refutation()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1803"
+      "source_location": "L1848"
+    },
+    {
+      "id": "tools_selftest_testprotectedregions_test_bypassing_a_synchroniser_stage_on_a_read_is_caught",
+      "label": ".test_bypassing_a_synchroniser_stage_on_a_read_is_caught()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "code",
+      "norm_label": ".test_bypassing_a_synchroniser_stage_on_a_read_is_caught()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1819"
     },
     {
       "id": "tools_selftest_testprotectedregions_test_collapsing_a_synchroniser_is_caught",
@@ -6831,6 +6771,30 @@
       "source_location": "L1782"
     },
     {
+      "id": "tools_selftest_testprotectedregions_test_dropping_a_protected_reference_is_caught",
+      "label": ".test_dropping_a_protected_reference_is_caught()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "code",
+      "norm_label": ".test_dropping_a_protected_reference_is_caught()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1829"
+    },
+    {
+      "id": "tools_selftest_testprotectedregions_test_reading_a_protected_signal_does_not_freeze_the_line",
+      "label": ".test_reading_a_protected_signal_does_not_freeze_the_line()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "code",
+      "norm_label": ".test_reading_a_protected_signal_does_not_freeze_the_line()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1803"
+    },
+    {
       "id": "tools_selftest_testprotectedregions_test_reindenting_and_recommenting_are_not_edits",
       "label": ".test_reindenting_and_recommenting_are_not_edits()",
       "_callable": true,
@@ -6853,6 +6817,114 @@
       "norm_label": ".test_the_benchmark_declares_patterns_that_match_its_own_cdc()",
       "source_file": "tools/selftest.py",
       "source_location": "L1793"
+    },
+    {
+      "id": "tools_selftest_testprotectedregions_test_the_real_netproc_candidates_are_allowed",
+      "label": ".test_the_real_netproc_candidates_are_allowed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "code",
+      "norm_label": ".test_the_real_netproc_candidates_are_allowed()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1834"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_feats",
+      "label": "._feats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": "._feats()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L866"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_a_fully_passing_design_does_not_divide_by_zero",
+      "label": ".test_a_fully_passing_design_does_not_divide_by_zero()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_a_fully_passing_design_does_not_divide_by_zero()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L909"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_a_passing_path_still_has_a_severity",
+      "label": ".test_a_passing_path_still_has_a_severity()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_a_passing_path_still_has_a_severity()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L885"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_impact_uses_the_probability_when_one_is_given",
+      "label": ".test_impact_uses_the_probability_when_one_is_given()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_impact_uses_the_probability_when_one_is_given()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L917"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_severity_is_strictly_monotone_across_the_whole_range",
+      "label": ".test_severity_is_strictly_monotone_across_the_whole_range()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_severity_is_strictly_monotone_across_the_whole_range()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L871"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_severity_puts_the_constraint_at_the_midpoint",
+      "label": ".test_severity_puts_the_constraint_at_the_midpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_severity_puts_the_constraint_at_the_midpoint()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L882"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_severity_saturates_at_one_period",
+      "label": ".test_severity_saturates_at_one_period()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_severity_saturates_at_one_period()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L896"
+    },
+    {
+      "id": "tools_selftest_testpathselvalue_test_tns_shares_sum_to_one_when_violating",
+      "label": ".test_tns_shares_sum_to_one_when_violating()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "code",
+      "norm_label": ".test_tns_shares_sum_to_one_when_violating()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L900"
     },
     {
       "id": "tools_pathsel_pathtarget_to_dict",
@@ -9262,7 +9334,7 @@
       "source_location": "L6"
     },
     {
-      "id": "tools_selftest_rationale_2258",
+      "id": "tools_selftest_rationale_2303",
       "label": "Statistics live in the library, where they are measured. A skill document\u2026",
       "_origin": "ast",
       "community": 18,
@@ -9270,10 +9342,10 @@
       "file_type": "rationale",
       "norm_label": "statistics live in the library, where they are measured. a skill document...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2258"
+      "source_location": "L2303"
     },
     {
-      "id": "tools_selftest_rationale_2296",
+      "id": "tools_selftest_rationale_2341",
       "label": "It runs before synthesis, so a timing report does not exist yet.",
       "_origin": "ast",
       "community": 18,
@@ -9281,10 +9353,10 @@
       "file_type": "rationale",
       "norm_label": "it runs before synthesis, so a timing report does not exist yet.",
       "source_file": "tools/selftest.py",
-      "source_location": "L2296"
+      "source_location": "L2341"
     },
     {
-      "id": "tools_selftest_rationale_2307",
+      "id": "tools_selftest_rationale_2352",
       "label": "Filtering must never silently empty a hand-written document.",
       "_origin": "ast",
       "community": 18,
@@ -9292,10 +9364,10 @@
       "file_type": "rationale",
       "norm_label": "filtering must never silently empty a hand-written document.",
       "source_file": "tools/selftest.py",
-      "source_location": "L2307"
+      "source_location": "L2352"
     },
     {
-      "id": "tools_selftest_rationale_2323",
+      "id": "tools_selftest_rationale_2368",
       "label": "A seed is an untested suggestion and must stay one until a run gives it a\u2026",
       "_origin": "ast",
       "community": 18,
@@ -9303,10 +9375,10 @@
       "file_type": "rationale",
       "norm_label": "a seed is an untested suggestion and must stay one until a run gives it a...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2323"
+      "source_location": "L2368"
     },
     {
-      "id": "tools_selftest_rationale_2336",
+      "id": "tools_selftest_rationale_2381",
       "label": "The catalogue is an index. Statistics belong in the library, where they were\u2026",
       "_origin": "ast",
       "community": 18,
@@ -9314,7 +9386,7 @@
       "file_type": "rationale",
       "norm_label": "the catalogue is an index. statistics belong in the library, where they were...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2336"
+      "source_location": "L2381"
     },
     {
       "id": "tools_selftest",
@@ -9657,7 +9729,7 @@
       "node_kind": "heading",
       "norm_label": "1. what this repo is",
       "source_file": "HANDOFF.md",
-      "source_location": "L18"
+      "source_location": "L20"
     },
     {
       "id": "handoff_2_files",
@@ -9669,7 +9741,7 @@
       "node_kind": "heading",
       "norm_label": "2. files",
       "source_file": "HANDOFF.md",
-      "source_location": "L54"
+      "source_location": "L56"
     },
     {
       "id": "handoff_3_measured_results",
@@ -9681,7 +9753,7 @@
       "node_kind": "heading",
       "norm_label": "3. measured results",
       "source_file": "HANDOFF.md",
-      "source_location": "L79"
+      "source_location": "L81"
     },
     {
       "id": "handoff_4_defects_already_found_and_fixed",
@@ -9693,7 +9765,7 @@
       "node_kind": "heading",
       "norm_label": "4. defects already found and fixed",
       "source_file": "HANDOFF.md",
-      "source_location": "L129"
+      "source_location": "L157"
     },
     {
       "id": "handoff_5_objectives_status",
@@ -9705,7 +9777,7 @@
       "node_kind": "heading",
       "norm_label": "5. objectives status",
       "source_file": "HANDOFF.md",
-      "source_location": "L149"
+      "source_location": "L177"
     },
     {
       "id": "handoff_6_1_multi_clock_support_done",
@@ -9717,7 +9789,7 @@
       "node_kind": "heading",
       "norm_label": "6.1 multi-clock support \u2014 done",
       "source_file": "HANDOFF.md",
-      "source_location": "L192"
+      "source_location": "L220"
     },
     {
       "id": "handoff_6_2_the_benchmark_design_built_designs_soc_bench",
@@ -9729,7 +9801,7 @@
       "node_kind": "heading",
       "norm_label": "6.2 the benchmark design \u2014 built (`designs/soc_bench/`)",
       "source_file": "HANDOFF.md",
-      "source_location": "L261"
+      "source_location": "L289"
     },
     {
       "id": "handoff_6_3_the_equivalence_contract_decided",
@@ -9741,7 +9813,7 @@
       "node_kind": "heading",
       "norm_label": "6.3 the equivalence contract \u2014 decided",
       "source_file": "HANDOFF.md",
-      "source_location": "L235"
+      "source_location": "L263"
     },
     {
       "id": "handoff_6_4_what_the_benchmark_still_needs_from_the_framework",
@@ -9753,7 +9825,7 @@
       "node_kind": "heading",
       "norm_label": "6.4 what the benchmark still needs from the framework",
       "source_file": "HANDOFF.md",
-      "source_location": "L292"
+      "source_location": "L320"
     },
     {
       "id": "handoff_6_the_upcoming_work",
@@ -9765,7 +9837,7 @@
       "node_kind": "heading",
       "norm_label": "6. the upcoming work",
       "source_file": "HANDOFF.md",
-      "source_location": "L177"
+      "source_location": "L205"
     },
     {
       "id": "handoff_7_things_that_will_bite_you",
@@ -9777,7 +9849,7 @@
       "node_kind": "heading",
       "norm_label": "7. things that will bite you",
       "source_file": "HANDOFF.md",
-      "source_location": "L421"
+      "source_location": "L464"
     },
     {
       "id": "handoff_8_navigating_the_code_graphify",
@@ -9789,7 +9861,7 @@
       "node_kind": "heading",
       "norm_label": "8. navigating the code \u2014 graphify",
       "source_file": "HANDOFF.md",
-      "source_location": "L470"
+      "source_location": "L513"
     },
     {
       "id": "handoff_9_verify_without_tools_or_a_model",
@@ -9801,7 +9873,7 @@
       "node_kind": "heading",
       "norm_label": "9. verify without tools or a model",
       "source_file": "HANDOFF.md",
-      "source_location": "L515"
+      "source_location": "L558"
     },
     {
       "id": "handoff_handoff_astra_path_portfolio_addon",
@@ -9825,7 +9897,7 @@
       "node_kind": "heading",
       "norm_label": "writing a multi-clock sdc \u2014 four things that cost an afternoon each",
       "source_file": "HANDOFF.md",
-      "source_location": "L438"
+      "source_location": "L481"
     },
     {
       "id": "tools_selftest_rationale_46",
@@ -9942,7 +10014,7 @@
       "label": "Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "rationale",
       "norm_label": "resolving a path group to a period. this is the piece handoff section 6.1 calls...",
       "source_file": "tools/selftest.py",
@@ -9953,66 +10025,11 @@
       "label": "The failure mode being guarded: falling back to the primary period is sometimes\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "TestMultiClockRanking",
+      "community_name": "TestClockResolution",
       "file_type": "rationale",
       "norm_label": "the failure mode being guarded: falling back to the primary period is sometimes...",
       "source_file": "tools/selftest.py",
       "source_location": "L1334"
-    },
-    {
-      "id": "tools_selftest_rationale_1350",
-      "label": "The trap: paths normalised against a period that is not their own. Nothing\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "rationale",
-      "norm_label": "the trap: paths normalised against a period that is not their own. nothing...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1350"
-    },
-    {
-      "id": "tools_selftest_rationale_1378",
-      "label": "Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "rationale",
-      "norm_label": "half a nanosecond short of a 2 ns cycle is a quarter of the budget. half a...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1378"
-    },
-    {
-      "id": "tools_selftest_rationale_1416",
-      "label": "Raw slack cannot order paths in different domains. Here the slow path has the\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "rationale",
-      "norm_label": "raw slack cannot order paths in different domains. here the slow path has the...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1416"
-    },
-    {
-      "id": "tools_selftest_rationale_1431",
-      "label": "The uncertainty model must survive the change of units: two paths a few\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "rationale",
-      "norm_label": "the uncertainty model must survive the change of units: two paths a few...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1431"
-    },
-    {
-      "id": "tools_selftest_rationale_1445",
-      "label": "A path ranked against a period that is not its own is the exact silent failure.\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TestMultiClockRanking",
-      "file_type": "rationale",
-      "norm_label": "a path ranked against a period that is not its own is the exact silent failure....",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1445"
     },
     {
       "id": "tools_selftest_rationale_305",
@@ -10026,7 +10043,7 @@
       "source_location": "L305"
     },
     {
-      "id": "tools_selftest_rationale_1814",
+      "id": "tools_selftest_rationale_1859",
       "label": "docs/equivalence-contract.md, enforced. `sat` models a flop as \"Q at t+1 is D\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10034,10 +10051,10 @@
       "file_type": "rationale",
       "norm_label": "docs/equivalence-contract.md, enforced. `sat` models a flop as \"q at t+1 is d...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1814"
+      "source_location": "L1859"
     },
     {
-      "id": "tools_selftest_rationale_1839",
+      "id": "tools_selftest_rationale_1884",
       "label": "The behaviour that replaced declining: it is checked, not refused, and the Tcl\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10045,10 +10062,10 @@
       "file_type": "rationale",
       "norm_label": "the behaviour that replaced declining: it is checked, not refused, and the tcl...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1839"
+      "source_location": "L1884"
     },
     {
-      "id": "tools_selftest_rationale_1861",
+      "id": "tools_selftest_rationale_1906",
       "label": "The trap this guards. Capping the depth so multi-clock proofs finish makes them\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10056,10 +10073,10 @@
       "file_type": "rationale",
       "norm_label": "the trap this guards. capping the depth so multi-clock proofs finish makes them...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1861"
+      "source_location": "L1906"
     },
     {
-      "id": "tools_selftest_rationale_1888",
+      "id": "tools_selftest_rationale_1933",
       "label": "Adequate depth is a property of the design, not a global default: on dual_clock\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10067,10 +10084,10 @@
       "file_type": "rationale",
       "norm_label": "adequate depth is a property of the design, not a global default: on dual_clock...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1888"
+      "source_location": "L1933"
     },
     {
-      "id": "tools_selftest_rationale_1905",
+      "id": "tools_selftest_rationale_1950",
       "label": "eqy partitions against a common clock and has no multiclock mode, so asking it\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10078,10 +10095,10 @@
       "file_type": "rationale",
       "norm_label": "eqy partitions against a common clock and has no multiclock mode, so asking it...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1905"
+      "source_location": "L1950"
     },
     {
-      "id": "tools_selftest_rationale_1913",
+      "id": "tools_selftest_rationale_1958",
       "label": "Wherever `unsupported` is still returned it must not promote a candidate, and\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10089,10 +10106,10 @@
       "file_type": "rationale",
       "norm_label": "wherever `unsupported` is still returned it must not promote a candidate, and...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1913"
+      "source_location": "L1958"
     },
     {
-      "id": "tools_selftest_rationale_1926",
+      "id": "tools_selftest_rationale_1971",
       "label": "Induction does not converge with free clocks, so every multi-clock verdict is\u2026",
       "_origin": "ast",
       "community": 26,
@@ -10100,7 +10117,7 @@
       "file_type": "rationale",
       "norm_label": "induction does not converge with free clocks, so every multi-clock verdict is...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1926"
+      "source_location": "L1971"
     },
     {
       "id": "tools_selftest_rationale_925",
@@ -10273,7 +10290,7 @@
       "source_location": "L56"
     },
     {
-      "id": "tools_selftest_rationale_1993",
+      "id": "tools_selftest_rationale_2038",
       "label": "A model that re-emits the file with trailing spaces has not edited it, and must\u2026",
       "_origin": "ast",
       "community": 29,
@@ -10281,10 +10298,10 @@
       "file_type": "rationale",
       "norm_label": "a model that re-emits the file with trailing spaces has not edited it, and must...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1993"
+      "source_location": "L2038"
     },
     {
-      "id": "tools_selftest_rationale_2009",
+      "id": "tools_selftest_rationale_2054",
       "label": "Two agents inserting at the same point conflict, even though neither replaced\u2026",
       "_origin": "ast",
       "community": 29,
@@ -10292,7 +10309,7 @@
       "file_type": "rationale",
       "norm_label": "two agents inserting at the same point conflict, even though neither replaced...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2009"
+      "source_location": "L2054"
     },
     {
       "id": "tools_astra",
@@ -10438,7 +10455,7 @@
       "source_location": "L83"
     },
     {
-      "id": "tools_selftest_rationale_2071",
+      "id": "tools_selftest_rationale_2116",
       "label": "`{{(ACC-2*W){p[31]}}, p}` is a sign extension, not a multiply.",
       "_origin": "ast",
       "community": 30,
@@ -10446,10 +10463,10 @@
       "file_type": "rationale",
       "norm_label": "`{{(acc-2*w){p[31]}}, p}` is a sign extension, not a multiply.",
       "source_file": "tools/selftest.py",
-      "source_location": "L2071"
+      "source_location": "L2116"
     },
     {
-      "id": "tools_selftest_rationale_2118",
+      "id": "tools_selftest_rationale_2163",
       "label": "mac_chain declares three bottlenecks; alu32 declares none.",
       "_origin": "ast",
       "community": 30,
@@ -10457,10 +10474,10 @@
       "file_type": "rationale",
       "norm_label": "mac_chain declares three bottlenecks; alu32 declares none.",
       "source_file": "tools/selftest.py",
-      "source_location": "L2118"
+      "source_location": "L2163"
     },
     {
-      "id": "tools_selftest_rationale_2405",
+      "id": "tools_selftest_rationale_2450",
       "label": "A four-iteration ceiling is only reachable if patience allows it: at patience 2\u2026",
       "_origin": "ast",
       "community": 31,
@@ -10468,10 +10485,10 @@
       "file_type": "rationale",
       "norm_label": "a four-iteration ceiling is only reachable if patience allows it: at patience 2...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2405"
+      "source_location": "L2450"
     },
     {
-      "id": "tools_selftest_rationale_2428",
+      "id": "tools_selftest_rationale_2473",
       "label": "The addon must be runnable on the same model as the base loop, or a comparison\u2026",
       "_origin": "ast",
       "community": 31,
@@ -10479,10 +10496,10 @@
       "file_type": "rationale",
       "norm_label": "the addon must be runnable on the same model as the base loop, or a comparison...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2428"
+      "source_location": "L2473"
     },
     {
-      "id": "tools_selftest_rationale_2436",
+      "id": "tools_selftest_rationale_2481",
       "label": "20 paths is one per endpoint, which truncates the TNS denominator on anything\u2026",
       "_origin": "ast",
       "community": 31,
@@ -10490,10 +10507,10 @@
       "file_type": "rationale",
       "norm_label": "20 paths is one per endpoint, which truncates the tns denominator on anything...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2436"
+      "source_location": "L2481"
     },
     {
-      "id": "tools_selftest_rationale_2150",
+      "id": "tools_selftest_rationale_2195",
       "label": "The library must accumulate evidence on one entry, not fragment it. Measured on\u2026",
       "_origin": "ast",
       "community": 32,
@@ -10501,7 +10518,7 @@
       "file_type": "rationale",
       "norm_label": "the library must accumulate evidence on one entry, not fragment it. measured on...",
       "source_file": "tools/selftest.py",
-      "source_location": "L2150"
+      "source_location": "L2195"
     },
     {
       "id": "tools_selftest_rationale_1100",
@@ -10548,6 +10565,28 @@
       "source_location": "L185"
     },
     {
+      "id": "tools_selftest_rationale_1350",
+      "label": "The trap: paths normalised against a period that is not their own. Nothing\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "the trap: paths normalised against a period that is not their own. nothing...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1350"
+    },
+    {
+      "id": "tools_selftest_rationale_1378",
+      "label": "Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "half a nanosecond short of a 2 ns cycle is a quarter of the budget. half a...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1378"
+    },
+    {
       "id": "tools_selftest_rationale_1397",
       "label": "Pinning the bug this replaced: with one period both paths score identically, so\u2026",
       "_origin": "ast",
@@ -10570,6 +10609,39 @@
       "source_location": "L1409"
     },
     {
+      "id": "tools_selftest_rationale_1416",
+      "label": "Raw slack cannot order paths in different domains. Here the slow path has the\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "raw slack cannot order paths in different domains. here the slow path has the...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1416"
+    },
+    {
+      "id": "tools_selftest_rationale_1431",
+      "label": "The uncertainty model must survive the change of units: two paths a few\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "the uncertainty model must survive the change of units: two paths a few...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1431"
+    },
+    {
+      "id": "tools_selftest_rationale_1445",
+      "label": "A path ranked against a period that is not its own is the exact silent failure.\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "a path ranked against a period that is not its own is the exact silent failure....",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1445"
+    },
+    {
       "id": "tools_selftest_rationale_1456",
       "label": "criticality() works in cycles of each path's own clock. On a single-clock\u2026",
       "_origin": "ast",
@@ -10590,28 +10662,6 @@
       "norm_label": "a synthetic opensta path, in the shape parse_sta produces. paths through one...",
       "source_file": "tools/selftest.py",
       "source_location": "L739"
-    },
-    {
-      "id": "tools_selftest_rationale_872",
-      "label": "Both halves matter. A met design must be rankable (the old gate zeroed it), and\u2026",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "rationale",
-      "norm_label": "both halves matter. a met design must be rankable (the old gate zeroed it), and...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L872"
-    },
-    {
-      "id": "tools_selftest_rationale_886",
-      "label": "alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this\u2026",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "_path",
-      "file_type": "rationale",
-      "norm_label": "alu32's real numbers: wns +0.3701 at a 2.5 ns period. under the old gate this...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L886"
     },
     {
       "id": "tools_selftest_rationale_978",
@@ -10999,7 +11049,40 @@
       "source_location": ""
     },
     {
-      "id": "tools_protect_rationale_123",
+      "id": "tools_protect_rationale_104",
+      "label": "Every mention of a protected signal, in order, with its bit select. The select\u2026",
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "protect.py",
+      "file_type": "rationale",
+      "norm_label": "every mention of a protected signal, in order, with its bit select. the select...",
+      "source_file": "tools/protect.py",
+      "source_location": "L104"
+    },
+    {
+      "id": "tools_protect_rationale_124",
+      "label": "Protected assignment lines merged into contiguous 1-based ranges. Used to keep\u2026",
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "protect.py",
+      "file_type": "rationale",
+      "norm_label": "protected assignment lines merged into contiguous 1-based ranges. used to keep...",
+      "source_file": "tools/protect.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "tools_protect_rationale_141",
+      "label": "What the candidate did to protected logic. Empty means it left it alone.",
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "protect.py",
+      "file_type": "rationale",
+      "norm_label": "what the candidate did to protected logic. empty means it left it alone.",
+      "source_file": "tools/protect.py",
+      "source_location": "L141"
+    },
+    {
+      "id": "tools_protect_rationale_176",
       "label": "Run the check across a whole design, keyed by file name. A file the candidate\u2026",
       "_origin": "ast",
       "community": 42,
@@ -11007,10 +11090,10 @@
       "file_type": "rationale",
       "norm_label": "run the check across a whole design, keyed by file name. a file the candidate...",
       "source_file": "tools/protect.py",
-      "source_location": "L123"
+      "source_location": "L176"
     },
     {
-      "id": "tools_protect_rationale_145",
+      "id": "tools_protect_rationale_198",
       "label": "What an agent is told. Says why, because a rule whose reason is hidden gets\u2026",
       "_origin": "ast",
       "community": 42,
@@ -11018,7 +11101,7 @@
       "file_type": "rationale",
       "norm_label": "what an agent is told. says why, because a rule whose reason is hidden gets...",
       "source_file": "tools/protect.py",
-      "source_location": "L145"
+      "source_location": "L198"
     },
     {
       "id": "tools_protect_rationale_2",
@@ -11032,7 +11115,7 @@
       "source_location": "L2"
     },
     {
-      "id": "tools_protect_rationale_47",
+      "id": "tools_protect_rationale_61",
       "label": "Code content of a line, insensitive to comments and whitespace. A candidate\u2026",
       "_origin": "ast",
       "community": 42,
@@ -11040,43 +11123,32 @@
       "file_type": "rationale",
       "norm_label": "code content of a line, insensitive to comments and whitespace. a candidate...",
       "source_file": "tools/protect.py",
-      "source_location": "L47"
-    },
-    {
-      "id": "tools_protect_rationale_61",
-      "label": "(1-based line number, normalised content) for every protected line.",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "protect.py",
-      "file_type": "rationale",
-      "norm_label": "(1-based line number, normalised content) for every protected line.",
-      "source_file": "tools/protect.py",
       "source_location": "L61"
     },
     {
-      "id": "tools_protect_rationale_74",
-      "label": "Protected lines merged into contiguous 1-based inclusive ranges. Used to keep\u2026",
+      "id": "tools_protect_rationale_75",
+      "label": "(1-based line number, normalised content) for every line that ASSIGNS a\u2026",
       "_origin": "ast",
       "community": 42,
       "community_name": "protect.py",
       "file_type": "rationale",
-      "norm_label": "protected lines merged into contiguous 1-based inclusive ranges. used to keep...",
+      "norm_label": "(1-based line number, normalised content) for every line that assigns a...",
       "source_file": "tools/protect.py",
-      "source_location": "L74"
+      "source_location": "L75"
     },
     {
-      "id": "tools_protect_rationale_91",
-      "label": "What the candidate did to protected logic. Empty means it left it alone.\u2026",
+      "id": "tools_protect_rationale_89",
+      "label": "Does this line drive a protected signal? Matches `cdc_x <= ...`, `if (!rst_n)\u2026",
       "_origin": "ast",
       "community": 42,
       "community_name": "protect.py",
       "file_type": "rationale",
-      "norm_label": "what the candidate did to protected logic. empty means it left it alone....",
+      "norm_label": "does this line drive a protected signal? matches `cdc_x <= ...`, `if (!rst_n)...",
       "source_file": "tools/protect.py",
-      "source_location": "L91"
+      "source_location": "L89"
     },
     {
-      "id": "tools_selftest_rationale_2351",
+      "id": "tools_selftest_rationale_2396",
       "label": "Proves the pnr path reads the right file, with no 20 GB image.",
       "_origin": "ast",
       "community": 43,
@@ -11084,10 +11156,10 @@
       "file_type": "rationale",
       "norm_label": "proves the pnr path reads the right file, with no 20 gb image.",
       "source_file": "tools/selftest.py",
-      "source_location": "L2351"
+      "source_location": "L2396"
     },
     {
-      "id": "tools_selftest_rationale_2468",
+      "id": "tools_selftest_rationale_2513",
       "label": "The addon must not change how `make opt` behaves.",
       "_origin": "ast",
       "community": 44,
@@ -11095,7 +11167,7 @@
       "file_type": "rationale",
       "norm_label": "the addon must not change how `make opt` behaves.",
       "source_file": "tools/selftest.py",
-      "source_location": "L2468"
+      "source_location": "L2513"
     },
     {
       "id": "tools_selftest_rationale_784",
@@ -11500,6 +11572,39 @@
     },
     {
       "id": "tools_selftest_rationale_1804",
+      "label": "The defect this replaced. On netproc all three specialists were rejected for\u2026",
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "rationale",
+      "norm_label": "the defect this replaced. on netproc all three specialists were rejected for...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1804"
+    },
+    {
+      "id": "tools_selftest_rationale_1820",
+      "label": "The reason reads cannot simply be ignored: swapping cdc_x[1] for cdc_x[0] takes\u2026",
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "rationale",
+      "norm_label": "the reason reads cannot simply be ignored: swapping cdc_x[1] for cdc_x[0] takes...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1820"
+    },
+    {
+      "id": "tools_selftest_rationale_1835",
+      "label": "Pinned to the design as shipped, so a future tightening of the rule cannot\u2026",
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "TestProtectedRegions",
+      "file_type": "rationale",
+      "norm_label": "pinned to the design as shipped, so a future tightening of the rule cannot...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1835"
+    },
+    {
+      "id": "tools_selftest_rationale_1849",
       "label": "It says nothing about whether the transformation is sound, so it must not\u2026",
       "_origin": "ast",
       "community": 51,
@@ -11507,7 +11612,7 @@
       "file_type": "rationale",
       "norm_label": "it says nothing about whether the transformation is sound, so it must not...",
       "source_file": "tools/selftest.py",
-      "source_location": "L1804"
+      "source_location": "L1849"
     },
     {
       "id": "docs_equivalence_contract_1_the_claim_on_a_single_clock_design",
@@ -11543,7 +11648,7 @@
       "node_kind": "heading",
       "norm_label": "3. what the code does today",
       "source_file": "docs/equivalence-contract.md",
-      "source_location": "L144"
+      "source_location": "L172"
     },
     {
       "id": "docs_equivalence_contract_4_scale",
@@ -11555,7 +11660,7 @@
       "node_kind": "heading",
       "norm_label": "4. scale",
       "source_file": "docs/equivalence-contract.md",
-      "source_location": "L168"
+      "source_location": "L196"
     },
     {
       "id": "docs_equivalence_contract_5_related_constraints",
@@ -11567,7 +11672,7 @@
       "node_kind": "heading",
       "norm_label": "5. related constraints",
       "source_file": "docs/equivalence-contract.md",
-      "source_location": "L188"
+      "source_location": "L216"
     },
     {
       "id": "docs_equivalence_contract_a_bounded_pass_is_worth_exactly_what_its_depth_can_see",
@@ -11628,6 +11733,18 @@
       "norm_label": "the equivalence contract",
       "source_file": "docs/equivalence-contract.md",
       "source_location": "L1"
+    },
+    {
+      "id": "docs_equivalence_contract_the_first_line_of_defence_declared_off_limits_regions",
+      "label": "The first line of defence: declared-off-limits regions",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "The equivalence contract",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "the first line of defence: declared-off-limits regions",
+      "source_file": "docs/equivalence-contract.md",
+      "source_location": "L142"
     },
     {
       "id": "readme_a_pre_synthesis_pass",
@@ -11928,6 +12045,28 @@
       "norm_label": "netproc",
       "source_file": "designs/netproc/rtl/netproc.v",
       "source_location": "L33"
+    },
+    {
+      "id": "tools_selftest_rationale_872",
+      "label": "Both halves matter. A met design must be rankable (the old gate zeroed it), and\u2026",
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "rationale",
+      "norm_label": "both halves matter. a met design must be rankable (the old gate zeroed it), and...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L872"
+    },
+    {
+      "id": "tools_selftest_rationale_886",
+      "label": "alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this\u2026",
+      "_origin": "ast",
+      "community": 59,
+      "community_name": "TestPathSelValue",
+      "file_type": "rationale",
+      "norm_label": "alu32's real numbers: wns +0.3701 at a 2.5 ns period. under the old gate this...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L886"
     },
     {
       "id": "tools_portfolio",
@@ -15765,6 +15904,18 @@
       "weight": 1.0
     },
     {
+      "source": "tools_protect_assigns_protected",
+      "target": "tools_protect_matches",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tools/protect.py",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
       "source": "tools_protect_check_files",
       "target": "tools_protect_protected_lines",
       "relation": "calls",
@@ -15773,7 +15924,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L135",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -15785,7 +15936,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L138",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -15797,23 +15948,23 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L67",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
       "source": "tools_protect_protected_lines",
-      "target": "tools_protect_identifiers",
+      "target": "tools_protect_assigns_protected",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L68",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
-      "source": "tools_protect_protected_lines",
+      "source": "tools_protect_references",
       "target": "tools_protect_matches",
       "relation": "calls",
       "_origin": "ast",
@@ -15821,7 +15972,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L68",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -15833,7 +15984,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L79",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -15845,7 +15996,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/protect.py",
-      "source_location": "L100",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect_violations",
+      "target": "tools_protect_references",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tools/protect.py",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -17069,7 +17232,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1936",
+      "source_location": "L1981",
       "weight": 1.0
     },
     {
@@ -17081,7 +17244,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1938",
+      "source_location": "L1983",
       "weight": 1.0
     },
     {
@@ -17093,7 +17256,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1907",
+      "source_location": "L1952",
       "weight": 1.0
     },
     {
@@ -17105,7 +17268,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1909",
+      "source_location": "L1954",
       "weight": 1.0
     },
     {
@@ -17117,7 +17280,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1875",
+      "source_location": "L1920",
       "weight": 1.0
     },
     {
@@ -17129,7 +17292,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1879",
+      "source_location": "L1924",
       "weight": 1.0
     },
     {
@@ -17141,7 +17304,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1882",
+      "source_location": "L1927",
       "weight": 1.0
     },
     {
@@ -17153,7 +17316,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1848",
+      "source_location": "L1893",
       "weight": 1.0
     },
     {
@@ -17165,7 +17328,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1852",
+      "source_location": "L1897",
       "weight": 1.0
     },
     {
@@ -17177,7 +17340,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1854",
+      "source_location": "L1899",
       "weight": 1.0
     },
     {
@@ -17189,7 +17352,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1981",
+      "source_location": "L2026",
       "weight": 1.0
     },
     {
@@ -17201,7 +17364,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1951",
+      "source_location": "L1996",
       "weight": 1.0
     },
     {
@@ -17213,7 +17376,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1959",
+      "source_location": "L2004",
       "weight": 1.0
     },
     {
@@ -17225,7 +17388,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L1968",
+      "source_location": "L2013",
       "weight": 1.0
     },
     {
@@ -18209,7 +18372,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2425",
+      "source_location": "L2470",
       "weight": 1.0
     },
     {
@@ -18221,7 +18384,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2417",
+      "source_location": "L2462",
       "weight": 1.0
     },
     {
@@ -18233,7 +18396,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2407",
+      "source_location": "L2452",
       "weight": 1.0
     },
     {
@@ -18245,7 +18408,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2412",
+      "source_location": "L2457",
       "weight": 1.0
     },
     {
@@ -18257,7 +18420,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2430",
+      "source_location": "L2475",
       "weight": 1.0
     },
     {
@@ -18269,7 +18432,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2438",
+      "source_location": "L2483",
       "weight": 1.0
     },
     {
@@ -18281,7 +18444,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2052",
+      "source_location": "L2097",
       "weight": 1.0
     },
     {
@@ -18293,7 +18456,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2060",
+      "source_location": "L2105",
       "weight": 1.0
     },
     {
@@ -18305,7 +18468,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2064",
+      "source_location": "L2109",
       "weight": 1.0
     },
     {
@@ -18317,7 +18480,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2099",
+      "source_location": "L2144",
       "weight": 1.0
     },
     {
@@ -18329,7 +18492,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2056",
+      "source_location": "L2101",
       "weight": 1.0
     },
     {
@@ -18341,7 +18504,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2115",
+      "source_location": "L2160",
       "weight": 1.0
     },
     {
@@ -18353,7 +18516,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2082",
+      "source_location": "L2127",
       "weight": 1.0
     },
     {
@@ -18485,7 +18648,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2360",
+      "source_location": "L2405",
       "weight": 1.0
     },
     {
@@ -18497,7 +18660,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2368",
+      "source_location": "L2413",
       "weight": 1.0
     },
     {
@@ -18509,7 +18672,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tools/selftest.py",
-      "source_location": "L2376",
+      "source_location": "L2421",
       "weight": 1.0
     },
     {
@@ -20369,7 +20532,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "tools/protect.py",
-      "source_location": "L121",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -20381,7 +20544,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "tools/protect.py",
-      "source_location": "L162",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -22843,6 +23006,17 @@
     },
     {
       "source": "docs_equivalence_contract_2_the_claim_on_a_multi_clock_design",
+      "target": "docs_equivalence_contract_the_first_line_of_defence_declared_off_limits_regions",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/equivalence-contract.md",
+      "source_location": "L142",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_equivalence_contract_2_the_claim_on_a_multi_clock_design",
       "target": "docs_equivalence_contract_rejected_bounded_equivalence_with_set_clock_groups_asynchronous",
       "relation": "contains",
       "_origin": "ast",
@@ -22882,7 +23056,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/equivalence-contract.md",
-      "source_location": "L144",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -22893,7 +23067,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/equivalence-contract.md",
-      "source_location": "L168",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -22904,7 +23078,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/equivalence-contract.md",
-      "source_location": "L188",
+      "source_location": "L216",
       "weight": 1.0
     },
     {
@@ -23058,7 +23232,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L192",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -23069,7 +23243,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L235",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -23080,7 +23254,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L261",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -23091,7 +23265,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L292",
+      "source_location": "L320",
       "weight": 1.0
     },
     {
@@ -23102,7 +23276,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L438",
+      "source_location": "L481",
       "weight": 1.0
     },
     {
@@ -23113,23 +23287,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L129",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
       "target": "handoff_5_objectives_status",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "HANDOFF.md",
-      "source_location": "L149",
-      "weight": 1.0
-    },
-    {
-      "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_6_the_upcoming_work",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23146,7 +23309,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L18",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_handoff_astra_path_portfolio_addon",
+      "target": "handoff_6_the_upcoming_work",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -23157,7 +23331,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L421",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -23168,7 +23342,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L470",
+      "source_location": "L513",
       "weight": 1.0
     },
     {
@@ -23179,7 +23353,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L515",
+      "source_location": "L558",
       "weight": 1.0
     },
     {
@@ -23190,7 +23364,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L54",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -23201,7 +23375,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L79",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -25164,79 +25338,13 @@
     },
     {
       "source": "tools_protect",
-      "target": "tools_protect_check_files",
+      "target": "tools_protect_references",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L121",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_protect",
-      "target": "tools_protect_describe",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L144",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_protect",
-      "target": "tools_protect_render",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L162",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_protect",
-      "target": "tools_protect_identifiers",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L42",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_protect",
-      "target": "tools_protect_normalise",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L46",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_protect",
-      "target": "tools_protect_matches",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L56",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_protect",
-      "target": "tools_protect_protected_lines",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L60",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -25247,7 +25355,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L73",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -25258,7 +25366,95 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L89",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_check_files",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_describe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L197",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_render",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_identifiers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_normalise",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_matches",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_protected_lines",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect",
+      "target": "tools_protect_assigns_protected",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -26193,7 +26389,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1813",
+      "source_location": "L1858",
       "weight": 1.0
     },
     {
@@ -26204,7 +26400,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1942",
+      "source_location": "L1987",
       "weight": 1.0
     },
     {
@@ -26215,29 +26411,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2024",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_selftest",
-      "target": "tools_selftest_testrtlscandepth",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/selftest.py",
-      "source_location": "L2128",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_selftest",
-      "target": "tools_selftest_testskillmerging",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/selftest.py",
-      "source_location": "L2149",
+      "source_location": "L2069",
       "weight": 1.0
     },
     {
@@ -26253,13 +26427,35 @@
     },
     {
       "source": "tools_selftest",
+      "target": "tools_selftest_testrtlscandepth",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L2173",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest",
+      "target": "tools_selftest_testskillmerging",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L2194",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest",
       "target": "tools_selftest_testskilldoc",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2245",
+      "source_location": "L2290",
       "weight": 1.0
     },
     {
@@ -26270,7 +26466,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2350",
+      "source_location": "L2395",
       "weight": 1.0
     },
     {
@@ -26281,7 +26477,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2400",
+      "source_location": "L2445",
       "weight": 1.0
     },
     {
@@ -26292,7 +26488,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2446",
+      "source_location": "L2491",
       "weight": 1.0
     },
     {
@@ -28415,7 +28611,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1822",
+      "source_location": "L1867",
       "weight": 1.0
     },
     {
@@ -28426,7 +28622,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1828",
+      "source_location": "L1873",
       "weight": 1.0
     },
     {
@@ -28437,7 +28633,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1832",
+      "source_location": "L1877",
       "weight": 1.0
     },
     {
@@ -28448,7 +28644,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1838",
+      "source_location": "L1883",
       "weight": 1.0
     },
     {
@@ -28459,7 +28655,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1860",
+      "source_location": "L1905",
       "weight": 1.0
     },
     {
@@ -28470,7 +28666,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1887",
+      "source_location": "L1932",
       "weight": 1.0
     },
     {
@@ -28481,7 +28677,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1904",
+      "source_location": "L1949",
       "weight": 1.0
     },
     {
@@ -28492,7 +28688,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1912",
+      "source_location": "L1957",
       "weight": 1.0
     },
     {
@@ -28503,7 +28699,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1925",
+      "source_location": "L1970",
       "weight": 1.0
     },
     {
@@ -28514,7 +28710,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1935",
+      "source_location": "L1980",
       "weight": 1.0
     },
     {
@@ -28602,7 +28798,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1946",
+      "source_location": "L1991",
       "weight": 1.0
     },
     {
@@ -28613,7 +28809,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1949",
+      "source_location": "L1994",
       "weight": 1.0
     },
     {
@@ -28624,7 +28820,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1957",
+      "source_location": "L2002",
       "weight": 1.0
     },
     {
@@ -28635,7 +28831,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1966",
+      "source_location": "L2011",
       "weight": 1.0
     },
     {
@@ -28646,7 +28842,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1977",
+      "source_location": "L2022",
       "weight": 1.0
     },
     {
@@ -28657,7 +28853,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1986",
+      "source_location": "L2031",
       "weight": 1.0
     },
     {
@@ -28668,7 +28864,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1992",
+      "source_location": "L2037",
       "weight": 1.0
     },
     {
@@ -28679,7 +28875,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2001",
+      "source_location": "L2046",
       "weight": 1.0
     },
     {
@@ -28690,7 +28886,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2008",
+      "source_location": "L2053",
       "weight": 1.0
     },
     {
@@ -29284,7 +29480,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2447",
+      "source_location": "L2492",
       "weight": 1.0
     },
     {
@@ -29295,7 +29491,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2452",
+      "source_location": "L2497",
       "weight": 1.0
     },
     {
@@ -29306,7 +29502,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2456",
+      "source_location": "L2501",
       "weight": 1.0
     },
     {
@@ -29317,7 +29513,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2460",
+      "source_location": "L2505",
       "weight": 1.0
     },
     {
@@ -29328,7 +29524,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2467",
+      "source_location": "L2512",
       "weight": 1.0
     },
     {
@@ -29339,7 +29535,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2401",
+      "source_location": "L2446",
       "weight": 1.0
     },
     {
@@ -29350,7 +29546,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2404",
+      "source_location": "L2449",
       "weight": 1.0
     },
     {
@@ -29361,7 +29557,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2411",
+      "source_location": "L2456",
       "weight": 1.0
     },
     {
@@ -29372,7 +29568,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2416",
+      "source_location": "L2461",
       "weight": 1.0
     },
     {
@@ -29383,7 +29579,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2424",
+      "source_location": "L2469",
       "weight": 1.0
     },
     {
@@ -29394,7 +29590,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2427",
+      "source_location": "L2472",
       "weight": 1.0
     },
     {
@@ -29405,7 +29601,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2435",
+      "source_location": "L2480",
       "weight": 1.0
     },
     {
@@ -29416,7 +29612,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2441",
+      "source_location": "L2486",
       "weight": 1.0
     },
     {
@@ -29498,13 +29694,57 @@
     },
     {
       "source": "tools_selftest_testprotectedregions",
-      "target": "tools_selftest_testprotectedregions_test_a_protected_edit_is_undecided_not_a_refutation",
+      "target": "tools_selftest_testprotectedregions_test_reading_a_protected_signal_does_not_freeze_the_line",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
       "source_location": "L1803",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_testprotectedregions",
+      "target": "tools_selftest_testprotectedregions_test_bypassing_a_synchroniser_stage_on_a_read_is_caught",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1819",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_testprotectedregions",
+      "target": "tools_selftest_testprotectedregions_test_dropping_a_protected_reference_is_caught",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1829",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_testprotectedregions",
+      "target": "tools_selftest_testprotectedregions_test_the_real_netproc_candidates_are_allowed",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1834",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_testprotectedregions",
+      "target": "tools_selftest_testprotectedregions_test_a_protected_edit_is_undecided_not_a_refutation",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1848",
       "weight": 1.0
     },
     {
@@ -29834,7 +30074,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2045",
+      "source_location": "L2090",
       "weight": 1.0
     },
     {
@@ -29845,7 +30085,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2051",
+      "source_location": "L2096",
       "weight": 1.0
     },
     {
@@ -29856,7 +30096,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2054",
+      "source_location": "L2099",
       "weight": 1.0
     },
     {
@@ -29867,7 +30107,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2058",
+      "source_location": "L2103",
       "weight": 1.0
     },
     {
@@ -29878,7 +30118,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2063",
+      "source_location": "L2108",
       "weight": 1.0
     },
     {
@@ -29889,7 +30129,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2070",
+      "source_location": "L2115",
       "weight": 1.0
     },
     {
@@ -29900,7 +30140,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2084",
+      "source_location": "L2129",
       "weight": 1.0
     },
     {
@@ -29911,7 +30151,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2104",
+      "source_location": "L2149",
       "weight": 1.0
     },
     {
@@ -29922,7 +30162,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2117",
+      "source_location": "L2162",
       "weight": 1.0
     },
     {
@@ -29933,7 +30173,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2129",
+      "source_location": "L2174",
       "weight": 1.0
     },
     {
@@ -29944,7 +30184,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2134",
+      "source_location": "L2179",
       "weight": 1.0
     },
     {
@@ -29955,7 +30195,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2139",
+      "source_location": "L2184",
       "weight": 1.0
     },
     {
@@ -29966,7 +30206,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2246",
+      "source_location": "L2291",
       "weight": 1.0
     },
     {
@@ -29977,7 +30217,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2251",
+      "source_location": "L2296",
       "weight": 1.0
     },
     {
@@ -29988,7 +30228,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2257",
+      "source_location": "L2302",
       "weight": 1.0
     },
     {
@@ -29999,7 +30239,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2268",
+      "source_location": "L2313",
       "weight": 1.0
     },
     {
@@ -30010,7 +30250,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2273",
+      "source_location": "L2318",
       "weight": 1.0
     },
     {
@@ -30021,7 +30261,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2278",
+      "source_location": "L2323",
       "weight": 1.0
     },
     {
@@ -30032,7 +30272,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2288",
+      "source_location": "L2333",
       "weight": 1.0
     },
     {
@@ -30043,7 +30283,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2295",
+      "source_location": "L2340",
       "weight": 1.0
     },
     {
@@ -30054,7 +30294,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2302",
+      "source_location": "L2347",
       "weight": 1.0
     },
     {
@@ -30065,7 +30305,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2306",
+      "source_location": "L2351",
       "weight": 1.0
     },
     {
@@ -30076,7 +30316,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2314",
+      "source_location": "L2359",
       "weight": 1.0
     },
     {
@@ -30087,7 +30327,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2318",
+      "source_location": "L2363",
       "weight": 1.0
     },
     {
@@ -30098,7 +30338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2322",
+      "source_location": "L2367",
       "weight": 1.0
     },
     {
@@ -30109,7 +30349,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2335",
+      "source_location": "L2380",
       "weight": 1.0
     },
     {
@@ -30131,7 +30371,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2159",
+      "source_location": "L2204",
       "weight": 1.0
     },
     {
@@ -30142,7 +30382,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2162",
+      "source_location": "L2207",
       "weight": 1.0
     },
     {
@@ -30153,7 +30393,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2167",
+      "source_location": "L2212",
       "weight": 1.0
     },
     {
@@ -30164,7 +30404,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2172",
+      "source_location": "L2217",
       "weight": 1.0
     },
     {
@@ -30175,7 +30415,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2182",
+      "source_location": "L2227",
       "weight": 1.0
     },
     {
@@ -30186,7 +30426,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2191",
+      "source_location": "L2236",
       "weight": 1.0
     },
     {
@@ -30197,7 +30437,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2200",
+      "source_location": "L2245",
       "weight": 1.0
     },
     {
@@ -30208,7 +30448,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2212",
+      "source_location": "L2257",
       "weight": 1.0
     },
     {
@@ -30219,7 +30459,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2234",
+      "source_location": "L2279",
       "weight": 1.0
     },
     {
@@ -30362,7 +30602,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2353",
+      "source_location": "L2398",
       "weight": 1.0
     },
     {
@@ -30373,7 +30613,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2366",
+      "source_location": "L2411",
       "weight": 1.0
     },
     {
@@ -30384,7 +30624,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2374",
+      "source_location": "L2419",
       "weight": 1.0
     },
     {
@@ -30395,7 +30635,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2380",
+      "source_location": "L2425",
       "weight": 1.0
     },
     {
@@ -30406,7 +30646,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2384",
+      "source_location": "L2429",
       "weight": 1.0
     },
     {
@@ -31730,25 +31970,58 @@
       "weight": 1.0
     },
     {
-      "source": "tools_protect_rationale_123",
+      "source": "tools_protect_rationale_104",
+      "target": "tools_protect_references",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect_rationale_124",
+      "target": "tools_protect_regions",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect_rationale_141",
+      "target": "tools_protect_violations",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/protect.py",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_protect_rationale_176",
       "target": "tools_protect_check_files",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L123",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
-      "source": "tools_protect_rationale_145",
+      "source": "tools_protect_rationale_198",
       "target": "tools_protect_describe",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L145",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -31763,19 +32036,8 @@
       "weight": 1.0
     },
     {
-      "source": "tools_protect_rationale_47",
-      "target": "tools_protect_normalise",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/protect.py",
-      "source_location": "L47",
-      "weight": 1.0
-    },
-    {
       "source": "tools_protect_rationale_61",
-      "target": "tools_protect_protected_lines",
+      "target": "tools_protect_normalise",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -31785,25 +32047,25 @@
       "weight": 1.0
     },
     {
-      "source": "tools_protect_rationale_74",
-      "target": "tools_protect_regions",
+      "source": "tools_protect_rationale_75",
+      "target": "tools_protect_protected_lines",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L74",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
-      "source": "tools_protect_rationale_91",
-      "target": "tools_protect_violations",
+      "source": "tools_protect_rationale_89",
+      "target": "tools_protect_assigns_protected",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/protect.py",
-      "source_location": "L91",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -33062,7 +33324,7 @@
     },
     {
       "source": "tools_selftest_rationale_1804",
-      "target": "tools_selftest_testprotectedregions_test_a_protected_edit_is_undecided_not_a_refutation",
+      "target": "tools_selftest_testprotectedregions_test_reading_a_protected_signal_does_not_freeze_the_line",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33072,25 +33334,36 @@
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1814",
-      "target": "tools_selftest_testequivalencecontract",
+      "source": "tools_selftest_rationale_1820",
+      "target": "tools_selftest_testprotectedregions_test_bypassing_a_synchroniser_stage_on_a_read_is_caught",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1814",
+      "source_location": "L1820",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1839",
-      "target": "tools_selftest_testequivalencecontract_test_multi_clock_reaches_the_miter_with_clk2fflogic_asked_for",
+      "source": "tools_selftest_rationale_1835",
+      "target": "tools_selftest_testprotectedregions_test_the_real_netproc_candidates_are_allowed",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1839",
+      "source_location": "L1835",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_rationale_1849",
+      "target": "tools_selftest_testprotectedregions_test_a_protected_edit_is_undecided_not_a_refutation",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1849",
       "weight": 1.0
     },
     {
@@ -33105,69 +33378,80 @@
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1861",
+      "source": "tools_selftest_rationale_1859",
+      "target": "tools_selftest_testequivalencecontract",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1859",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_rationale_1884",
+      "target": "tools_selftest_testequivalencecontract_test_multi_clock_reaches_the_miter_with_clk2fflogic_asked_for",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L1884",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_rationale_1906",
       "target": "tools_selftest_testequivalencecontract_test_multi_clock_depth_is_not_reduced",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1861",
+      "source_location": "L1906",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1888",
+      "source": "tools_selftest_rationale_1933",
       "target": "tools_selftest_testequivalencecontract_test_a_design_can_record_the_depth_it_verified",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1888",
+      "source_location": "L1933",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1905",
+      "source": "tools_selftest_rationale_1950",
       "target": "tools_selftest_testequivalencecontract_test_eqy_still_declines_on_multi_clock",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1905",
+      "source_location": "L1950",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1913",
+      "source": "tools_selftest_rationale_1958",
       "target": "tools_selftest_testequivalencecontract_test_declining_is_neither_a_pass_nor_a_refutation",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1913",
+      "source_location": "L1958",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_1926",
+      "source": "tools_selftest_rationale_1971",
       "target": "tools_selftest_testequivalencecontract_test_a_bounded_multiclock_pass_is_not_an_unbounded_proof",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L1926",
-      "weight": 1.0
-    },
-    {
-      "source": "tools_selftest_rationale_1993",
-      "target": "tools_selftest_testmerge_test_trailing_whitespace_is_not_a_hunk",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tools/selftest.py",
-      "source_location": "L1993",
+      "source_location": "L1971",
       "weight": 1.0
     },
     {
@@ -33182,157 +33466,168 @@
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2009",
+      "source": "tools_selftest_rationale_2038",
+      "target": "tools_selftest_testmerge_test_trailing_whitespace_is_not_a_hunk",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/selftest.py",
+      "source_location": "L2038",
+      "weight": 1.0
+    },
+    {
+      "source": "tools_selftest_rationale_2054",
       "target": "tools_selftest_testmerge_test_insertions_claim_the_joint_they_sit_in",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2009",
+      "source_location": "L2054",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2071",
+      "source": "tools_selftest_rationale_2116",
       "target": "tools_selftest_testrtlscan_test_width_expressions_are_not_arithmetic",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2071",
+      "source_location": "L2116",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2118",
+      "source": "tools_selftest_rationale_2163",
       "target": "tools_selftest_testrtlscan_test_shipped_designs_behave_as_documented",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2118",
+      "source_location": "L2163",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2150",
+      "source": "tools_selftest_rationale_2195",
       "target": "tools_selftest_testskillmerging",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2150",
+      "source_location": "L2195",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2258",
+      "source": "tools_selftest_rationale_2303",
       "target": "tools_selftest_testskilldoc_test_makes_no_numeric_evidence_claims",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2258",
+      "source_location": "L2303",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2296",
+      "source": "tools_selftest_rationale_2341",
       "target": "tools_selftest_testskilldoc_test_the_cleanup_role_drops_path_reading",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2296",
+      "source_location": "L2341",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2307",
+      "source": "tools_selftest_rationale_2352",
       "target": "tools_selftest_testskilldoc_test_an_untagged_document_is_returned_whole",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2307",
+      "source_location": "L2352",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2323",
+      "source": "tools_selftest_rationale_2368",
       "target": "tools_selftest_testskilldoc_test_seed_entries_carry_no_statistics",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2323",
+      "source_location": "L2368",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2336",
+      "source": "tools_selftest_rationale_2381",
       "target": "tools_selftest_testskilldoc_test_the_document_states_no_record_for_any_entry",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2336",
+      "source_location": "L2381",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2351",
+      "source": "tools_selftest_rationale_2396",
       "target": "tools_selftest_teststageparameterisation",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2351",
+      "source_location": "L2396",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2405",
+      "source": "tools_selftest_rationale_2450",
       "target": "tools_selftest_testportfoliobudget_test_the_default_ceiling_allows_four_iterations",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2405",
+      "source_location": "L2450",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2428",
+      "source": "tools_selftest_rationale_2473",
       "target": "tools_selftest_testportfoliobudget_test_the_model_is_selectable_for_a_head_to_head",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2428",
+      "source_location": "L2473",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2436",
+      "source": "tools_selftest_rationale_2481",
       "target": "tools_selftest_testportfoliobudget_test_the_pool_default_is_widened",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2436",
+      "source_location": "L2481",
       "weight": 1.0
     },
     {
-      "source": "tools_selftest_rationale_2468",
+      "source": "tools_selftest_rationale_2513",
       "target": "tools_selftest_testportfolioagents_test_base_loop_prompts_are_untouched",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tools/selftest.py",
-      "source_location": "L2468",
+      "source_location": "L2513",
       "weight": 1.0
     },
     {
@@ -34056,6 +34351,18 @@
       "weight": 1.0
     },
     {
+      "source": "tools_protect_violations",
+      "target": "counter",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "tools/protect.py",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
       "source": "tools_rtl_map_diagnose",
       "target": "counter",
       "relation": "calls",
@@ -34105,5 +34412,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0030850b44d1196c59518a58bfc4cfc9643f2220"
+  "built_at_commit": "6f39a02f5f328c073547dc452c3d25092022275c"
 }

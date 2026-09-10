@@ -2,16 +2,18 @@
 
 Context for whoever picks this up next, including me in a later session.
 
-Branch `path-portfolio`, 13 commits ahead of `main`. 225 tests, all passing,
+Branch `path-portfolio`, 14 commits ahead of `main`. 229 tests, all passing,
 none needing an EDA install or a model. `make opt` is unchanged and tested to
 be so.
 
-**Since the last handoff:** §6.1 (multi-clock) and §6.3 (the equivalence
-contract) are done — see `docs/multi-clock.md` and
-`docs/equivalence-contract.md`. §6.2's benchmark design is **built and timing**
-(`designs/soc_bench/`, 49,935 cells, 13 clocks). What still blocks objective 6
-is the SEC partitioner, and one conceptual gap the benchmark exposed in
-`criticality()` — both in §6.4.
+**Since the last handoff:** §6.1 (multi-clock), §6.3 (the equivalence
+contract) and §6.2 (the benchmark) are all done, and multi-clock equivalence
+now works — `sec.check()` no longer declines, so a candidate can be promoted
+across asynchronous domains. Four designs now exercise it: `soc_bench` (13
+clocks, 49,935 cells), `netproc` (13 clocks, 50,502 cells, no multipliers) and
+`dual_clock` (3 clocks, the small one where a proof closes). What remains is
+**scale**: a bounded check refutes bad candidates quickly at 50K cells but
+usually cannot certify good ones. §6.4 has the measurements.
 
 ---
 
@@ -66,7 +68,7 @@ flowchart LR
 | `tools/skills.py` | 555 | the confidence-weighted library |
 | `tools/rtl_map.py` | 611 | path → RTL localisation, structural diagnosis |
 | `tools/protect.py` | 170 | what the optimiser may not touch, and the gate that enforces it **before** SEC |
-| `tools/selftest.py` | 2475 | 225 tests, no EDA, no model |
+| `tools/selftest.py` | 2520 | 229 tests, no EDA, no model |
 
 Reuse rule: `portfolio.py` subclasses `drrtl.Orchestrator`, so evaluation, SEC,
 scoring, skill learning, the trajectory log and the reply parsers all come
@@ -109,6 +111,32 @@ available within constraints"), which the library correctly refused to learn
 from. So this run demonstrates that multi-clock selection, protection, SEC and
 promotion work end to end. It does **not** show the specialists contributing
 anything on this design.
+
+**Multi-clock, `netproc`, Haiku, 1 iteration** — the run that settled the
+scale question, and disproved the premise the design was built on:
+
+| | |
+|---|---|
+| protection gate | **3/3 passed** — the fixed rule lets the real fix through |
+| specialists | all three diagnosed the same bottleneck: "512-bit parity as serial XOR chain" |
+| SEC | t1 timed out at 420 s; **t2 and t3 were OOM-killed** (exit 137) |
+| promoted | nothing |
+
+`netproc` was built without multipliers because multipliers are what stop
+`soc_bench` being certified. **That premise was wrong, or at least
+insufficient.** At 50K cells a bounded multi-clock check does not close either
+way — and the likely reason is that its headline bottleneck is a *512-deep XOR
+chain*, and deep parity is the classic hard case for a resolution-based SAT
+solver, every bit as bad as a multiplier. The general form of the lesson: the
+miter proves every output equivalent regardless of which line changed, so
+**tractability is a property of the whole design, not of the edit**. There is
+no rewrite-local escape.
+
+What `netproc` is still good for, and it is not nothing: it is a better
+*optimisation* target than `soc_bench`. Four clock groups violate rather than
+one dominating, it reports **32 distinct cones**, and all three specialists
+independently found the intended bottleneck. Selection, scoping, protection and
+diagnosis all work on it. Only certification does not.
 
 **Read these carefully.** Three things are easy to over-claim:
 
@@ -323,11 +351,26 @@ unproven: the per-domain proof cuts those boundaries, so a collapsed
 synchroniser or a re-encoded gray bus passes every check the loop runs and is
 still wrong silicon. Prompting against it is not enough, so a design declares
 `"protected": ["cdc_*", "clk_*_div*"]` and a candidate that adds, removes or
-alters any line mentioning one is rejected **before synthesis** — ahead of the
-gate that cannot catch it. The rule is deliberately blunt (whole lines,
-whitespace- and comment-insensitive) because a subtle rule invites an agent to
-argue it stayed within the spirit of one, and nothing downstream can check
-whether it did. A protected edit records as *undecided*, never a refutation, so
+changes a line *assigning* one — or changes any *reference* to one, bit select
+included — is rejected **before synthesis**, ahead of the gate that cannot
+catch it.
+
+**The first version of this rule was too blunt, and a real run proved it.** It
+froze any line *mentioning* a protected identifier. On `netproc` that rejected
+all three specialists for rewriting
+
+    xfrm_par <= par_chain[XW] ^ cdc_xfrm_from_look[1];
+
+into the balanced-tree form — the exact fix the design asks for, with the CDC
+reference untouched. The run evaluated nothing and promoted nothing. Reads are
+now allowed and references checked instead, which still catches swapping
+`cdc_x[1]` for `cdc_x[0]` (a bypassed synchroniser stage), dropping a reference
+entirely, deleting a divider and re-encoding the gray counter. Both halves are
+pinned by tests, including the real candidates from that run.
+
+The general lesson, which cost a whole model-call iteration to learn: a safety
+rule that blocks the fix is not conservative, it is broken. "Blunt is safe" was
+wrong. A protected edit records as *undecided*, never a refutation, so
 it cannot condemn a sound strategy in the skill library.
 
 Two further things are decided but not built, and both block running the loop
@@ -478,7 +521,7 @@ graphify explain "pathsel"     # a node, its neighbours, and why each edge exist
 graphify path "portfolio.py" "score.py"    # shortest path between two nodes
 ```
 
-Current index: **1078 nodes, 1871 edges, 59 communities**, one per module. Line
+Current index: **1090 nodes, 1886 edges, 60 communities**, one per module. Line
 numbers were spot-checked against the tree and are exact. `runs/` is not
 indexed, so the 92 MB of run artifacts add no noise.
 
@@ -515,7 +558,7 @@ applies to every project on this machine, not just this repo.
 ## 9. Verify without tools or a model
 
 ```bash
-python3 tools/selftest.py                    # 225 tests
+python3 tools/selftest.py                    # 229 tests
 python3 tools/pathsel.py runs/mac_chain/opt-20260901-025558-run1/baseline -k 3
 python3 tools/rtlscan.py designs/mac_chain/rtl/mac_chain.v
 python3 tools/skills.py consolidate          # repairs a fragmented library

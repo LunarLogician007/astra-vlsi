@@ -156,11 +156,14 @@ Clock generation and clock domain crossings are declared off limits in
 "protected": ["cdc_*", "clk_*_div*"]
 ```
 
-A candidate that adds, removes or alters any line mentioning a matching
-identifier is rejected without being synthesised or equivalence-checked. That
-ordering is the point — see
+A candidate that changes a line **assigning** a protected signal, or that
+changes any **reference** to one (identifier and bit select alike), is rejected
+without being synthesised or equivalence-checked. Reading a protected signal on
+a line that also does ordinary work is allowed — forbidding that forbids the
+optimisation itself. See
 [`equivalence-contract.md`](equivalence-contract.md) for why SEC cannot catch
-such a change, and `HANDOFF.md` §6.4 for why the rule is deliberately blunt.
+such a change, and `HANDOFF.md` §6.4 for what a blunter version of this rule
+cost.
 
 Dividers are in that region for a second reason: their post-synthesis instance
 name is what the SDC hangs a generated clock on, so rewriting one silently

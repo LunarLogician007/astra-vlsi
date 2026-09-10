@@ -136,8 +136,36 @@ about analogue settling behaviour that no cycle-level model captures. A
 synchroniser removed from a design that is otherwise equivalent under every
 interleaving would likely be caught here, but "likely" is not a guarantee, and
 metastability is not represented at all. So CDC logic stays out of the
-optimiser's editable scope regardless — see below. This check is the second
-line of defence, not the first.
+optimiser's editable scope regardless. This check is the second line of
+defence, not the first.
+
+### The first line of defence: declared-off-limits regions
+
+A design declares what the optimiser may not touch:
+
+```json
+"protected": ["cdc_*", "clk_*_div*"]
+```
+
+and `tools/protect.py` enforces it **before** synthesis and before SEC. Two
+halves, and both are needed:
+
+1. A line that **assigns** a protected signal may not change — the synchroniser
+   and divider bodies themselves.
+2. Every **reference** to one must survive unchanged: same identifier, same bit
+   select, same count. This is what catches reading `cdc_x[0]` where the gold
+   read `cdc_x[1]`, which bypasses a synchroniser stage without touching its
+   assignment at all.
+
+Reading a protected signal on a line that also does ordinary work stays legal.
+A blunter first version froze any line *mentioning* one, and a real run showed
+what that costs: on `netproc` it rejected all three specialists for rewriting
+`par_chain[XW] ^ cdc_xfrm_from_look[1]` into the balanced-tree form — the exact
+fix the design asks for, CDC reference untouched. Blocking the optimisation is
+not a safe default. See `HANDOFF.md` §6.4.
+
+A rejection records as *undecided*, never a refutation, so it cannot teach the
+skill library that a sound transformation breaks equivalence.
 
 ---
 

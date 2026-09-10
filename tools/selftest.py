@@ -1800,6 +1800,51 @@ class TestProtectedRegions(unittest.TestCase):
         self.assertTrue(pats, "soc_bench must declare protected patterns")
         self.assertGreater(len(protect.protected_lines(rtl, pats)), 20)
 
+    def test_reading_a_protected_signal_does_not_freeze_the_line(self):
+        """The defect this replaced. On netproc all three specialists were
+        rejected for rewriting
+
+            xfrm_par <= par_chain[XW] ^ cdc_xfrm_from_look[1];
+
+        into the balanced-tree form `par_result ^ cdc_xfrm_from_look[1]` --
+        the exact fix the design asks for, with the CDC reference untouched.
+        A whole-line rule blocks the optimisation, which is not a safe
+        default; it is a broken one."""
+        gold = ("  always @(posedge clk) cdc_x <= {cdc_x[0], flag};\n"
+                "  always @(posedge clk) y <= chain[N] ^ cdc_x[1];\n")
+        cand = ("  always @(posedge clk) cdc_x <= {cdc_x[0], flag};\n"
+                "  always @(posedge clk) y <= tree_result ^ cdc_x[1];\n")
+        self.assertEqual(protect.violations(gold, cand, ["cdc_*"]), [])
+
+    def test_bypassing_a_synchroniser_stage_on_a_read_is_caught(self):
+        """The reason reads cannot simply be ignored: swapping cdc_x[1] for
+        cdc_x[0] takes a stage out of the crossing without touching the
+        synchroniser's own assignment."""
+        gold = "  y <= chain ^ cdc_x[1];\n"
+        cand = "  y <= chain ^ cdc_x[0];\n"
+        v = protect.violations(gold, cand, ["cdc_*"])
+        self.assertTrue(v)
+        self.assertTrue(any("cdc_x[1]" in x for x in v))
+
+    def test_dropping_a_protected_reference_is_caught(self):
+        gold = "  y <= chain ^ cdc_x[1];\n"
+        cand = "  y <= chain;\n"
+        self.assertTrue(protect.violations(gold, cand, ["cdc_*"]))
+
+    def test_the_real_netproc_candidates_are_allowed(self):
+        """Pinned to the design as shipped, so a future tightening of the rule
+        cannot silently re-break the optimisation it exists to permit."""
+        cfg = json.loads((ROOT / "designs" / "netproc"
+                          / "config.json").read_text())
+        rtl = (ROOT / "designs" / "netproc" / "rtl" / "netproc.v").read_text()
+        pats = cfg["protected"]
+        fixed = rtl.replace(
+            "xfrm_par <= par_chain[XW] ^ cdc_xfrm_from_look[1];",
+            "xfrm_par <= par_result ^ cdc_xfrm_from_look[1];")
+        self.assertNotEqual(fixed, rtl, "the anchor line must still exist")
+        self.assertEqual(protect.violations(rtl, fixed, pats), [],
+                         "the balanced-tree fix must be permitted")
+
     def test_a_protected_edit_is_undecided_not_a_refutation(self):
         """It says nothing about whether the transformation is sound, so it
         must not condemn the strategy in the skill library."""

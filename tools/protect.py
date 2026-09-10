@@ -20,10 +20,24 @@ rather than argued about afterwards. A design declares what is off limits:
 
 and a candidate that edited any of it is rejected without being synthesised.
 
-The rule is deliberately blunt: a line mentioning a protected identifier may
-not be added, removed, or changed. Blunt is right here. A subtle rule invites
-a candidate to argue it stayed within the spirit of one, and the whole point is
-that no tool downstream can check whether it did.
+The rule has two halves, and both are needed:
+
+  1. A line that ASSIGNS a protected signal may not change. That is the
+     synchroniser and divider logic itself.
+  2. Every REFERENCE to a protected signal must survive unchanged -- same
+     identifier, same bit select, same number of them. That catches reading
+     `cdc_x[0]` where the gold read `cdc_x[1]`, which bypasses a synchroniser
+     stage without touching its assignment.
+
+Reading a protected signal on a line that also does ordinary work is allowed,
+because forbidding it forbids the optimisation. Measured: on netproc all three
+specialists were rejected for rewriting
+
+    xfrm_par <= par_chain[XW] ^ cdc_xfrm_from_look[1];
+
+into the balanced-tree form `par_result ^ cdc_xfrm_from_look[1]` -- the exact
+fix the design asks for, with the CDC reference untouched. A whole-line rule
+blocks that, and blocking the fix is not a safe default. It is a broken one.
 
 Nothing here parses Verilog. It is line-oriented text comparison, so it costs
 nothing and cannot itself be wrong about the language.
@@ -58,22 +72,58 @@ def matches(name: str, patterns: Iterable[str]) -> bool:
 
 
 def protected_lines(text: str, patterns: Iterable[str]) -> list[tuple[int, str]]:
-    """(1-based line number, normalised content) for every protected line."""
+    """(1-based line number, normalised content) for every line that ASSIGNS a
+    protected signal -- the synchroniser and divider bodies themselves."""
     pats = list(patterns)
     if not pats:
         return []
     out: list[tuple[int, str]] = []
     for n, line in enumerate(text.splitlines(), start=1):
         code = _normalise(line)
-        if code and any(matches(i, pats) for i in _identifiers(line)):
+        if code and _assigns_protected(line, pats):
             out.append((n, code))
     return out
 
 
-def regions(text: str, patterns: Iterable[str]) -> list[tuple[int, int]]:
-    """Protected lines merged into contiguous 1-based inclusive ranges.
+def _assigns_protected(line: str, patterns: Iterable[str]) -> bool:
+    """Does this line drive a protected signal?
 
-    Used to keep protected lines out of a target's editable scope, so an agent
+    Matches `cdc_x <= ...`, `if (!rst_n) cdc_x <= 0;` and `assign clk_d = ...`
+    alike. A comparison such as `if (cdc_x <= 3)` is misread as an assignment,
+    which only makes the rule stricter on that line -- safe in the direction
+    that matters.
+    """
+    for m in re.finditer(r"([A-Za-z_][A-Za-z0-9_$]*)\s*(?:\[[^\]]*\])?\s*(<=|=)(?!=)",
+                         _LINE_COMMENT.sub("", line)):
+        if matches(m.group(1), patterns):
+            return True
+    return False
+
+
+def references(text: str, patterns: Iterable[str]) -> list[str]:
+    """Every mention of a protected signal, in order, with its bit select.
+
+    The select is part of the reference on purpose: `cdc_x[1]` and `cdc_x[0]`
+    are different signals, and swapping one for the other is how a synchroniser
+    stage gets bypassed without its assignment being touched.
+    """
+    pats = list(patterns)
+    if not pats:
+        return []
+    out: list[str] = []
+    for line in text.splitlines():
+        for m in re.finditer(r"([A-Za-z_][A-Za-z0-9_$]*)(\s*\[[^\]]*\])?",
+                             _LINE_COMMENT.sub("", line)):
+            if matches(m.group(1), pats):
+                sel = (m.group(2) or "").replace(" ", "")
+                out.append(m.group(1) + sel)
+    return out
+
+
+def regions(text: str, patterns: Iterable[str]) -> list[tuple[int, int]]:
+    """Protected assignment lines merged into contiguous 1-based ranges.
+
+    Used to keep protected logic out of a target's editable scope, so an agent
     is not handed something it will then be rejected for changing.
     """
     nums = [n for n, _ in protected_lines(text, patterns)]
@@ -88,33 +138,36 @@ def regions(text: str, patterns: Iterable[str]) -> list[tuple[int, int]]:
 
 def violations(parent: str, candidate: str,
                patterns: Iterable[str]) -> list[str]:
-    """What the candidate did to protected logic. Empty means it left it alone.
-
-    Compares the ordered sequence of protected lines rather than diffing the
-    whole file, so moving unrelated code around is free and touching a
-    synchroniser is not.
-    """
+    """What the candidate did to protected logic. Empty means it left it alone."""
     pats = list(patterns)
     if not pats:
         return []
+    out: list[str] = []
+
     before = [c for _, c in protected_lines(parent, pats)]
     after = [c for _, c in protected_lines(candidate, pats)]
-    if before == after:
-        return []
+    if before != after:
+        lost = [c for c in before if c not in after]
+        gained = [c for c in after if c not in before]
+        if len(after) < len(before):
+            out.append(f"{len(before) - len(after)} protected assignment(s) removed")
+        elif len(after) > len(before):
+            out.append(f"{len(after) - len(before)} protected assignment(s) added")
+        for c in lost[:3]:
+            out.append(f"removed or altered: {c[:100]}")
+        for c in gained[:3]:
+            out.append(f"introduced: {c[:100]}")
+        if not out:
+            out.append("protected assignments reordered")
 
-    out: list[str] = []
-    lost = [c for c in before if c not in after]
-    gained = [c for c in after if c not in before]
-    if len(after) < len(before):
-        out.append(f"{len(before) - len(after)} protected line(s) removed")
-    elif len(after) > len(before):
-        out.append(f"{len(after) - len(before)} protected line(s) added")
-    for c in lost[:4]:
-        out.append(f"removed or altered: {c[:100]}")
-    for c in gained[:4]:
-        out.append(f"introduced: {c[:100]}")
-    if not out:
-        out.append("protected lines reordered")
+    rb, ra = references(parent, pats), references(candidate, pats)
+    if rb != ra:
+        from collections import Counter
+        cb, ca = Counter(rb), Counter(ra)
+        for name in sorted(set(cb) | set(ca)):
+            if cb[name] != ca[name]:
+                out.append(f"reference to {name} changed: "
+                           f"{cb[name]} -> {ca[name]} occurrence(s)")
     return out
 
 

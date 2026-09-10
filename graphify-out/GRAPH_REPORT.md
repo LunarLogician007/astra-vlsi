@@ -1,16 +1,16 @@
 # Graph Report - astra  (2026-09-10)
 
 ## Corpus Check
-- 38 files · ~83,392 words
+- 38 files · ~84,499 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1078 nodes · 1871 edges · 59 communities (43 shown, 15 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.85)
+- 1090 nodes · 1886 edges · 60 communities (44 shown, 15 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0030850b`
+- Built from commit: `6f39a02f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -39,7 +39,7 @@
 - HANDOFF — ASTRA path-portfolio addon
 - TestEq3
 - astra_advise.py
-- TestMultiClockRanking
+- TestClockResolution
 - TestSkills
 - TestEquivalenceContract
 - TestPathSelCriticality
@@ -73,6 +73,7 @@
 - Setup
 - dual_clock.v
 - netproc.v
+- TestPathSelValue
 
 ## God Nodes (most connected - your core abstractions)
 1. `_path()` - 30 edges
@@ -101,14 +102,14 @@
 ## Import Cycles
 - None detected.
 
-## Communities (59 total, 15 thin omitted)
+## Communities (60 total, 15 thin omitted)
 
 ### Community 0 - "pathsel.py"
 Cohesion: 0.06
 Nodes (62): Counter, build_targets(), _by_cluster(), _cell_count(), _clock_coverage(), cluster(), cluster_similarity(), cluster_value() (+54 more)
 
 ### Community 1 - "drrtl.py"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (28): build_parser(), die(), EvaluationAgent, extract_json(), extract_verilog(), fmt(), info(), main() (+20 more)
 
 ### Community 2 - "rtlscan.py"
@@ -184,7 +185,7 @@ Cohesion: 0.12
 Nodes (6): Self-tests for the Dr. RTL layer: the paper's equations, the RTL mapper, the…, TestEvaluationFailures, TestExploration, TestRtlScanDepth, TestSkillLearning, TestToolEnv
 
 ### Community 20 - "_NoRtl"
-Cohesion: 0.21
+Cohesion: 0.23
 Nodes (6): _empty_index(), _NoRtl, Regression guard on the bug this replaced: criticality used to be hard-zeroed…, The other side of it: a cone that is nowhere near limiting the clock is not…, A register bank produces many paths and one bottleneck., TestPathSelClustering
 
 ### Community 21 - "HANDOFF — ASTRA path-portfolio addon"
@@ -199,9 +200,9 @@ Nodes (6): The published weights and the published normalisation., While the bas
 Cohesion: 0.30
 Nodes (14): build_prompt(), call_claude(), die(), endpoint_summary(), find_run(), info(), load_json(), main() (+6 more)
 
-### Community 24 - "TestMultiClockRanking"
-Cohesion: 0.14
-Nodes (9): Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls…, The failure mode being guarded: falling back to the primary period is sometimes…, The trap: paths normalised against a period that is not their own. Nothing…, Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a…, Raw slack cannot order paths in different domains. Here the slow path has the…, The uncertainty model must survive the change of units: two paths a few…, A path ranked against a period that is not its own is the exact silent failure.…, TestClockResolution (+1 more)
+### Community 24 - "TestClockResolution"
+Cohesion: 0.29
+Nodes (3): Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls…, The failure mode being guarded: falling back to the primary period is sometimes…, TestClockResolution
 
 ### Community 26 - "TestEquivalenceContract"
 Cohesion: 0.18
@@ -236,8 +237,8 @@ Cohesion: 0.29
 Nodes (3): Scores are minimised, so the winner is the one below the mean., A z-score must not care that one design's slacks are 10x another's., TestEq5
 
 ### Community 35 - "_path"
-Cohesion: 0.13
-Nodes (10): _path(), Pinning the bug this replaced: with one period both paths score identically, so…, Back-compat: every single-clock caller passes a float and must get exactly the…, criticality() works in cycles of each path's own clock. On a single-clock…, A synthetic OpenSTA path, in the shape parse_sta produces. Paths through one…, Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, Without the shared-cone term, twenty bit-slices of one bottleneck would each… (+2 more)
+Cohesion: 0.15
+Nodes (13): _path(), The trap: paths normalised against a period that is not their own. Nothing…, Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a…, Pinning the bug this replaced: with one period both paths score identically, so…, Back-compat: every single-clock caller passes a float and must get exactly the…, Raw slack cannot order paths in different domains. Here the slow path has the…, The uncertainty model must survive the change of units: two paths a few…, A path ranked against a period that is not its own is the exact silent failure.… (+5 more)
 
 ### Community 36 - "TestClockGroupParsing"
 Cohesion: 0.22
@@ -252,16 +253,16 @@ Cohesion: 0.29
 Nodes (3): The honesty guard, pinned to a committed artifact. If a weight tweak ever makes…, The design declares three bottlenecks by hand in config.json. The selector…, TestPathSelOnRealRun
 
 ### Community 42 - "protect.py"
-Cohesion: 0.16
-Nodes (17): check_files(), describe(), _identifiers(), matches(), _normalise(), protected_lines(), Any, Run the check across a whole design, keyed by file name. A file the candidate… (+9 more)
+Cohesion: 0.13
+Nodes (20): _assigns_protected(), check_files(), describe(), matches(), _normalise(), protected_lines(), Any, Every mention of a protected signal, in order, with its bit select. The select… (+12 more)
 
 ### Community 51 - "TestProtectedRegions"
-Cohesion: 0.12
-Nodes (9): CDC and clock generation sit on the far side of the cut the equivalence proof…, The whole point is to permit the optimisation, not to freeze the file., Two flops to one. Passes SEC, and is broken silicon., A rule that fires on whitespace teaches the loop to avoid the file entirely,…, An easy way past a per-file check., Every existing single-clock design declares no protected patterns and must…, A protected list that matches nothing is worse than none -- it reads as…, It says nothing about whether the transformation is sound, so it must not… (+1 more)
+Cohesion: 0.08
+Nodes (12): CDC and clock generation sit on the far side of the cut the equivalence proof…, The whole point is to permit the optimisation, not to freeze the file., Two flops to one. Passes SEC, and is broken silicon., A rule that fires on whitespace teaches the loop to avoid the file entirely,…, An easy way past a per-file check., Every existing single-clock design declares no protected patterns and must…, A protected list that matches nothing is worse than none -- it reads as…, The defect this replaced. On netproc all three specialists were rejected for… (+4 more)
 
 ### Community 52 - "The equivalence contract"
-Cohesion: 0.20
-Nodes (10): 1. The claim, on a single-clock design, 2. The claim, on a multi-clock design, 3. What the code does today, 4. Scale, 5. Related constraints, A bounded pass is worth exactly what its depth can see, Adopted: whole-design equivalence with every clock free, Considered: per-domain SEC with the CDC boundaries cut (+2 more)
+Cohesion: 0.18
+Nodes (11): 1. The claim, on a single-clock design, 2. The claim, on a multi-clock design, 3. What the code does today, 4. Scale, 5. Related constraints, A bounded pass is worth exactly what its depth can see, Adopted: whole-design equivalence with every clock free, Considered: per-domain SEC with the CDC boundaries cut (+3 more)
 
 ### Community 53 - "Path-portfolio mode"
 Cohesion: 0.22
@@ -275,25 +276,29 @@ Nodes (5): Dr. RTL optimisation loop, Honest differences from the paper, The equ
 Cohesion: 0.50
 Nodes (4): Linux, macOS, Setup, Windows (WSL2) — x86
 
+### Community 59 - "TestPathSelValue"
+Cohesion: 0.18
+Nodes (3): Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, TestPathSelValue
+
 ## Knowledge Gaps
-- **67 isolated node(s):** `alu32`, `dual_clock`, `dual_path`, `mac_chain`, `netproc` (+62 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 488 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **68 isolated node(s):** `alu32`, `dual_clock`, `dual_path`, `mac_chain`, `netproc` (+63 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 496 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TestClockSet` connect `TestClockSet` to `selftest.py`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
-- **Why does `TestProtectedRegions` connect `TestProtectedRegions` to `selftest.py`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `ClockSet` connect `ClockSet` to `sec.py`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `TestRtlScan` connect `TestRtlScan` to `selftest.py`?**
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **Why does `_path()` connect `_path` to `TestPathSelSegments`, `TestClockGroupParsing`, `._setup`, `TestPathSelValue`, `TestStageParameterisation`, `TestPathSelMetrics`, `selftest.py`, `_NoRtl`, `TestPathSelCriticality`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **Why does `TestEq3` connect `TestEq3` to `selftest.py`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `alu32`, `dual_clock`, `dual_path` to the rest of the system?**
-  _67 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _68 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `pathsel.py` be split into smaller, more focused modules?**
   _Cohesion score 0.06321334503950835 - nodes in this community are weakly interconnected._
 - **Should `drrtl.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.08441558441558442 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08686868686868687 - nodes in this community are weakly interconnected._
 - **Should `rtlscan.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08392156862745098 - nodes in this community are weakly interconnected._
