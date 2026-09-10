@@ -30,6 +30,19 @@
       "source_location": "L151"
     },
     {
+      "id": "tools_rtl_map_rtlindex",
+      "label": "RtlIndex",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "pathsel.py",
+      "file_type": "code",
+      "norm_label": "rtlindex",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L108"
+    },
+    {
       "id": "tools_drrtl_evaluationagent",
       "label": "EvaluationAgent",
       "_callable": true,
@@ -186,19 +199,6 @@
       "source_location": "L2245"
     },
     {
-      "id": "tools_selftest_testclockresolution",
-      "label": "TestClockResolution",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "selftest.py",
-      "file_type": "code",
-      "norm_label": "testclockresolution",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1318"
-    },
-    {
       "id": "tools_selftest_testevaluationfailures",
       "label": "TestEvaluationFailures",
       "_callable": true,
@@ -329,17 +329,17 @@
       "source_location": "L45"
     },
     {
-      "id": "tools_selftest_testcriticalityunitsarecycles",
-      "label": "TestCriticalityUnitsAreCycles",
+      "id": "tools_selftest_testclockresolution",
+      "label": "TestClockResolution",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
-      "norm_label": "testcriticalityunitsarecycles",
+      "norm_label": "testclockresolution",
       "source_file": "tools/selftest.py",
-      "source_location": "L1455"
+      "source_location": "L1318"
     },
     {
       "id": "tools_selftest_testmulticlockranking",
@@ -348,7 +348,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": "testmulticlockranking",
       "source_file": "tools/selftest.py",
@@ -472,13 +472,26 @@
       "source_location": "L151"
     },
     {
+      "id": "tools_selftest_testcriticalityunitsarecycles",
+      "label": "TestCriticalityUnitsAreCycles",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": "testcriticalityunitsarecycles",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1455"
+    },
+    {
       "id": "tools_selftest_testpathselvalue",
       "label": "TestPathSelValue",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": "testpathselvalue",
       "source_file": "tools/selftest.py",
@@ -730,19 +743,6 @@
       "norm_label": "rtlcleanupagent",
       "source_file": "tools/portfolio.py",
       "source_location": "L126"
-    },
-    {
-      "id": "tools_rtl_map_rtlindex",
-      "label": "RtlIndex",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "rtl_map.py",
-      "file_type": "code",
-      "norm_label": "rtlindex",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L108"
     },
     {
       "id": "tools_score_scoreerror",
@@ -1191,6 +1191,30 @@
       "source_location": "L114"
     },
     {
+      "id": "tools_rtl_map_rtlindex_line",
+      "label": ".line()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "pathsel.py",
+      "file_type": "code",
+      "norm_label": ".line()",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "tools_rtl_map_rtlindex_span",
+      "label": ".span()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "pathsel.py",
+      "file_type": "code",
+      "norm_label": ".span()",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L128"
+    },
+    {
       "id": "tools_drrtl_build_parser",
       "label": "build_parser()",
       "_callable": true,
@@ -1513,6 +1537,18 @@
       "norm_label": ".propose()",
       "source_file": "tools/drrtl.py",
       "source_location": "L521"
+    },
+    {
+      "id": "tools_drrtl_skilllearningagent_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "drrtl.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "tools/drrtl.py",
+      "source_location": "L655"
     },
     {
       "id": "tools_drrtl_skilllearningagent_learn",
@@ -2943,42 +2979,6 @@
       "source_location": "L2288"
     },
     {
-      "id": "tools_selftest_testclockresolution_test_a_group_resolves_to_its_own_clock",
-      "label": ".test_a_group_resolves_to_its_own_clock()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "selftest.py",
-      "file_type": "code",
-      "norm_label": ".test_a_group_resolves_to_its_own_clock()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1328"
-    },
-    {
-      "id": "tools_selftest_testclockresolution_test_a_single_clock_design_never_reports_a_fallback",
-      "label": ".test_a_single_clock_design_never_reports_a_fallback()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "selftest.py",
-      "file_type": "code",
-      "norm_label": ".test_a_single_clock_design_never_reports_a_fallback()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1341"
-    },
-    {
-      "id": "tools_selftest_testclockresolution_two",
-      "label": "._two()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "selftest.py",
-      "file_type": "code",
-      "norm_label": "._two()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1322"
-    },
-    {
       "id": "tools_selftest_testevaluationfailures_test_a_failed_stage_produces_an_unscorable_candidate",
       "label": ".test_a_failed_stage_produces_an_unscorable_candidate()",
       "_callable": true,
@@ -3795,16 +3795,28 @@
       "source_location": "L113"
     },
     {
-      "id": "tools_selftest_path",
-      "label": "_path()",
+      "id": "tools_selftest_testclockresolution_test_a_group_resolves_to_its_own_clock",
+      "label": ".test_a_group_resolves_to_its_own_clock()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
-      "norm_label": "_path()",
+      "norm_label": ".test_a_group_resolves_to_its_own_clock()",
       "source_file": "tools/selftest.py",
-      "source_location": "L737"
+      "source_location": "L1328"
+    },
+    {
+      "id": "tools_selftest_testclockresolution_test_a_single_clock_design_never_reports_a_fallback",
+      "label": ".test_a_single_clock_design_never_reports_a_fallback()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TestMultiClockRanking",
+      "file_type": "code",
+      "norm_label": ".test_a_single_clock_design_never_reports_a_fallback()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1341"
     },
     {
       "id": "tools_selftest_testclockresolution_test_an_unknown_group_is_flagged_not_silently_defaulted",
@@ -3812,59 +3824,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": ".test_an_unknown_group_is_flagged_not_silently_defaulted()",
       "source_file": "tools/selftest.py",
       "source_location": "L1333"
     },
     {
-      "id": "tools_selftest_testcriticalityunitsarecycles_feats",
-      "label": "._feats()",
+      "id": "tools_selftest_testclockresolution_two",
+      "label": "._two()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
-      "norm_label": "._feats()",
+      "norm_label": "._two()",
       "source_file": "tools/selftest.py",
-      "source_location": "L1461"
-    },
-    {
-      "id": "tools_selftest_testcriticalityunitsarecycles_test_one_clock_is_unaffected_by_the_change_of_units",
-      "label": ".test_one_clock_is_unaffected_by_the_change_of_units()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_one_clock_is_unaffected_by_the_change_of_units()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1466"
-    },
-    {
-      "id": "tools_selftest_testcriticalityunitsarecycles_test_sigma_zero_still_collapses_to_the_deterministic_answer",
-      "label": ".test_sigma_zero_still_collapses_to_the_deterministic_answer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_sigma_zero_still_collapses_to_the_deterministic_answer()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1482"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_a_bare_float_still_applies_to_every_path",
-      "label": ".test_a_bare_float_still_applies_to_every_path()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_a_bare_float_still_applies_to_every_path()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1408"
+      "source_location": "L1322"
     },
     {
       "id": "tools_selftest_testmulticlockranking_test_a_near_tie_within_one_domain_still_splits",
@@ -3872,7 +3848,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": ".test_a_near_tie_within_one_domain_still_splits()",
       "source_file": "tools/selftest.py",
@@ -3884,7 +3860,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": ".test_an_unresolved_group_is_reported_in_the_selection()",
       "source_file": "tools/selftest.py",
@@ -3896,7 +3872,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": ".test_criticality_ranks_by_share_of_each_paths_own_budget()",
       "source_file": "tools/selftest.py",
@@ -3908,7 +3884,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": ".test_each_path_carries_its_own_clocks_period()",
       "source_file": "tools/selftest.py",
@@ -3920,23 +3896,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": ".test_equal_slack_in_a_slower_domain_is_less_severe()",
       "source_file": "tools/selftest.py",
       "source_location": "L1377"
-    },
-    {
-      "id": "tools_selftest_testmulticlockranking_test_the_old_single_period_behaviour_would_have_tied_them",
-      "label": ".test_the_old_single_period_behaviour_would_have_tied_them()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_the_old_single_period_behaviour_would_have_tied_them()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1396"
     },
     {
       "id": "tools_selftest_testmulticlockranking_two",
@@ -3944,23 +3908,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "code",
       "norm_label": "._two()",
       "source_file": "tools/selftest.py",
       "source_location": "L1362"
-    },
-    {
-      "id": "tools_selftest_testpathselcriticality_test_a_path_with_no_slack_reported_cannot_win",
-      "label": ".test_a_path_with_no_slack_reported_cannot_win()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "code",
-      "norm_label": ".test_a_path_with_no_slack_reported_cannot_win()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1014"
     },
     {
       "id": "tools_selftest_testskills_lib",
@@ -4237,18 +4189,6 @@
       "norm_label": ".test_a_clearly_worse_cone_keeps_the_weight()",
       "source_file": "tools/selftest.py",
       "source_location": "L970"
-    },
-    {
-      "id": "tools_selftest_testpathselcriticality_test_a_cone_holds_its_weight_against_its_own_bit_slices",
-      "label": ".test_a_cone_holds_its_weight_against_its_own_bit_slices()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 27,
-      "community_name": "TestPathSelCriticality",
-      "file_type": "code",
-      "norm_label": ".test_a_cone_holds_its_weight_against_its_own_bit_slices()",
-      "source_file": "tools/selftest.py",
-      "source_location": "L977"
     },
     {
       "id": "tools_selftest_testpathselcriticality_test_it_is_reproducible",
@@ -5379,12 +5319,108 @@
       "source_location": "L174"
     },
     {
+      "id": "tools_selftest_path",
+      "label": "_path()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": "_path()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L737"
+    },
+    {
+      "id": "tools_selftest_testcriticalityunitsarecycles_feats",
+      "label": "._feats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": "._feats()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1461"
+    },
+    {
+      "id": "tools_selftest_testcriticalityunitsarecycles_test_one_clock_is_unaffected_by_the_change_of_units",
+      "label": ".test_one_clock_is_unaffected_by_the_change_of_units()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_one_clock_is_unaffected_by_the_change_of_units()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1466"
+    },
+    {
+      "id": "tools_selftest_testcriticalityunitsarecycles_test_sigma_zero_still_collapses_to_the_deterministic_answer",
+      "label": ".test_sigma_zero_still_collapses_to_the_deterministic_answer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_sigma_zero_still_collapses_to_the_deterministic_answer()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1482"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_test_a_bare_float_still_applies_to_every_path",
+      "label": ".test_a_bare_float_still_applies_to_every_path()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_a_bare_float_still_applies_to_every_path()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1408"
+    },
+    {
+      "id": "tools_selftest_testmulticlockranking_test_the_old_single_period_behaviour_would_have_tied_them",
+      "label": ".test_the_old_single_period_behaviour_would_have_tied_them()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_the_old_single_period_behaviour_would_have_tied_them()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1396"
+    },
+    {
+      "id": "tools_selftest_testpathselcriticality_test_a_cone_holds_its_weight_against_its_own_bit_slices",
+      "label": ".test_a_cone_holds_its_weight_against_its_own_bit_slices()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_a_cone_holds_its_weight_against_its_own_bit_slices()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L977"
+    },
+    {
+      "id": "tools_selftest_testpathselcriticality_test_a_path_with_no_slack_reported_cannot_win",
+      "label": ".test_a_path_with_no_slack_reported_cannot_win()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "code",
+      "norm_label": ".test_a_path_with_no_slack_reported_cannot_win()",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1014"
+    },
+    {
       "id": "tools_selftest_testpathselvalue_test_a_fully_passing_design_does_not_divide_by_zero",
       "label": ".test_a_fully_passing_design_does_not_divide_by_zero()",
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_a_fully_passing_design_does_not_divide_by_zero()",
       "source_file": "tools/selftest.py",
@@ -5396,7 +5432,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_a_passing_path_still_has_a_severity()",
       "source_file": "tools/selftest.py",
@@ -5408,7 +5444,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_impact_uses_the_probability_when_one_is_given()",
       "source_file": "tools/selftest.py",
@@ -5420,7 +5456,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_severity_is_strictly_monotone_across_the_whole_range()",
       "source_file": "tools/selftest.py",
@@ -5432,7 +5468,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_severity_puts_the_constraint_at_the_midpoint()",
       "source_file": "tools/selftest.py",
@@ -5444,7 +5480,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_severity_saturates_at_one_period()",
       "source_file": "tools/selftest.py",
@@ -5456,7 +5492,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "code",
       "norm_label": ".test_tns_shares_sum_to_one_when_violating()",
       "source_file": "tools/selftest.py",
@@ -6423,18 +6459,6 @@
       "source_location": "L783"
     },
     {
-      "id": "tools_drrtl_skilllearningagent_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "skills.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tools/drrtl.py",
-      "source_location": "L655"
-    },
-    {
       "id": "tools_skills_classify",
       "label": "classify()",
       "_callable": true,
@@ -7335,30 +7359,6 @@
       "source_location": "L177"
     },
     {
-      "id": "tools_rtl_map_rtlindex_line",
-      "label": ".line()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "rtl_map.py",
-      "file_type": "code",
-      "norm_label": ".line()",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L124"
-    },
-    {
-      "id": "tools_rtl_map_rtlindex_span",
-      "label": ".span()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "rtl_map.py",
-      "file_type": "code",
-      "norm_label": ".span()",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L128"
-    },
-    {
       "id": "tools_rtl_map_split_pin",
       "label": "split_pin()",
       "_callable": true,
@@ -8052,6 +8052,17 @@
       "source_location": "L991"
     },
     {
+      "id": "tools_rtl_map_rationale_109",
+      "label": "The design's Verilog, addressable by line and by identifier.",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "pathsel.py",
+      "file_type": "rationale",
+      "norm_label": "the design's verilog, addressable by line and by identifier.",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L109"
+    },
+    {
       "id": "tools_drrtl",
       "label": "drrtl.py",
       "_origin": "ast",
@@ -8487,7 +8498,7 @@
       "node_kind": "heading",
       "norm_label": "variants",
       "source_file": "README.md",
-      "source_location": "L789"
+      "source_location": "L790"
     },
     {
       "id": "readme_what_it_costs",
@@ -9317,17 +9328,6 @@
       "source_location": "L1"
     },
     {
-      "id": "tools_selftest_rationale_1319",
-      "label": "Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls\u2026",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "selftest.py",
-      "file_type": "rationale",
-      "norm_label": "resolving a path group to a period. this is the piece handoff section 6.1 calls...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1319"
-    },
-    {
       "id": "tools_selftest_rationale_2",
       "label": "Self-tests for the Dr. RTL layer: the paper's equations, the RTL mapper, the\u2026",
       "_origin": "ast",
@@ -9938,11 +9938,22 @@
       "source_location": "L2"
     },
     {
+      "id": "tools_selftest_rationale_1319",
+      "label": "Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls\u2026",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TestMultiClockRanking",
+      "file_type": "rationale",
+      "norm_label": "resolving a path group to a period. this is the piece handoff section 6.1 calls...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1319"
+    },
+    {
       "id": "tools_selftest_rationale_1334",
       "label": "The failure mode being guarded: falling back to the primary period is sometimes\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "rationale",
       "norm_label": "the failure mode being guarded: falling back to the primary period is sometimes...",
       "source_file": "tools/selftest.py",
@@ -9953,7 +9964,7 @@
       "label": "The trap: paths normalised against a period that is not their own. Nothing\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "rationale",
       "norm_label": "the trap: paths normalised against a period that is not their own. nothing...",
       "source_file": "tools/selftest.py",
@@ -9964,40 +9975,18 @@
       "label": "Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "rationale",
       "norm_label": "half a nanosecond short of a 2 ns cycle is a quarter of the budget. half a...",
       "source_file": "tools/selftest.py",
       "source_location": "L1378"
     },
     {
-      "id": "tools_selftest_rationale_1397",
-      "label": "Pinning the bug this replaced: with one period both paths score identically, so\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "rationale",
-      "norm_label": "pinning the bug this replaced: with one period both paths score identically, so...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1397"
-    },
-    {
-      "id": "tools_selftest_rationale_1409",
-      "label": "Back-compat: every single-clock caller passes a float and must get exactly the\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "rationale",
-      "norm_label": "back-compat: every single-clock caller passes a float and must get exactly the...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1409"
-    },
-    {
       "id": "tools_selftest_rationale_1416",
       "label": "Raw slack cannot order paths in different domains. Here the slow path has the\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "rationale",
       "norm_label": "raw slack cannot order paths in different domains. here the slow path has the...",
       "source_file": "tools/selftest.py",
@@ -10008,7 +9997,7 @@
       "label": "The uncertainty model must survive the change of units: two paths a few\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "rationale",
       "norm_label": "the uncertainty model must survive the change of units: two paths a few...",
       "source_file": "tools/selftest.py",
@@ -10019,33 +10008,11 @@
       "label": "A path ranked against a period that is not its own is the exact silent failure.\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "_path",
+      "community_name": "TestMultiClockRanking",
       "file_type": "rationale",
       "norm_label": "a path ranked against a period that is not its own is the exact silent failure....",
       "source_file": "tools/selftest.py",
       "source_location": "L1445"
-    },
-    {
-      "id": "tools_selftest_rationale_1456",
-      "label": "criticality() works in cycles of each path's own clock. On a single-clock\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "rationale",
-      "norm_label": "criticality() works in cycles of each path's own clock. on a single-clock...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L1456"
-    },
-    {
-      "id": "tools_selftest_rationale_739",
-      "label": "A synthetic OpenSTA path, in the shape parse_sta produces. Paths through one\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "_path",
-      "file_type": "rationale",
-      "norm_label": "a synthetic opensta path, in the shape parse_sta produces. paths through one...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L739"
     },
     {
       "id": "tools_selftest_rationale_305",
@@ -10145,17 +10112,6 @@
       "norm_label": "p(this path is the one limiting the clock). static timing analysis is...",
       "source_file": "tools/selftest.py",
       "source_location": "L925"
-    },
-    {
-      "id": "tools_selftest_rationale_978",
-      "label": "Without the shared-cone term, twenty bit-slices of one bottleneck would each\u2026",
-      "_origin": "ast",
-      "community": 27,
-      "community_name": "TestPathSelCriticality",
-      "file_type": "rationale",
-      "norm_label": "without the shared-cone term, twenty bit-slices of one bottleneck would each...",
-      "source_file": "tools/selftest.py",
-      "source_location": "L978"
     },
     {
       "id": "tools_selftest_rationale_995",
@@ -10592,11 +10548,55 @@
       "source_location": "L185"
     },
     {
+      "id": "tools_selftest_rationale_1397",
+      "label": "Pinning the bug this replaced: with one period both paths score identically, so\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "pinning the bug this replaced: with one period both paths score identically, so...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1397"
+    },
+    {
+      "id": "tools_selftest_rationale_1409",
+      "label": "Back-compat: every single-clock caller passes a float and must get exactly the\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "back-compat: every single-clock caller passes a float and must get exactly the...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1409"
+    },
+    {
+      "id": "tools_selftest_rationale_1456",
+      "label": "criticality() works in cycles of each path's own clock. On a single-clock\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "criticality() works in cycles of each path's own clock. on a single-clock...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L1456"
+    },
+    {
+      "id": "tools_selftest_rationale_739",
+      "label": "A synthetic OpenSTA path, in the shape parse_sta produces. Paths through one\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "a synthetic opensta path, in the shape parse_sta produces. paths through one...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L739"
+    },
+    {
       "id": "tools_selftest_rationale_872",
       "label": "Both halves matter. A met design must be rankable (the old gate zeroed it), and\u2026",
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "rationale",
       "norm_label": "both halves matter. a met design must be rankable (the old gate zeroed it), and...",
       "source_file": "tools/selftest.py",
@@ -10607,11 +10607,22 @@
       "label": "alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this\u2026",
       "_origin": "ast",
       "community": 35,
-      "community_name": "TestPathSelValue",
+      "community_name": "_path",
       "file_type": "rationale",
       "norm_label": "alu32's real numbers: wns +0.3701 at a 2.5 ns period. under the old gate this...",
       "source_file": "tools/selftest.py",
       "source_location": "L886"
+    },
+    {
+      "id": "tools_selftest_rationale_978",
+      "label": "Without the shared-cone term, twenty bit-slices of one bottleneck would each\u2026",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "_path",
+      "file_type": "rationale",
+      "norm_label": "without the shared-cone term, twenty bit-slices of one bottleneck would each...",
+      "source_file": "tools/selftest.py",
+      "source_location": "L978"
     },
     {
       "id": "tools_selftest_rationale_1592",
@@ -11895,6 +11906,30 @@
       "source_location": "L29"
     },
     {
+      "id": "designs_netproc_rtl_netproc",
+      "label": "netproc.v",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "netproc.v",
+      "confidence_score": 1.0,
+      "file_type": "code",
+      "norm_label": "netproc.v",
+      "source_file": "designs/netproc/rtl/netproc.v",
+      "source_location": "L1"
+    },
+    {
+      "id": "designs_netproc_rtl_netproc_netproc",
+      "label": "netproc",
+      "_origin": "ast",
+      "community": 58,
+      "community_name": "netproc.v",
+      "confidence_score": 1.0,
+      "file_type": "code",
+      "norm_label": "netproc",
+      "source_file": "designs/netproc/rtl/netproc.v",
+      "source_location": "L33"
+    },
+    {
       "id": "tools_portfolio",
       "label": "portfolio.py",
       "_origin": "ast",
@@ -12069,17 +12104,6 @@
       "norm_label": "path",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "tools_rtl_map_rationale_109",
-      "label": "The design's Verilog, addressable by line and by identifier.",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "rtl_map.py",
-      "file_type": "rationale",
-      "norm_label": "the design's verilog, addressable by line and by identifier.",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L109"
     },
     {
       "id": "tools_rtl_map_rationale_134",
@@ -23298,7 +23322,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L789",
+      "source_location": "L790",
       "weight": 1.0
     },
     {
@@ -26797,6 +26821,17 @@
       "confidence_score": 1.0,
       "source_file": "designs/mac_chain/rtl/mac_chain.v",
       "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "designs_netproc_rtl_netproc",
+      "target": "designs_netproc_rtl_netproc_netproc",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "designs/netproc/rtl/netproc.v",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -34070,5 +34105,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c5cf63996d2b24a01cb2e1a8fcbf142a44248c35"
+  "built_at_commit": "0030850b44d1196c59518a58bfc4cfc9643f2220"
 }

@@ -751,6 +751,7 @@ so write clock dividers as pure toggle flops.
 | `dual_path` | 1.5 ns | not yet run — see [path-portfolio mode](#what-this-does-not-yet-show) |
 | `soc_bench` | 13 clocks, 5 async | **VIOLATED**, WNS −6.5126, TNS −65.1401, 60 endpoints, 49,935 cells |
 | `dual_clock` | 3 clocks, 2 async | **VIOLATED**, WNS −0.0523, TNS −0.6798, 13 endpoints, 1,307 cells |
+| `netproc` | 13 clocks, 5 async | **VIOLATED** in 4 groups, WNS −17.83, TNS −764.26, 184 endpoints, 50,502 cells |
 
 `alu32` is the sanity check. Its critical path is the 32-bit ripple-carry adder
 Yosys infers — ~70 gates deep, which is why it needs 2.5 ns and not 1.0.

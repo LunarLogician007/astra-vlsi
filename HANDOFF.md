@@ -478,7 +478,7 @@ graphify explain "pathsel"     # a node, its neighbours, and why each edge exist
 graphify path "portfolio.py" "score.py"    # shortest path between two nodes
 ```
 
-Current index: **1076 nodes, 1870 edges, 58 communities**, one per module. Line
+Current index: **1078 nodes, 1871 edges, 59 communities**, one per module. Line
 numbers were spot-checked against the tree and are exact. `runs/` is not
 indexed, so the 92 MB of run artifacts add no noise.
 

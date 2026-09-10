@@ -1,16 +1,16 @@
 # Graph Report - astra  (2026-09-10)
 
 ## Corpus Check
-- 36 files · ~81,174 words
+- 38 files · ~83,392 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1076 nodes · 1870 edges · 58 communities (43 shown, 14 thin omitted)
+- 1078 nodes · 1871 edges · 59 communities (43 shown, 15 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c5cf6399`
+- Built from commit: `0030850b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -39,7 +39,7 @@
 - HANDOFF — ASTRA path-portfolio addon
 - TestEq3
 - astra_advise.py
-- _path
+- TestMultiClockRanking
 - TestSkills
 - TestEquivalenceContract
 - TestPathSelCriticality
@@ -50,7 +50,7 @@
 - TestSkillMerging
 - TestPathSelSegments
 - TestEq5
-- TestPathSelValue
+- _path
 - TestClockGroupParsing
 - TestReplyParsing
 - ._setup
@@ -72,6 +72,7 @@
 - Dr. RTL optimisation loop
 - Setup
 - dual_clock.v
+- netproc.v
 
 ## God Nodes (most connected - your core abstractions)
 1. `_path()` - 30 edges
@@ -86,28 +87,28 @@
 10. `TestSkillDoc` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `render_doc()` --references--> `SkillLibrary`  [EXTRACTED]
+  tools/skillgen.py → tools/skills.py
+- `ensure_seeds()` --references--> `SkillLibrary`  [EXTRACTED]
+  tools/skillgen.py → tools/skills.py
 - `path_features()` --references--> `RtlIndex`  [EXTRACTED]
   tools/pathsel.py → tools/rtl_map.py
 - `_scope()` --references--> `RtlIndex`  [EXTRACTED]
   tools/pathsel.py → tools/rtl_map.py
 - `_span_regions()` --references--> `RtlIndex`  [EXTRACTED]
   tools/pathsel.py → tools/rtl_map.py
-- `_make_target()` --references--> `RtlIndex`  [EXTRACTED]
-  tools/pathsel.py → tools/rtl_map.py
-- `build_targets()` --references--> `RtlIndex`  [EXTRACTED]
-  tools/pathsel.py → tools/rtl_map.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (58 total, 14 thin omitted)
+## Communities (59 total, 15 thin omitted)
 
 ### Community 0 - "pathsel.py"
-Cohesion: 0.07
-Nodes (60): Counter, build_targets(), _by_cluster(), _cell_count(), _clock_coverage(), cluster(), cluster_similarity(), cluster_value() (+52 more)
+Cohesion: 0.06
+Nodes (62): Counter, build_targets(), _by_cluster(), _cell_count(), _clock_coverage(), cluster(), cluster_similarity(), cluster_value() (+54 more)
 
 ### Community 1 - "drrtl.py"
-Cohesion: 0.09
+Cohesion: 0.08
 Nodes (28): build_parser(), die(), EvaluationAgent, extract_json(), extract_verilog(), fmt(), info(), main() (+20 more)
 
 ### Community 2 - "rtlscan.py"
@@ -132,7 +133,7 @@ Nodes (20): PathTarget, build_parser(), call_budget(), main(), MergeAgent, PathS
 
 ### Community 7 - "rtl_map.py"
 Cohesion: 0.09
-Nodes (36): analyse(), base_ident(), diagnose(), _family(), from_run(), is_mangled(), load_netlist_index(), main() (+28 more)
+Nodes (34): analyse(), base_ident(), diagnose(), _family(), from_run(), is_mangled(), load_netlist_index(), main() (+26 more)
 
 ### Community 8 - "score.py"
 Cohesion: 0.09
@@ -179,8 +180,8 @@ Cohesion: 0.10
 Nodes (6): Statistics live in the library, where they are measured. A skill document…, It runs before synthesis, so a timing report does not exist yet., Filtering must never silently empty a hand-written document., A seed is an untested suggestion and must stay one until a run gives it a…, The catalogue is an index. Statistics belong in the library, where they were…, TestSkillDoc
 
 ### Community 19 - "selftest.py"
-Cohesion: 0.09
-Nodes (8): Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls…, Self-tests for the Dr. RTL layer: the paper's equations, the RTL mapper, the…, TestClockResolution, TestEvaluationFailures, TestExploration, TestRtlScanDepth, TestSkillLearning, TestToolEnv
+Cohesion: 0.12
+Nodes (6): Self-tests for the Dr. RTL layer: the paper's equations, the RTL mapper, the…, TestEvaluationFailures, TestExploration, TestRtlScanDepth, TestSkillLearning, TestToolEnv
 
 ### Community 20 - "_NoRtl"
 Cohesion: 0.21
@@ -198,17 +199,17 @@ Nodes (6): The published weights and the published normalisation., While the bas
 Cohesion: 0.30
 Nodes (14): build_prompt(), call_claude(), die(), endpoint_summary(), find_run(), info(), load_json(), main() (+6 more)
 
-### Community 24 - "_path"
+### Community 24 - "TestMultiClockRanking"
 Cohesion: 0.14
-Nodes (13): _path(), The failure mode being guarded: falling back to the primary period is sometimes…, The trap: paths normalised against a period that is not their own. Nothing…, Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a…, Pinning the bug this replaced: with one period both paths score identically, so…, Back-compat: every single-clock caller passes a float and must get exactly the…, Raw slack cannot order paths in different domains. Here the slow path has the…, The uncertainty model must survive the change of units: two paths a few… (+5 more)
+Nodes (9): Resolving a path group to a period. This is the piece HANDOFF section 6.1 calls…, The failure mode being guarded: falling back to the primary period is sometimes…, The trap: paths normalised against a period that is not their own. Nothing…, Half a nanosecond short of a 2 ns cycle is a quarter of the budget. Half a…, Raw slack cannot order paths in different domains. Here the slow path has the…, The uncertainty model must survive the change of units: two paths a few…, A path ranked against a period that is not its own is the exact silent failure.…, TestClockResolution (+1 more)
 
 ### Community 26 - "TestEquivalenceContract"
 Cohesion: 0.18
 Nodes (8): docs/equivalence-contract.md, enforced. `sat` models a flop as "Q at t+1 is D…, The behaviour that replaced declining: it is checked, not refused, and the Tcl…, The trap this guards. Capping the depth so multi-clock proofs finish makes them…, Adequate depth is a property of the design, not a global default: on dual_clock…, eqy partitions against a common clock and has no multiclock mode, so asking it…, Wherever `unsupported` is still returned it must not promote a candidate, and…, Induction does not converge with free clocks, so every multi-clock verdict is…, TestEquivalenceContract
 
 ### Community 27 - "TestPathSelCriticality"
-Cohesion: 0.26
-Nodes (4): P(this path is the one limiting the clock). Static timing analysis is…, Without the shared-cone term, twenty bit-slices of one bottleneck would each…, The case that motivates the whole distribution: minimising delay against a…, TestPathSelCriticality
+Cohesion: 0.33
+Nodes (3): P(this path is the one limiting the clock). Static timing analysis is…, The case that motivates the whole distribution: minimising delay against a…, TestPathSelCriticality
 
 ### Community 28 - "RTL timing optimisation"
 Cohesion: 0.17
@@ -234,9 +235,9 @@ Nodes (4): When a design has one cone, its path is cut into disjoint spans., Wit
 Cohesion: 0.29
 Nodes (3): Scores are minimised, so the winner is the one below the mean., A z-score must not care that one design's slacks are 10x another's., TestEq5
 
-### Community 35 - "TestPathSelValue"
-Cohesion: 0.20
-Nodes (3): Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, TestPathSelValue
+### Community 35 - "_path"
+Cohesion: 0.13
+Nodes (10): _path(), Pinning the bug this replaced: with one period both paths score identically, so…, Back-compat: every single-clock caller passes a float and must get exactly the…, criticality() works in cycles of each path's own clock. On a single-clock…, A synthetic OpenSTA path, in the shape parse_sta produces. Paths through one…, Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, Without the shared-cone term, twenty bit-slices of one bottleneck would each… (+2 more)
 
 ### Community 36 - "TestClockGroupParsing"
 Cohesion: 0.22
@@ -275,24 +276,24 @@ Cohesion: 0.50
 Nodes (4): Linux, macOS, Setup, Windows (WSL2) — x86
 
 ## Knowledge Gaps
-- **66 isolated node(s):** `alu32`, `dual_clock`, `dual_path`, `mac_chain`, `soc_bench` (+61 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 486 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **67 isolated node(s):** `alu32`, `dual_clock`, `dual_path`, `mac_chain`, `netproc` (+62 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 488 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
+- **Why does `TestClockSet` connect `TestClockSet` to `selftest.py`?**
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Why does `TestProtectedRegions` connect `TestProtectedRegions` to `selftest.py`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Why does `TestPortfolioBudget` connect `TestPortfolioBudget` to `selftest.py`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **Why does `ClockSet` connect `ClockSet` to `sec.py`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **What connects `alu32`, `dual_clock`, `dual_path` to the rest of the system?**
-  _66 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _67 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `pathsel.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.06746031746031746 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06321334503950835 - nodes in this community are weakly interconnected._
 - **Should `drrtl.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.08686868686868687 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08441558441558442 - nodes in this community are weakly interconnected._
 - **Should `rtlscan.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08392156862745098 - nodes in this community are weakly interconnected._
