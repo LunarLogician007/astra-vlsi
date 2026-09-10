@@ -2,22 +2,116 @@
 
 Context for whoever picks this up next, including me in a later session.
 
-Branch `path-portfolio`, 14 commits ahead of `main`. 229 tests, all passing,
-none needing an EDA install or a model. `make opt` is unchanged and tested to
-be so.
-
-**Since the last handoff:** §6.1 (multi-clock), §6.3 (the equivalence
-contract) and §6.2 (the benchmark) are all done, and multi-clock equivalence
-now works — `sec.check()` no longer declines, so a candidate can be promoted
-across asynchronous domains. Four designs now exercise it: `soc_bench` (13
-clocks, 49,935 cells), `netproc` (13 clocks, 50,502 cells, no multipliers) and
-`dual_clock` (3 clocks, the small one where a proof closes). What remains is
-**scale**: a bounded check refutes bad candidates quickly at 50K cells but
-usually cannot certify good ones. §6.4 has the measurements.
+Branch `path-portfolio`, 19 commits ahead of `main`. **229 tests, all passing**,
+none needing an EDA install or a model.
 
 ---
 
-## 1. What this repo is
+## 0. Status at a glance
+
+| objective | state |
+|---|---|
+| 1 · Analyse RTL against timing constraints | done |
+| 2 · Identify critical paths and violations | done |
+| 3 · GenAI recommends optimisations | **2 of 4** — logic restructuring ✅, retiming ✅, pipelining ✗ (forbidden by the equivalence contract), FSM ✗ (testbed now exists, nothing run against it) |
+| 4 · Evaluate timing / area / performance | done |
+| 5 · Formally verify equivalence | **unbounded** on single-clock; **bounded, refute-biased** on multi-clock |
+| 6 · Benchmark: 5 async domains, CDC, dividers, ~50K cells | **two built and timing**; neither can be *certified* at that size |
+
+**The one-line summary:** the framework is complete and closes end to end. The
+50K-cell benchmarks run correctly and reject bad candidates, but a bounded
+equivalence check cannot confirm good ones at that scale — a limit of the
+open-source solver, not unfinished work.
+
+| design | clocks | cells | loop runs | SEC certifies | promotes |
+|---|---|---|---|---|---|
+| `mac_chain` | 1 | 7,343 | ✅ | ✅ unbounded `induction` | ✅ |
+| `alu32` | 1 | 1,318 | ✅ | ✅ | ✅ (meets timing already) |
+| `dual_path` | 1 | — | never synthesised | — | — |
+| `dual_clock` | 3 (2 async) | 1,307 | ✅ | ✅ `bounded` | ✅ **proven end to end** |
+| `soc_bench` | 13 (5 async) | 49,935 | ✅ | ❌ refutes only | ❌ |
+| `netproc` | 13 (5 async) | 50,502 | ✅ | ❌ refutes only | ❌ |
+
+---
+
+## 1. How to make it work
+
+### Setup, once
+
+```bash
+make build          # ~5–10 min; builds the Yosys + OpenSTA + nangate45 image
+make doctor         # confirms tools, PDKs, and that every design resolves
+```
+
+On macOS the container runs under Colima. **It stops on its own** — it dropped
+twice in one session here — and every EDA call then fails with
+`failed to connect to the docker API at unix:///var/run/docker.sock`. The fix
+is `colima start`; the image and designs survive.
+
+### The two loops
+
+They run **on the host** (so `claude` and its credentials are local) and
+dispatch Yosys/OpenSTA **into the container** via `ASTRA_TOOL_PREFIX`. That
+split is what `make opt` and `make portfolio` set up for you:
+
+```bash
+make opt       DESIGN=mac_chain  OPT_ARGS="--model haiku --iters 1"
+make portfolio DESIGN=dual_clock PF_ARGS="--model haiku --iters 1"
+```
+
+Running `python3 tools/portfolio.py <design>` directly works too, but only if
+you set `ASTRA_TOOL_PREFIX` yourself — otherwise it tries to run Yosys on the
+host and fails with the docker-socket error above.
+
+### Flow commands — no model, no API key, no tokens
+
+```bash
+make run   DESIGN=netproc                 # synthesis + STA
+make syn   DESIGN=netproc                 # synthesis only
+make scan  DESIGN=netproc                 # structural smells, no tools at all
+make paths DESIGN=netproc RUN=<run-id>    # the targets worth an agent call
+make list                                 # designs and runs, with each design's clocks
+```
+
+### Verify with no tools and no model
+
+```bash
+python3 tools/selftest.py     # 229 tests: no EDA, no model, no network
+python3 tools/pathsel.py runs/mac_chain/opt-20260901-025558-run1/baseline -k 3
+```
+
+That `pathsel` invocation is the acceptance check for the novelty: on the
+committed artifact it must collapse 20 paths to **one cone** and cut three
+segments matching the three bottlenecks `mac_chain/config.json` declares by
+hand — without reading that field. Its brief also names the capture clock.
+
+### What to expect, per design
+
+- **`mac_chain`** — the reference. Full loop, unbounded proofs, promotes.
+  ~5 s synthesis. Use it to check nothing is broken.
+- **`dual_clock`** — the multi-clock loop, closing. ~3 s synthesis, SEC proves
+  in ~51 s at its declared `sec_depth: 6`. **This is the design that
+  demonstrates multi-clock promotion.**
+- **`soc_bench` / `netproc`** — the objective-6 benchmarks. ~45–125 s
+  synthesis. Selection, scoping, protection and diagnosis all work; SEC times
+  out or is OOM-killed rather than certifying, so nothing is promoted. Expected,
+  not a bug — see §5.
+
+### Before comparing two runs
+
+- **Reset the skill library between arms** (`make clean-skills`). It persists
+  across runs by design, so the second arm otherwise inherits the first's
+  learning. For a throwaway run point it elsewhere: `--skills /tmp/x.json`.
+- **Match `--iters`.** The loops ship different defaults (3 for `make opt`,
+  4 for `make portfolio`), so omitting it compares budgets, not methods.
+- **Do not run with `--clean 0`.** The pre-synthesis stage takes the obvious
+  fix off the table, which is what forces the specialists onto *different*
+  bottlenecks. Without it they converge and the unions collapse to the parent.
+- **`--dry-run` still needs the container.** It skips model calls, not tools.
+
+---
+
+## 2. What this repo is
 
 A container (Yosys + OpenSTA + nangate45) with two closed-loop RTL timing
 optimisers built on it.
@@ -44,8 +138,9 @@ flowchart LR
   T1 --> U["Stage 4 — unions<br/>{1,2}{1,3}{2,3}{1,2,3}<br/><b>0 calls</b>"]
   T2 --> U
   T3 --> U
+  U --> PR["protect.py<br/><b>0 calls</b>"]
+  PR --> EV["SEC → synth → STA"]
   U --> MG["merge agent<br/>1 call"]
-  U --> EV["SEC → synth → STA"]
   MG --> EV
   EV --> EQ4["argmin Eq.4 over<br/>specialists ∪ unions ∪ parent"]
   EQ4 -.->|next parent| SEL
@@ -53,35 +148,33 @@ flowchart LR
 
 ---
 
-## 2. Files
+## 3. Files
 
 | file | lines | what it owns |
 |---|---|---|
-| `tools/pathsel.py` | 1237 | **the novelty** — cone clustering, criticality distribution, value scoring, MMR selection, path segmentation |
-| `tools/portfolio.py` | 1222 | the addon orchestrator; subclasses `drrtl.Orchestrator` |
+| `tools/pathsel.py` | 1253 | **the novelty** — cone clustering, criticality distribution, value scoring, MMR selection, path segmentation |
+| `tools/portfolio.py` | 1240 | the addon orchestrator; subclasses `drrtl.Orchestrator` |
+| `tools/drrtl.py` | 1356 | base loop, four agents; **do not fork it, subclass it** |
 | `tools/rtlscan.py` | 738 | pre-synthesis structural smells, lexical (no elaboration) |
-| `tools/merge.py` | 337 | order-independent mechanical union + conflict report |
-| `tools/skillgen.py` | 436 | renders `SKILL.md`, routes sections per agent role |
-| `tools/drrtl.py` | 1291 | base loop, four agents; **do not fork it, subclass it** |
-| `tools/clocks.py` | 348 | the clock model — periods, groups, SDC generation. **Stdlib only, imports nothing from this tree**, so every consumer resolves a period the same way without a cycle |
-| `tools/score.py` | 354 | Eq. 1/3/4/5, plus `sec_tally` and `critical_period` |
-| `tools/skills.py` | 555 | the confidence-weighted library |
 | `tools/rtl_map.py` | 611 | path → RTL localisation, structural diagnosis |
-| `tools/protect.py` | 170 | what the optimiser may not touch, and the gate that enforces it **before** SEC |
+| `tools/skills.py` | 552 | the confidence-weighted library |
+| `tools/skillgen.py` | 689 | renders `SKILL.md`, routes sections per agent role |
+| `tools/clocks.py` | 425 | the clock model — periods, groups, SDC generation. **Stdlib only, imports nothing from this tree** |
+| `tools/score.py` | 419 | Eq. 1/3/4/5, `sec_tally`, `timing_in_cycles` |
+| `tools/merge.py` | 337 | order-independent mechanical union + conflict report |
+| `tools/sec.py` | 315 | SEC driver — single-clock miter, multi-clock `clk2fflogic` |
+| `tools/protect.py` | 223 | what the optimiser may not touch, enforced **before** SEC |
 | `tools/selftest.py` | 2520 | 229 tests, no EDA, no model |
 
 Reuse rule: `portfolio.py` subclasses `drrtl.Orchestrator`, so evaluation, SEC,
 scoring, skill learning, the trajectory log and the reply parsers all come
-across unchanged. `drrtl.py` was changed only by three parameterisations (a
-swappable system prompt and directive list, an explicit SEC gold, a run prefix)
-and `rtl_map.py` by a `stage=` argument.
+across unchanged.
 
 ---
 
-## 3. Measured results
+## 4. Measured results
 
 Haiku, `mac_chain`, 2 ns target. Eq. 3 is relative to D_0; lower is better.
-SEC counted over candidates that reached a verdict.
 
 | run | iters | calls | ΔWNS | ΔTNS | Eq.3 | SEC |
 |---|---|---|---|---|---|---|
@@ -91,8 +184,7 @@ SEC counted over candidates that reached a verdict.
 | portfolio, 1 iter | 1 | 6 | +52.8 % | +56.0 % | −0.4599 | 3/3 |
 | portfolio, post-fix | 1 | 6 | +53.5 % | +56.7 % | −0.4658 | 3/3 |
 
-**Multi-clock, `dual_clock`, Haiku, 1 iteration** — the run that showed the
-loop closing end to end on more than one clock:
+**`dual_clock`, Haiku, 1 iteration** — the multi-clock loop closing end to end:
 
 | metric | D_0 | best | change |
 |---|---|---|---|
@@ -101,484 +193,194 @@ loop closing end to end on more than one clock:
 | area | 2620.63 | 2565.30 | −2.1 % |
 | Eq. 3 | 0.0000 | **−3.8139** | |
 
-SEC 3/3 specialists and 1/1 unions, all `bounded` with every clock free.
+SEC 3/3 specialists, 1/1 unions, all `bounded` with every clock free.
 
-**Read this one carefully too.** The whole gain came from the **pre-synthesis
-cleanup agent** (`clean0`, adopted at −3.8139). All three specialists returned
-candidates *identical* to that parent — same WNS to fifteen digits — and each
-reported a verdict rather than a transformation ("No safe optimization
-available within constraints"), which the library correctly refused to learn
-from. So this run demonstrates that multi-clock selection, protection, SEC and
-promotion work end to end. It does **not** show the specialists contributing
-anything on this design.
-
-**Multi-clock, `netproc`, Haiku, 1 iteration** — the run that settled the
-scale question, and disproved the premise the design was built on:
+**`netproc`, Haiku, 1 iteration** — the run that settled the scale question:
 
 | | |
 |---|---|
-| protection gate | **3/3 passed** — the fixed rule lets the real fix through |
-| specialists | all three diagnosed the same bottleneck: "512-bit parity as serial XOR chain" |
-| SEC | t1 timed out at 420 s; **t2 and t3 were OOM-killed** (exit 137) |
+| protection gate | 3/3 passed |
+| specialists | all three found the same bottleneck: "512-bit parity as serial XOR chain" |
+| SEC | t1 timed out at 420 s; **t2 and t3 OOM-killed** (exit 137) |
 | promoted | nothing |
 
-`netproc` was built without multipliers because multipliers are what stop
-`soc_bench` being certified. **That premise was wrong, or at least
-insufficient.** At 50K cells a bounded multi-clock check does not close either
-way — and the likely reason is that its headline bottleneck is a *512-deep XOR
-chain*, and deep parity is the classic hard case for a resolution-based SAT
-solver, every bit as bad as a multiplier. The general form of the lesson: the
-miter proves every output equivalent regardless of which line changed, so
-**tractability is a property of the whole design, not of the edit**. There is
-no rewrite-local escape.
-
-What `netproc` is still good for, and it is not nothing: it is a better
-*optimisation* target than `soc_bench`. Four clock groups violate rather than
-one dominating, it reports **32 distinct cones**, and all three specialists
-independently found the intended bottleneck. Selection, scoping, protection and
-diagnosis all work on it. Only certification does not.
-
-**Read these carefully.** Three things are easy to over-claim:
+### Read all of these carefully
 
 - **Every run peaked at iteration 1.** No iteration 2 or 3 has improved on it
-  in any portfolio run. The extended run's winning −0.5153 came from iteration
-  1; its iterations 2 and 3 lost all six model calls to CLI failures. One early
-  Opus run is the sole counterexample.
-- **The merge agent has never earned its call.** Its measured delta against the
-  free mechanical union is `+0.0000` on every run.
-- **Cone selection has never fired** in any measured run. The two designs those
-  runs used collapse to one cone, so all of it exercised *segmentation*.
-  `soc_bench` reports **26 distinct cones**, so it is the first design that can
-  exercise cone selection — but see §6.4 before reading anything into what it
-  picks.
+  in any portfolio run. One early Opus run is the sole counterexample.
+- **The merge agent has never earned its call.** Measured delta against the
+  free mechanical union: `+0.0000` on every run.
+- **On `dual_clock` the specialists contributed nothing.** The whole gain came
+  from the pre-synthesis cleanup agent; all three specialists returned
+  candidates *identical* to that parent and reported a verdict rather than a
+  transformation. The run proves the multi-clock plumbing, not the novelty.
+- **Cone selection has never fired** in any measured run. `soc_bench` reports
+  26 cones and `netproc` 32, so they are the first designs that could exercise
+  it — but neither can promote, so nothing has been measured through it.
 
 ---
 
-## 4. Defects already found and fixed
+## 5. The scale limit, and the traps around it
 
-Each of these was the instrument being wrong, not the method. Worth reading
-before trusting any number in a summary.
-
-| defect | symptom | fix |
-|---|---|---|
-| SEC counted `passed/attempted` | a run where 6 of 9 model calls **died** reported "33 % SEC" when 3 of 3 real candidates passed | `score.sec_tally` counts over *decided*; both loops share it |
-| library fragmented its evidence | one concept split into 4 entries at n=1–2, one keyed on a **verdict** (`"already attempted; insufficient margin"`); an agent declined a transformation whose own mean advantage was favourable | prefix token matching, containment alongside Jaccard, strategy floor, verdicts barred from founding an entry, `skills consolidate` |
-| `criticality` gated on `slack < 0` | every target in a design that **meets** timing scored 0.0 and could not be ranked | `severity()`, monotone across zero, constraint at 0.5 |
-| skill doc exceeded its budget | catalogue silently truncated away before any agent saw it | budget fits the document; per-role routing |
-| segmentation ≠ RTL separability | with `--clean 0`, all 3 agents made the *same* edit; every hunk contested, union returned the parent | the pre-synthesis stage is what forces divergence — **do not disable it** |
-
-**Process warning.** Two edits made via shell heredocs were written, verified
-working, then reverted before staging — one commit's message described a change
-its diff did not contain. Verify with `git show HEAD:<file>` after committing,
-and prefer the edit tools over heredoc rewrites.
-
----
-
-## 5. Objectives status
-
-| # | objective | status |
-|---|---|---|
-| 1 | Analyze RTL against timing constraints | done |
-| 2 | Identify critical paths and violations | done |
-| 3 | GenAI recommends optimizations | **2 of 4** (FSM now has a testbed — `soc_bench`) |
-| 4 | Evaluate timing / area / performance | done |
-| 5 | Formally verify equivalence | **unbounded** (induction) on single-clock; **bounded, refute-biased** on multi-clock via `clk2fflogic` — see §6.3 and the depth warning in §6.4 |
-| 6 | Benchmark: 5 async domains, CDC, dividers, ~50K cells | **design built and timing** (`soc_bench`, 49,935 cells, 13 clocks); the loop runs on it and rejects bad candidates, but at that size a proof does not close — see §6.4 |
-
-Objective 3 detail: logic restructuring ✅, retiming ✅, **pipelining ✗**,
-**FSM optimization ✗**.
-
-Pipelining is *actively forbidden* — `drrtl.py:424`, `portfolio.py:169`,
-`SKILL.md:26` all state "you may not add or remove a pipeline stage". That is
-not an oversight: adding latency breaks the sequential-equivalence gate every
-candidate passes through. Allowing it means changing the verification contract,
-not editing a prompt.
-
-FSM optimization now **has** a testbed: `soc_bench`'s 7-state packet framer,
-which Yosys's `fsm` pass extracts. It is still ✗ because nothing has been run
-against it, and the skill document still tells agents they are unreliable at
-FSM work, on published evidence. That claim is now testable rather than
-untestable.
-
----
-
-## 6. The upcoming work
-
-Three pieces, in dependency order. **(1), (2) and (3) are now done** — the
-framework, the benchmark design and the contract. What remains is running the
-loop on it, which needs the SEC partitioner and a decision about
-`criticality()` across async domains (§6.4).
-
-```mermaid
-flowchart TD
-  A["1 · Multi-clock support<br/>framework data model<br/><b>DONE</b>"] --> B["2 · The 50K-cell benchmark<br/>5 async domains, CDC, dividers, FSM<br/><b>not started</b>"]
-  A --> C["3 · Equivalence contract<br/>what 'equivalent' means across async domains<br/><b>DECIDED</b>"]
-  C --> B
-  B --> D["4 · Re-run the benchmark<br/>and re-measure everything"]
-```
-
-### 6.1 Multi-clock support — DONE
-
-Full detail in **`docs/multi-clock.md`**. Summary of what landed:
-
-- `tools/clocks.py` — `Clock` / `ClockSet`. Accepts `clocks: [{name, port,
-  period_ns, generated_from?, divide_by?}]`; a generated clock derives its
-  period from `divide_by`. The singular `clock` object still loads and is kept
-  as a one-element alias in both `config.json` and `metrics.json`, so the three
-  shipped designs need no edit and no old reader gets `None`.
-- SDC: `@ASTRA_CLOCK_DEFS@` generates `create_clock` /
-  `create_generated_clock` per clock plus `set_clock_groups -asynchronous`
-  across independent masters. `@CLK_PERIOD:<name>@` names one clock;
-  `@CLK_PERIOD@` still means the primary.
-- `sta_common.tcl` emits per-clock-group WNS/TNS/violating endpoints, bucketed
-  by capture clock. `parse_sta.clock_groups()` carries them, and falls back to
-  bucketing the reported paths by their `path_group` when the STA build cannot
-  emit them — labelled `source: "reported"`, `complete: false`, because its TNS
-  is a floor, not a total.
-- **The trap is closed.** `PathFeatures.period_ns` is the period of the clock
-  that captured *that* path. `severity()`, `criticality()` (whose sigma is a
-  *fraction* of a period, so the absolute slop differs per domain) and
-  `rtl_map.diagnose()` all use it. An unresolved group is reported in the
-  selection artifact under `clocks.unresolved`, never silently defaulted.
-- `score.critical_period()` scales Eq. 3 by the period of the group that owns
-  the worst slack, falling back to the tightest clock.
-- **Yosys `abc -D` targets the tightest period** (the decision §6.1 asked for).
-  It never under-constrains; the cost is that slow domains are mapped against a
-  target they did not need and may buy delay with area. `astra syn` prints the
-  caveat on any multi-clock design. `ClockSet.synthesis_period` is the single
-  place that decision lives.
-
-**A bug this found in itself.** The first version of the group summary
-converted `get_property <path> slack` from seconds, as `sta::worst_slack`
-requires — but that property is already in library units, so every group number
-came out 1e9 too large. `parse_sta._coerce`'s magnitude guard silently rescued
-it at the scale being tested and would *not* have below 1 ps. Fixed, and
-`parse_sta` now cross-checks the worst group slack against the design-wide WNS
-(`agrees_with_design_wns`) so the next such disagreement reports itself instead
-of waiting to be noticed.
-
-Verified against real OpenSTA on `mac_chain`: WNS −0.3573 / TNS −3.7438 / 15
-violating endpoints, group and design-wide numbers agreeing.
-
-### 6.3 The equivalence contract — DECIDED
-
-Written up in **`docs/equivalence-contract.md`**. The decision:
-
-- The `set_clock_groups -asynchronous` option offered below is **rejected**. It
-  conflates an STA construct with a formal one: `set_clock_groups` means
-  nothing to a SAT miter, which needs a concrete clock model, and a proof at
-  one clock ratio says nothing about a design whose whole claim is that no
-  ratio is privileged.
-- **Adopted: per-domain SEC with the CDC boundaries cut.** Each partition has
-  one clock, which is what both engines can actually discharge. At a crossing,
-  the signal is an observed output on the launching side and a free,
-  unconstrained input on the receiving side.
-- What that does *not* prove — synchronizer depth, crossing protocol, gray
-  coding — is handled the way pipelining is: **CDC logic is out of the
-  optimiser's editable scope**, structurally, rather than checked after the
-  fact.
-- **Enforced now:** `sec.check()` takes the `ClockSet` and *declines* on a
-  multi-clock design, returning `method: "unsupported"`. That is neither a pass
-  (Eq. 4 cannot promote it) nor a refutation (`sec_decided()` reports it as
-  undecided, so it never teaches the skill library that a sound transformation
-  breaks equivalence). The partitioner itself is **not implemented** — so a
-  multi-clock design currently cannot promote any candidate. That is the
-  correct failure mode, and it is a real blocker for running the loop on the
-  §6.2 benchmark.
-
-### 6.2 The benchmark design — BUILT (`designs/soc_bench/`)
-
-| requirement | required | delivered |
-|---|---|---|
-| independent master async clocks | 5 | **5** — clk_sys 2 ns, clk_dsp 3, clk_mem 4, clk_aux 5, clk_io 8 |
-| generated clocks per master | ≥1 | **8**, ratios 2/4/8 (13 clocks total) |
-| clock domain crossings | yes | **6** two-flop synchronisers + one gray-coded 8-bit bus |
-| clock dividers, multiple ratios | yes | ÷2, ÷4, ÷8 |
-| standard cells | ~50,000 | **49,935** (area 68,665 µm²) |
-| an FSM | yes | 7-state packet framer; Yosys `fsm` extracts it |
-
-Synthesises and times cleanly. Measured baseline: **WNS −6.5126 ns, TNS
-−65.1401 ns, 60 violating endpoints**, with real violations in three of the
-thirteen clock groups. Synthesis takes ~125 s, so budget ~2 min per candidate
-evaluation.
-
-Each of the five domains carries one deliberate, latency-preserving bottleneck
-(serial accumulate, serial correlator sum, 64-way serial mux cascade, serial
-CAM priority cascade, 256-deep serial XOR chain). They are declared by hand in
-`config.json` so the selector can be scored against them, the way
-`mac_chain`'s three are.
-
-**This is what first exercised the multi-clock model on real OpenSTA output**
-(§9 previously flagged that gap). Per-group WNS/TNS came back correct and
-`agrees_with_design_wns` is true. Building it also found four real defects —
-see §7.
-
-`designs/dual_path/` still exists for a different reason: it is the
-two-independent-cone testbed objective-2 work needs, and it has **never been
-synthesised**. It is not a substitute for this.
-
-### 6.4 What the benchmark still needs from the framework
-
-**All six multi-clock gaps found by the benchmark are now fixed.** They are
-listed here because the reasoning matters more than the diff, and because two
-of them changed published behaviour and had to be shown not to.
-
-| # | gap | fix |
-|---|---|---|
-| 1 | `criticality()` compared slack across async domains — "which path limits *the* clock" presupposes one | it works in **cycles of each path's own clock** now |
-| 2 | Eq. 3's TNS **summed nanoseconds** across domains, so a slow domain counted 16x its worth | `score.timing_in_cycles`; WNS is the worst *fractional* slack, TNS a sum of cycles |
-| 3 | `astra score` compared only the *primary* clock between runs | `_clock_deltas` reports every changed, added or dropped clock |
-| 4 | hold slack was design-wide only | `astra_group_summary` runs for `min` as well as `max` |
-| 5 | **nothing in the flow knew what CDC was** | `tools/protect.py` — a declared-off-limits gate that runs *before* SEC |
-| 6 | agent prompts said "target clock \<X\> ns", contradicting the per-target brief | `clocks.render_context` lists every domain |
-
-**#1 and #2 changed the published single-clock path, and both are safe for the
-same reason.** Each is a *uniform division by one period*: criticality's argmax
-is invariant under it, and `norm_timing` is a ratio, so value and baseline
-cancel. That is proved rather than asserted — `TestCriticalityUnitsAreCycles`
-pins a design and its 5x-scaled twin to identical rankings,
-`test_one_clock_scores_identically_in_either_unit` pins Eq. 3 to twelve decimal
-places, and a portfolio dry run against the pushed commit reproduces mac_chain
-byte for byte (same cones, same three targets, same 0.537/0.502/0.538).
-
-On `soc_bench` the fix moves the portfolio where it belongs: off the single aux
-endpoint (−6.5126 ns, but only 0.65 of a 10 ns cycle) and onto the clk_sys MAC
-chain — 33 paths at −2.0384 ns on a 2 ns clock, a full cycle over budget, and
-68% of the design's TNS.
-
-**#5 is the one worth understanding.** A CDC edit is *unprovable*, not merely
-unproven: the per-domain proof cuts those boundaries, so a collapsed
-synchroniser or a re-encoded gray bus passes every check the loop runs and is
-still wrong silicon. Prompting against it is not enough, so a design declares
-`"protected": ["cdc_*", "clk_*_div*"]` and a candidate that adds, removes or
-changes a line *assigning* one — or changes any *reference* to one, bit select
-included — is rejected **before synthesis**, ahead of the gate that cannot
-catch it.
-
-**The first version of this rule was too blunt, and a real run proved it.** It
-froze any line *mentioning* a protected identifier. On `netproc` that rejected
-all three specialists for rewriting
-
-    xfrm_par <= par_chain[XW] ^ cdc_xfrm_from_look[1];
-
-into the balanced-tree form — the exact fix the design asks for, with the CDC
-reference untouched. The run evaluated nothing and promoted nothing. Reads are
-now allowed and references checked instead, which still catches swapping
-`cdc_x[1]` for `cdc_x[0]` (a bypassed synchroniser stage), dropping a reference
-entirely, deleting a divider and re-encoding the gray counter. Both halves are
-pinned by tests, including the real candidates from that run.
-
-The general lesson, which cost a whole model-call iteration to learn: a safety
-rule that blocks the fix is not conservative, it is broken. "Blunt is safe" was
-wrong. A protected edit records as *undecided*, never a refutation, so
-it cannot condemn a sound strategy in the skill library.
-
-Two further things are decided but not built, and both block running the loop
-on §6.2 rather than blocking the design itself:
-
-**Multi-clock SEC now works — the partitioner was not needed.** §6.3's contract
-originally called for per-domain SEC with the CDC boundaries cut. Implementing
-it turned up something simpler and strictly stronger, and the contract has been
-updated to match rather than the code bent to fit the plan.
-
-The reason a miter needs one clock is an assumption in the *solver*, not a
-property of the design: Yosys's `sat` models a flop as "Q at t+1 is D at t" and
-ignores the clock, which assumes every flop ticks together. `clk2fflogic`
-removes the assumption — every clock becomes a free input with explicit edge
-detection — so a pass holds for **every interleaving** of the domains. That
-also puts the crossings *inside* the proof rather than cutting them out of it,
-and it is ~40 lines of Tcl instead of a new subsystem.
-
-Validated with a 2x2 rather than a smoke test: on a two-domain case, an
-equivalent rewrite passes, a bug in domain A is caught, a bug in domain B is
-caught, and gold-vs-gold passes. The single-clock path is untouched and still
-returns unbounded `induction`.
-
-Two honest limits:
-
-- **Every multi-clock verdict is `bounded`.** With free clocks, temporal
-  induction converges neither way (measured), so it is skipped rather than run
-  to burn the budget. Promoting on bounded is a weaker claim than the paper's,
-  and `method` keeps saying so.
-- **Metastability is not modelled**, by this or any cycle-level check. CDC
-  logic therefore stays outside the optimiser's editable scope
-  (`tools/protect.py`) regardless. Two independent defences, cheap one first.
-
-**Scale is now the binding constraint, and it is asymmetric.** A *refutation*
-is cheap; a *proof* is not. Measured:
+### Bounded SEC cannot certify at 50K cells
 
 | design | broken candidate | equivalent candidate |
 |---|---|---|
-| lab two-domain, no multipliers | refuted 0.3 s | **proved 0.5 s** |
-| a multiplier version of `dual_clock`, depth 8 | refuted 9 s | no verdict in 900 s |
-| `soc_bench`, 24 multipliers | refuted 21 s (d6) / 40 s (d10) | timed out at 1800 s (d3); **OOM-killed** (d5) |
+| two-domain toy, no arithmetic | refuted 0.3 s | **proved 0.5 s** |
+| `dual_clock`, depth 6 | refuted 3 s | **proved 51 s** |
+| `soc_bench`, 24 multipliers | refuted 21–40 s | timed out 1800 s; OOM at depth 5 |
+| `netproc`, 512-deep XOR chain | — | timed out 420 s; OOM |
 
-Bounded unrolling copies the design once per step, so unpipelined multipliers
-dominate. Induction would exploit their structural similarity, but with free
-clocks it converges neither way (measured twice, on both designs). Yosys's
-structural `equiv_*` flow was tried as an alternative and could not even
-separate the good candidate from the broken one — both left ~6,800 cells
-unproven — so it is not the answer either.
+`netproc` was built without multipliers precisely because multipliers stop
+`soc_bench` being certified. **That premise was insufficient.** Deep parity is
+the classic hard case for a resolution-based SAT solver, every bit as bad as a
+multiplier. The general form: the miter proves *every* output equivalent
+regardless of which line changed, so **tractability is a property of the whole
+design, not of the edit**. There is no rewrite-local escape.
 
-**The trap, and the most important thing on this page.** The obvious fix is to
-cap the multi-clock depth so proofs finish. It was implemented, measured, and
-**removed**:
+`eqy`, which partitions and would scale further, is **absent from the image** —
+`/etc/astra-tools.txt` records `eqy=unavailable`, so its build failed silently
+when the image was made. `make build EQY=1` is the first thing to try.
 
-    depth 8   refutes the broken candidate in 9 s; no proof in 900 s
-    depth 3   decides neither within 200 s
-    depth 2   proves the good candidate in 2 s -- and "proves" the broken one too
+### A bounded pass is worth exactly what its depth can see
 
-Four solver steps cannot reach the difference, so the shallow check reports
-*equivalent* for a design that is not. A depth tuned until proofs finish is a
-depth tuned until they are vacuous. **A bounded pass is worth exactly what its
-depth can see.** Timing out is undecided and promotes nothing, which is the
-correct failure; passing wrongly promotes a broken candidate, which is not.
-`tools/sec.py` carries the measurement and a test guards against reintroducing
-the cap.
+**The sharpest edge in the project**, and nothing checks it automatically.
+Measured on `dual_clock`, whose candidate had a genuine functional bug:
 
-So expect this shape: on a multiplier-heavy multi-clock design the loop
-**filters** bad candidates but does not **certify** good ones. On designs
-without heavy arithmetic it does both, in under a second. `eqy`, which
-partitions, is the documented escape and is **absent from the image** --
-`/etc/astra-tools.txt` records `eqy=unavailable`, so its build failed when the
-image was made and the Dockerfile downgraded rather than failed. `make build
-EQY=1` is the first thing to try.
+| depth | steps | broken candidate | equivalent candidate |
+|---|---|---|---|
+| 4 | 8 | **reported equivalent** — false pass, 3 s | proved, 2 s |
+| 6 | 12 | refuted, 3 s | proved, 51 s |
+| 8 | 16 | refuted, 5 s | no verdict in 300 s |
 
-**Per-domain synthesis targets.** `abc -D` takes the tightest period across all
-clocks, so slow domains are over-constrained and may show inflated area. Fine
-for a first measurement as long as it is reported; not fine if area is a
-headline number. See `docs/multi-clock.md`.
+One step too shallow and the check is vacuous; two too deep and it never
+finishes. A depth tuned until proofs close is a depth tuned until they are
+*vacuous*. A cap was implemented, measured, and removed; a test guards against
+reintroducing it. Designs record the depth their author verified (`sec_depth`
+in `config.json`).
 
-Objectives 5 and 6 remain in tension: objective 5 works *because* the designs
-are small and single-clock, and objective 6 removes both conditions. The
-contract is what keeps that tension visible instead of letting the word
-"equivalent" quietly weaken.
+---
 
-**Already handled:** CDC paths are excluded from setup analysis —
-`clocks.render_clock_groups()` emits `set_clock_groups -asynchronous` across
-independent masters, so crossings do not appear as enormous violations and
-swamp the portfolio's TNS shares and criticality distribution.
+## 6. Defects found and fixed
+
+Each was the instrument being wrong, not the method. Worth reading before
+trusting any number in a summary.
+
+| defect | symptom | fix |
+|---|---|---|
+| SEC counted `passed/attempted` | a run where 6 of 9 model calls **died** reported "33 % SEC" when 3 of 3 real candidates passed | `score.sec_tally` counts over *decided* |
+| library fragmented its evidence | one concept split into 4 entries, one keyed on a **verdict**; an agent declined a transformation whose own mean advantage was favourable | prefix token matching, containment, strategy floor, verdicts barred from founding an entry |
+| `criticality` gated on `slack < 0` | every target in a design that **meets** timing scored 0.0 | `severity()`, monotone across zero |
+| skill doc exceeded its budget | catalogue silently truncated before any agent saw it | budget fits the document; per-role routing |
+| segmentation ≠ RTL separability | with `--clean 0` all 3 agents made the *same* edit | the pre-synthesis stage forces divergence — **do not disable it** |
+| one period for every clock | paths in four of five domains normalised against the wrong number, **silently mis-ranked** | `tools/clocks.py`; each path uses its own clock's period |
+| `criticality` compared slack across async domains | "which path limits *the* clock" presupposes one clock | works in **cycles of each path's own clock** |
+| Eq. 3's TNS summed nanoseconds across domains | a 32 ns domain counted 16× a 2 ns one for the same fraction of budget lost | `score.timing_in_cycles` |
+| the protection gate froze whole lines | rejected all three specialists for the **exact fix the design asks for**, because the line also *read* a CDC signal | protect assignments; require references to survive |
+
+**Two process warnings.**
+
+1. Edits made via shell heredocs were written, verified, then reverted before
+   staging — one commit's message described a change its diff did not contain.
+   Verify with `git show HEAD:<file>` after committing.
+2. A commit (`c5cf639`) was made outside this workflow whose message
+   misdescribes `protect.py` as a "path-protection tool — freeze critical paths
+   across flow re-runs". It is not; it protects CDC and clock-generation RTL.
+   The diff is correct; the message is not.
 
 ---
 
 ## 7. Things that will bite you
 
-- **Do not run with `--clean 0`.** The pre-synthesis stage takes the obvious fix
-  off the table, which is what forces the specialists onto different
-  bottlenecks. Without it they converge and the unions collapse to the parent.
-- **Reset the skill library between benchmark arms** (`make clean-skills`). It
-  persists across runs by design, so the second arm otherwise inherits what the
-  first learned.
-- **Match `--iters` across arms.** The loops ship different defaults now — 3 for
-  `make opt`, 4 for `make portfolio` — so omitting it compares budgets, not
-  methods.
-- **`--dry-run` still needs the container.** It skips model calls, not the
-  baseline synthesis.
 - **CLI failures are the dominant confound.** `claude ... exit 1` with empty
   stderr has cost whole iterations. Check `not_generated` in the SEC tally
   before concluding anything about a run.
+- **Colima stops on its own.** See §1.
+- **A safety rule that blocks the fix is broken, not conservative.** The
+  protection gate's first version froze any line *mentioning* a protected
+  identifier and rejected the optimisation it existed to permit. "Blunt is
+  safe" was wrong.
 
 ### Writing a multi-clock SDC — four things that cost an afternoon each
 
-All four were found building `soc_bench`, and all four fail *loudly but
-uninformatively*, so they are worth recognising by their symptom.
+All found building `soc_bench`, all failing loudly but uninformatively.
 
 - **`get_ports {foo[*]}` does not work.** OpenSTA 3.1.0 reads the bus subscript
   as an integer and dies with a bare `Error: stoi` — no line number, no port
-  name. Select ports by walking `[all_inputs]` and matching in Tcl instead;
-  `soc_bench.sdc`'s `astra_ports` proc is the pattern. Note a loose glob is not
-  a fix: `sys_a*` also matches `sys_acc[0]`.
-- **An instance name containing `[` is unusable in SDC**, for the same reason.
-  This constrains the *RTL*: `autoname` names a cell after a net in its fan-in
-  cone when there is one, so a divider written `clk_r <= cnt[1]` synthesises to
-  `dsp_div_cnt[1]_DFFR_X1_D` and no generated clock can be hung on it. A **pure
-  toggle flop** (`clk_r <= ~clk_r`) has no such cone and stays bracket-free.
-  That is why `soc_bench`'s dividers ripple instead of using a counter.
+  name. Select ports by walking `[all_inputs]` and matching in Tcl;
+  `soc_bench.sdc`'s `astra_ports` proc is the pattern. A loose glob is not a
+  fix: `sys_a*` also matches `sys_acc[0]`.
+- **An instance name containing `[` is unusable in SDC**, same reason. This
+  constrains the *RTL*: `autoname` names a cell after a net in its fan-in cone,
+  so a divider written `clk_r <= cnt[1]` becomes `dsp_div_cnt[1]_DFFR_X1_D`
+  and no generated clock can hang on it. A **pure toggle flop**
+  (`clk_r <= ~clk_r`) has no such cone.
 - **Do not guess a generated clock's pin — read it.** Names are deterministic
   but unintuitive: the ÷4 flop comes out as `clk_dsp_div2_r_DFFR_X1_CK`, named
-  after its *clock* net, not its output. Synthesise once and parse the netlist
-  for whatever drives the divided net. Safe to hardcode afterwards only because
-  the dividers are in the do-not-edit region.
-- **A generated clock's `-source` is a pin, not a port**, when its source is
-  itself generated. `clocks.render_clock_defs` gets this right now; it did not
-  at first, and the symptom is `port '...' not found`.
+  after its *clock* net. Synthesise once and parse the netlist for whatever
+  drives the divided net.
+- **A generated clock's `-source` is a pin, not a port**, once its source is
+  itself generated. Symptom: `port '...' not found`.
 
 Also: `@ASTRA_CLOCK_DEFS@` is **not** substituted inside `#` comments, so
-documenting the placeholder in an SDC header is safe. It was not at first — the
-multi-line expansion uncommented fourteen lines of Tcl and welded the rest of
-the comment onto `set_clock_groups`.
+documenting the placeholder in a header is safe. It was not at first — the
+multi-line expansion uncommented fourteen lines of Tcl.
 
 ---
 
-## 8. Navigating the code — graphify
+## 8. What is left
+
+In rough order of value:
+
+1. **`make build EQY=1`.** The one plausible route to certifying a 50K-cell
+   design. Everything else about objective 6 is done.
+2. **Run the specialists somewhere they can contribute.** They have never
+   beaten the cleanup agent on a multi-clock design. `dual_clock` promotes but
+   the specialists added nothing; the benchmarks cannot promote at all. Until
+   one of those changes, the addon's central claim is unmeasured on multi-clock.
+3. **FSM optimisation.** `soc_bench` and `netproc` both carry a 7-state framer,
+   so objective 3's missing half finally has a testbed. Nothing has been run
+   against it, and the skill document still tells agents they are unreliable at
+   FSM work on published evidence — now testable rather than untestable.
+4. **Per-domain synthesis targets.** `abc -D` takes the tightest period across
+   all clocks, so slow domains are over-constrained and may show inflated area.
+   Fine while it is reported; not fine if area becomes a headline number.
+5. **`designs/dual_path/`** has still **never been synthesised**. It is the
+   two-independent-cone testbed objective-2 work needs.
+
+Detail for 1–4 lives in `docs/multi-clock.md` and
+`docs/equivalence-contract.md`. Read the contract before touching anything that
+decides whether a candidate is promotable.
+
+---
+
+## 9. Navigating the code — graphify
 
 The repo is indexed as a queryable code knowledge graph. Local AST parsing via
 tree-sitter: no LLM, no network, no vector store, no API key.
 
 ```bash
-graphify update .              # rebuild (seconds); regenerates graphify-out/
-graphify explain "pathsel"     # a node, its neighbours, and why each edge exists
+graphify update .                          # rebuild (seconds)
+graphify explain "pathsel"                 # a node, its neighbours, why each edge exists
 graphify path "portfolio.py" "score.py"    # shortest path between two nodes
 ```
 
-Current index: **1090 nodes, 1886 edges, 60 communities**, one per module. Line
-numbers were spot-checked against the tree and are exact. `runs/` is not
-indexed, so the 92 MB of run artifacts add no noise.
+Current index: **1096 nodes, 1892 edges, 60 communities**. `runs/` is not
+indexed, so the run artifacts add no noise.
 
-`GRAPH_REPORT.md`, `graph.json` and `graph.html` are now **tracked**, so the
-graph is browsable from the repo without a local install. The rebuild cache and
-the dated backup directories are not — several MB, churning on every rebuild.
+`GRAPH_REPORT.md`, `graph.json` and `graph.html` are **tracked**, so the graph
+is browsable from GitHub without a local install. The rebuild cache and dated
+backups are not.
 
-The tracked three are still **derived**, and go stale the moment code changes.
-`GRAPH_REPORT.md` records the commit it was built from; check that against
-`git rev-parse HEAD` before trusting it, and `graphify update .` to refresh.
-Note that a rebuild which finds no topology change leaves the outputs untouched
-— including that commit stamp — so to refresh the stamp alone, delete the three
-files and rebuild.
+**They are derived, and go stale the moment code changes.** `GRAPH_REPORT.md`
+records the commit it was built from — check that against `git rev-parse HEAD`
+before trusting it. A rebuild that finds no topology change leaves the outputs
+untouched *including that stamp*, so to refresh the stamp alone, delete the
+three files and rebuild.
 
-The report is worth reading once: it lists the most-connected abstractions,
-import cycles (none), and cross-module coupling.
-
-The one structural finding worth carrying forward: every "surprising
-connection" it reports is `pathsel.py → rtl_map.RtlIndex`. That is the addon's
-single real coupling to the base flow.
-
-That coupling **survived** the multi-clock change intact. `rtl_map` was not
-reworked: it gained one duck-typed helper (`_period_of`) that resolves a
-path's period from whatever it was handed, so `pathsel → rtl_map` is unchanged
-in shape. `tools/clocks.py` was deliberately made a leaf — stdlib only,
-importing nothing from this tree — so the five modules that now resolve
-periods all depend on it and it depends on none of them. Import cycles: still
-none.
-
-Installed at `~/.local/share/graphify-venv`, linked into `~/.local/bin`. Note
-`graphify install` also created a **global** `~/.claude/CLAUDE.md`, which
-applies to every project on this machine, not just this repo.
-
-## 9. Verify without tools or a model
-
-```bash
-python3 tools/selftest.py                    # 229 tests
-python3 tools/pathsel.py runs/mac_chain/opt-20260901-025558-run1/baseline -k 3
-python3 tools/rtlscan.py designs/mac_chain/rtl/mac_chain.v
-python3 tools/skills.py consolidate          # repairs a fragmented library
-make skilldoc                                # rebuild SKILL.md
-```
-
-The `pathsel` invocation is the acceptance check for the novelty: on the
-committed artifact it must collapse 20 paths to **one cone** and cut three
-segments matching the three bottlenecks `mac_chain/config.json` declares by
-hand — without reading that field. Its brief now also names the capture clock
-and that clock's period.
-
-**Multi-clock is now exercised for real.** `designs/soc_bench/` (§6.2) drives
-the generated SDC block, the async grouping and the per-group STA path against
-real OpenSTA output on a 13-clock, 49,935-cell netlist. Its baseline is WNS
-−6.5126 / TNS −65.1401 over 60 violating endpoints, and per-group slack
-cross-checks against the design-wide WNS.
-
-    astra run soc_bench                 # ~2 min: synthesis + multi-clock STA
-    python3 tools/pathsel.py runs/soc_bench/<run> -k 3
-
-Report: `docs/astra-portfolio-report.tex` (LaTeX, uncompiled, TikZ diagrams).
-Its results table predates the post-fix run and is one row short.
+Structural findings worth carrying: `ClockSet` is now the second most-connected
+abstraction, every "surprising connection" is still `pathsel.py →
+rtl_map.RtlIndex` — the addon's single real coupling to the base flow — and
+there are **no import cycles**. `tools/clocks.py` and `tools/protect.py` were
+both made stdlib-only leaves so that adding five consumers each could not
+create one.

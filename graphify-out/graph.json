@@ -30,19 +30,6 @@
       "source_location": "L151"
     },
     {
-      "id": "tools_rtl_map_rtlindex",
-      "label": "RtlIndex",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "pathsel.py",
-      "file_type": "code",
-      "norm_label": "rtlindex",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L108"
-    },
-    {
       "id": "tools_drrtl_evaluationagent",
       "label": "EvaluationAgent",
       "_callable": true,
@@ -745,6 +732,19 @@
       "source_location": "L126"
     },
     {
+      "id": "tools_rtl_map_rtlindex",
+      "label": "RtlIndex",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "rtl_map.py",
+      "file_type": "code",
+      "norm_label": "rtlindex",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L108"
+    },
+    {
       "id": "tools_score_scoreerror",
       "label": "ScoreError",
       "_callable": true,
@@ -1189,30 +1189,6 @@
       "norm_label": "weighted_jaccard()",
       "source_file": "tools/pathsel.py",
       "source_location": "L114"
-    },
-    {
-      "id": "tools_rtl_map_rtlindex_line",
-      "label": ".line()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "pathsel.py",
-      "file_type": "code",
-      "norm_label": ".line()",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L124"
-    },
-    {
-      "id": "tools_rtl_map_rtlindex_span",
-      "label": ".span()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "pathsel.py",
-      "file_type": "code",
-      "norm_label": ".span()",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L128"
     },
     {
       "id": "tools_drrtl_build_parser",
@@ -7431,6 +7407,30 @@
       "source_location": "L177"
     },
     {
+      "id": "tools_rtl_map_rtlindex_line",
+      "label": ".line()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "rtl_map.py",
+      "file_type": "code",
+      "norm_label": ".line()",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "tools_rtl_map_rtlindex_span",
+      "label": ".span()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "rtl_map.py",
+      "file_type": "code",
+      "norm_label": ".span()",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L128"
+    },
+    {
       "id": "tools_rtl_map_split_pin",
       "label": "split_pin()",
       "_callable": true,
@@ -8122,17 +8122,6 @@
       "norm_label": "which clock each path was normalised against, and whether that was a lookup or...",
       "source_file": "tools/pathsel.py",
       "source_location": "L991"
-    },
-    {
-      "id": "tools_rtl_map_rationale_109",
-      "label": "The design's Verilog, addressable by line and by identifier.",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "pathsel.py",
-      "file_type": "rationale",
-      "norm_label": "the design's verilog, addressable by line and by identifier.",
-      "source_file": "tools/rtl_map.py",
-      "source_location": "L109"
     },
     {
       "id": "tools_drrtl",
@@ -9720,124 +9709,88 @@
       "source_location": "L1"
     },
     {
-      "id": "handoff_1_what_this_repo_is",
-      "label": "1. What this repo is",
+      "id": "handoff_0_status_at_a_glance",
+      "label": "0. Status at a glance",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "1. what this repo is",
+      "norm_label": "0. status at a glance",
       "source_file": "HANDOFF.md",
-      "source_location": "L20"
+      "source_location": "L10"
     },
     {
-      "id": "handoff_2_files",
-      "label": "2. Files",
+      "id": "handoff_1_how_to_make_it_work",
+      "label": "1. How to make it work",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "2. files",
+      "norm_label": "1. how to make it work",
       "source_file": "HANDOFF.md",
-      "source_location": "L56"
+      "source_location": "L37"
     },
     {
-      "id": "handoff_3_measured_results",
-      "label": "3. Measured results",
+      "id": "handoff_2_what_this_repo_is",
+      "label": "2. What this repo is",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "3. measured results",
+      "norm_label": "2. what this repo is",
       "source_file": "HANDOFF.md",
-      "source_location": "L81"
+      "source_location": "L114"
     },
     {
-      "id": "handoff_4_defects_already_found_and_fixed",
-      "label": "4. Defects already found and fixed",
+      "id": "handoff_3_files",
+      "label": "3. Files",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "4. defects already found and fixed",
+      "norm_label": "3. files",
       "source_file": "HANDOFF.md",
-      "source_location": "L157"
+      "source_location": "L151"
     },
     {
-      "id": "handoff_5_objectives_status",
-      "label": "5. Objectives status",
+      "id": "handoff_4_measured_results",
+      "label": "4. Measured results",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "5. objectives status",
+      "norm_label": "4. measured results",
       "source_file": "HANDOFF.md",
-      "source_location": "L177"
+      "source_location": "L175"
     },
     {
-      "id": "handoff_6_1_multi_clock_support_done",
-      "label": "6.1 Multi-clock support \u2014 DONE",
+      "id": "handoff_5_the_scale_limit_and_the_traps_around_it",
+      "label": "5. The scale limit, and the traps around it",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "6.1 multi-clock support \u2014 done",
+      "norm_label": "5. the scale limit, and the traps around it",
       "source_file": "HANDOFF.md",
-      "source_location": "L220"
+      "source_location": "L223"
     },
     {
-      "id": "handoff_6_2_the_benchmark_design_built_designs_soc_bench",
-      "label": "6.2 The benchmark design \u2014 BUILT (`designs/soc_bench/`)",
+      "id": "handoff_6_defects_found_and_fixed",
+      "label": "6. Defects found and fixed",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "6.2 the benchmark design \u2014 built (`designs/soc_bench/`)",
+      "norm_label": "6. defects found and fixed",
       "source_file": "HANDOFF.md",
-      "source_location": "L289"
-    },
-    {
-      "id": "handoff_6_3_the_equivalence_contract_decided",
-      "label": "6.3 The equivalence contract \u2014 DECIDED",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6.3 the equivalence contract \u2014 decided",
-      "source_file": "HANDOFF.md",
-      "source_location": "L263"
-    },
-    {
-      "id": "handoff_6_4_what_the_benchmark_still_needs_from_the_framework",
-      "label": "6.4 What the benchmark still needs from the framework",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6.4 what the benchmark still needs from the framework",
-      "source_file": "HANDOFF.md",
-      "source_location": "L320"
-    },
-    {
-      "id": "handoff_6_the_upcoming_work",
-      "label": "6. The upcoming work",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6. the upcoming work",
-      "source_file": "HANDOFF.md",
-      "source_location": "L205"
+      "source_location": "L264"
     },
     {
       "id": "handoff_7_things_that_will_bite_you",
@@ -9849,31 +9802,79 @@
       "node_kind": "heading",
       "norm_label": "7. things that will bite you",
       "source_file": "HANDOFF.md",
-      "source_location": "L464"
+      "source_location": "L293"
     },
     {
-      "id": "handoff_8_navigating_the_code_graphify",
-      "label": "8. Navigating the code \u2014 graphify",
+      "id": "handoff_8_what_is_left",
+      "label": "8. What is left",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "8. navigating the code \u2014 graphify",
+      "norm_label": "8. what is left",
       "source_file": "HANDOFF.md",
-      "source_location": "L513"
+      "source_location": "L331"
     },
     {
-      "id": "handoff_9_verify_without_tools_or_a_model",
-      "label": "9. Verify without tools or a model",
+      "id": "handoff_9_navigating_the_code_graphify",
+      "label": "9. Navigating the code \u2014 graphify",
       "_origin": "ast",
       "community": 21,
       "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "9. verify without tools or a model",
+      "norm_label": "9. navigating the code \u2014 graphify",
       "source_file": "HANDOFF.md",
-      "source_location": "L558"
+      "source_location": "L357"
+    },
+    {
+      "id": "handoff_a_bounded_pass_is_worth_exactly_what_its_depth_can_see",
+      "label": "A bounded pass is worth exactly what its depth can see",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "a bounded pass is worth exactly what its depth can see",
+      "source_file": "HANDOFF.md",
+      "source_location": "L245"
+    },
+    {
+      "id": "handoff_before_comparing_two_runs",
+      "label": "Before comparing two runs",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "before comparing two runs",
+      "source_file": "HANDOFF.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "handoff_bounded_sec_cannot_certify_at_50k_cells",
+      "label": "Bounded SEC cannot certify at 50K cells",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "bounded sec cannot certify at 50k cells",
+      "source_file": "HANDOFF.md",
+      "source_location": "L225"
+    },
+    {
+      "id": "handoff_flow_commands_no_model_no_api_key_no_tokens",
+      "label": "Flow commands \u2014 no model, no API key, no tokens",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "flow commands \u2014 no model, no api key, no tokens",
+      "source_file": "HANDOFF.md",
+      "source_location": "L66"
     },
     {
       "id": "handoff_handoff_astra_path_portfolio_addon",
@@ -9888,6 +9889,66 @@
       "source_location": "L1"
     },
     {
+      "id": "handoff_read_all_of_these_carefully",
+      "label": "Read all of these carefully",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "read all of these carefully",
+      "source_file": "HANDOFF.md",
+      "source_location": "L207"
+    },
+    {
+      "id": "handoff_setup_once",
+      "label": "Setup, once",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "setup, once",
+      "source_file": "HANDOFF.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "handoff_the_two_loops",
+      "label": "The two loops",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "the two loops",
+      "source_file": "HANDOFF.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "handoff_verify_with_no_tools_and_no_model",
+      "label": "Verify with no tools and no model",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "verify with no tools and no model",
+      "source_file": "HANDOFF.md",
+      "source_location": "L76"
+    },
+    {
+      "id": "handoff_what_to_expect_per_design",
+      "label": "What to expect, per design",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "HANDOFF \u2014 ASTRA path-portfolio addon",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "what to expect, per design",
+      "source_file": "HANDOFF.md",
+      "source_location": "L88"
+    },
+    {
       "id": "handoff_writing_a_multi_clock_sdc_four_things_that_cost_an_afternoon_each",
       "label": "Writing a multi-clock SDC \u2014 four things that cost an afternoon each",
       "_origin": "ast",
@@ -9897,7 +9958,7 @@
       "node_kind": "heading",
       "norm_label": "writing a multi-clock sdc \u2014 four things that cost an afternoon each",
       "source_file": "HANDOFF.md",
-      "source_location": "L481"
+      "source_location": "L304"
     },
     {
       "id": "tools_selftest_rationale_46",
@@ -12243,6 +12304,17 @@
       "norm_label": "path",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "tools_rtl_map_rationale_109",
+      "label": "The design's Verilog, addressable by line and by identifier.",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "rtl_map.py",
+      "file_type": "rationale",
+      "norm_label": "the design's verilog, addressable by line and by identifier.",
+      "source_file": "tools/rtl_map.py",
+      "source_location": "L109"
     },
     {
       "id": "tools_rtl_map_rationale_134",
@@ -23225,47 +23297,102 @@
       "weight": 1.0
     },
     {
-      "source": "handoff_6_the_upcoming_work",
-      "target": "handoff_6_1_multi_clock_support_done",
+      "source": "handoff_1_how_to_make_it_work",
+      "target": "handoff_before_comparing_two_runs",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L220",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
-      "source": "handoff_6_the_upcoming_work",
-      "target": "handoff_6_3_the_equivalence_contract_decided",
+      "source": "handoff_1_how_to_make_it_work",
+      "target": "handoff_setup_once",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L263",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
-      "source": "handoff_6_the_upcoming_work",
-      "target": "handoff_6_2_the_benchmark_design_built_designs_soc_bench",
+      "source": "handoff_1_how_to_make_it_work",
+      "target": "handoff_the_two_loops",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L289",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
-      "source": "handoff_6_the_upcoming_work",
-      "target": "handoff_6_4_what_the_benchmark_still_needs_from_the_framework",
+      "source": "handoff_1_how_to_make_it_work",
+      "target": "handoff_flow_commands_no_model_no_api_key_no_tokens",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L320",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_1_how_to_make_it_work",
+      "target": "handoff_verify_with_no_tools_and_no_model",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_1_how_to_make_it_work",
+      "target": "handoff_what_to_expect_per_design",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_4_measured_results",
+      "target": "handoff_read_all_of_these_carefully",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L207",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_5_the_scale_limit_and_the_traps_around_it",
+      "target": "handoff_bounded_sec_cannot_certify_at_50k_cells",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_5_the_scale_limit_and_the_traps_around_it",
+      "target": "handoff_a_bounded_pass_is_worth_exactly_what_its_depth_can_see",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L245",
       "weight": 1.0
     },
     {
@@ -23276,51 +23403,73 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L481",
+      "source_location": "L304",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_4_defects_already_found_and_fixed",
+      "target": "handoff_0_status_at_a_glance",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L157",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_5_objectives_status",
+      "target": "handoff_2_what_this_repo_is",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L177",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_1_what_this_repo_is",
+      "target": "handoff_3_files",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L20",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_6_the_upcoming_work",
+      "target": "handoff_4_measured_results",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L205",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_handoff_astra_path_portfolio_addon",
+      "target": "handoff_5_the_scale_limit_and_the_traps_around_it",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L223",
+      "weight": 1.0
+    },
+    {
+      "source": "handoff_handoff_astra_path_portfolio_addon",
+      "target": "handoff_6_defects_found_and_fixed",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "HANDOFF.md",
+      "source_location": "L264",
       "weight": 1.0
     },
     {
@@ -23331,51 +23480,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L464",
+      "source_location": "L293",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_8_navigating_the_code_graphify",
+      "target": "handoff_8_what_is_left",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L513",
+      "source_location": "L331",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_9_verify_without_tools_or_a_model",
+      "target": "handoff_9_navigating_the_code_graphify",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L558",
+      "source_location": "L357",
       "weight": 1.0
     },
     {
       "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_2_files",
+      "target": "handoff_1_how_to_make_it_work",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "HANDOFF.md",
-      "source_location": "L56",
-      "weight": 1.0
-    },
-    {
-      "source": "handoff_handoff_astra_path_portfolio_addon",
-      "target": "handoff_3_measured_results",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "HANDOFF.md",
-      "source_location": "L81",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -34412,5 +34550,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "6f39a02f5f328c073547dc452c3d25092022275c"
+  "built_at_commit": "05f657b3a666ebde3c70a864cbf1cfc52f77eeed"
 }

@@ -1,16 +1,16 @@
 # Graph Report - astra  (2026-09-10)
 
 ## Corpus Check
-- 38 files · ~84,499 words
+- 38 files · ~82,550 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1090 nodes · 1886 edges · 60 communities (44 shown, 15 thin omitted)
+- 1096 nodes · 1892 edges · 60 communities (44 shown, 15 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6f39a02f`
+- Built from commit: `05f657b3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -88,15 +88,15 @@
 10. `TestSkillDoc` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `render_doc()` --references--> `SkillLibrary`  [EXTRACTED]
-  tools/skillgen.py → tools/skills.py
-- `ensure_seeds()` --references--> `SkillLibrary`  [EXTRACTED]
-  tools/skillgen.py → tools/skills.py
 - `path_features()` --references--> `RtlIndex`  [EXTRACTED]
   tools/pathsel.py → tools/rtl_map.py
 - `_scope()` --references--> `RtlIndex`  [EXTRACTED]
   tools/pathsel.py → tools/rtl_map.py
 - `_span_regions()` --references--> `RtlIndex`  [EXTRACTED]
+  tools/pathsel.py → tools/rtl_map.py
+- `_make_target()` --references--> `RtlIndex`  [EXTRACTED]
+  tools/pathsel.py → tools/rtl_map.py
+- `build_targets()` --references--> `RtlIndex`  [EXTRACTED]
   tools/pathsel.py → tools/rtl_map.py
 
 ## Import Cycles
@@ -105,8 +105,8 @@
 ## Communities (60 total, 15 thin omitted)
 
 ### Community 0 - "pathsel.py"
-Cohesion: 0.06
-Nodes (62): Counter, build_targets(), _by_cluster(), _cell_count(), _clock_coverage(), cluster(), cluster_similarity(), cluster_value() (+54 more)
+Cohesion: 0.07
+Nodes (60): Counter, build_targets(), _by_cluster(), _cell_count(), _clock_coverage(), cluster(), cluster_similarity(), cluster_value() (+52 more)
 
 ### Community 1 - "drrtl.py"
 Cohesion: 0.09
@@ -134,7 +134,7 @@ Nodes (20): PathTarget, build_parser(), call_budget(), main(), MergeAgent, PathS
 
 ### Community 7 - "rtl_map.py"
 Cohesion: 0.09
-Nodes (34): analyse(), base_ident(), diagnose(), _family(), from_run(), is_mangled(), load_netlist_index(), main() (+26 more)
+Nodes (36): analyse(), base_ident(), diagnose(), _family(), from_run(), is_mangled(), load_netlist_index(), main() (+28 more)
 
 ### Community 8 - "score.py"
 Cohesion: 0.09
@@ -189,8 +189,8 @@ Cohesion: 0.23
 Nodes (6): _empty_index(), _NoRtl, Regression guard on the bug this replaced: criticality used to be hard-zeroed…, The other side of it: a cone that is nowhere near limiting the clock is not…, A register bank produces many paths and one bottleneck., TestPathSelClustering
 
 ### Community 21 - "HANDOFF — ASTRA path-portfolio addon"
-Cohesion: 0.12
-Nodes (15): 1. What this repo is, 2. Files, 3. Measured results, 4. Defects already found and fixed, 5. Objectives status, 6.1 Multi-clock support — DONE, 6.2 The benchmark design — BUILT (`designs/soc_bench/`), 6.3 The equivalence contract — DECIDED (+7 more)
+Cohesion: 0.09
+Nodes (21): 0. Status at a glance, 1. How to make it work, 2. What this repo is, 3. Files, 4. Measured results, 5. The scale limit, and the traps around it, 6. Defects found and fixed, 7. Things that will bite you (+13 more)
 
 ### Community 22 - "TestEq3"
 Cohesion: 0.12
@@ -281,8 +281,8 @@ Cohesion: 0.18
 Nodes (3): Both halves matter. A met design must be rankable (the old gate zeroed it), and…, alu32's real numbers: WNS +0.3701 at a 2.5 ns period. Under the old gate this…, TestPathSelValue
 
 ## Knowledge Gaps
-- **68 isolated node(s):** `alu32`, `dual_clock`, `dual_path`, `mac_chain`, `netproc` (+63 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 496 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **72 isolated node(s):** `alu32`, `dual_clock`, `dual_path`, `mac_chain`, `netproc` (+67 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 500 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -295,9 +295,9 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `TestEq3` connect `TestEq3` to `selftest.py`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `alu32`, `dual_clock`, `dual_path` to the rest of the system?**
-  _68 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _72 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `pathsel.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.06321334503950835 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06746031746031746 - nodes in this community are weakly interconnected._
 - **Should `drrtl.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08686868686868687 - nodes in this community are weakly interconnected._
 - **Should `rtlscan.py` be split into smaller, more focused modules?**
