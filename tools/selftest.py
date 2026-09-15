@@ -633,6 +633,59 @@ class TestSkillLearning(unittest.TestCase):
 # ===========================================================================
 
 
+class TestSkillAbstractionEvidence(unittest.TestCase):
+    """The skill agent's summary may only claim what the checks established.
+
+    Regression for vending_machine: two correct operand-mux rewrites whose SEC
+    crashed were abstracted as "breaks-equivalence" and stored as refutations.
+    """
+
+    CRASH = {"equivalent": False, "method": "error",
+             "reason": "yosys SEC produced no verdict (exit 1)"}
+    REFUTED = {"equivalent": False, "method": "induction",
+               "reason": "counterexample found"}
+
+    def _learn(self, verdict, sec):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        lib = skills.SkillLibrary(Path(tmp.name) / "lib.json")
+        agent = drrtl.SkillLearningAgent(lib, use_llm=True, model="m", timeout=1)
+        group = [{"id": f"t{i}", "pattern": f"late result mux number {i}",
+                  "strategy": f"select operands first variant {i}",
+                  "advantage": None, "score": None, "sec": dict(sec)}
+                 for i in (1, 2)]
+        reply = json.dumps({"skills": [{
+            "pattern": "two wide additions selected at the output",
+            "strategy": "multiplex the operands into a single adder",
+            "verdict": verdict}]})
+        with mock.patch.object(drrtl.llm, "call", lambda *a, **k: reply):
+            out = agent.learn(group, "vending_machine", 1)
+        return lib.entries[out["abstracted"][0]["id"]]["stats"]
+
+    def test_a_crashed_check_is_not_learned_as_a_refutation(self):
+        st = self._learn("breaks-equivalence", self.CRASH)
+        self.assertEqual(st["sec_fail"], 0)
+        self.assertGreaterEqual(st["inconclusive"], 1)
+
+    def test_a_real_refutation_is_still_learned(self):
+        st = self._learn("breaks-equivalence", self.REFUTED)
+        self.assertGreaterEqual(st["sec_fail"], 1)
+
+    def test_effective_without_any_pass_is_not_a_pass(self):
+        st = self._learn("effective", self.CRASH)
+        self.assertEqual(st["sec_pass"], 0)
+
+
+class TestSingleClockAsyncReset(unittest.TestCase):
+    def test_the_single_clock_miter_asks_for_async2sync(self):
+        """Yosys's `sat` cannot import an async-reset flop, so without this
+        every candidate of vending_machine came back as a tool error."""
+        tcl = (ROOT / "flow" / "scripts" / "sec.tcl").read_text()
+        self.assertEqual(tcl.count("if {$multiclock} { yosys clk2fflogic } "
+                                   "else { yosys async2sync }"), 2,
+                         "both gold and gate must get the same treatment")
+
+
 class TestInconclusiveSec(unittest.TestCase):
     """A solver timeout is not evidence that a rewrite is wrong.
 

@@ -719,19 +719,30 @@ class SkillLearningAgent:
             return out
 
         parsed = extract_json(reply) or {}
+        # What the group actually established. An abstraction may only claim
+        # a verdict the checks reached: measured on vending_machine, two
+        # correct rewrites whose SEC *crashed* were summarised as
+        # "breaks-equivalence" and recorded as refutations, which marked a
+        # sound transformation "SEC pass 0/1" for every later design.
+        refuted = any(scoring.sec_decided(c) and not scoring.sec_passed(c)
+                      for c in group)
+        proved = any(scoring.sec_passed(c) for c in group)
         for s in (parsed.get("skills") or [])[:4]:
             if not s.get("pattern") or not s.get("strategy"):
                 continue
             verdict = (s.get("verdict") or "").lower()
+            breaks = verdict == "breaks-equivalence"
             # The abstraction is credited with the group's own outcome for
             # that verdict, not invented statistics: "effective" earns one
             # SEC-passing observation at the group's best advantage,
-            # "breaks-equivalence" earns a SEC failure.
+            # "breaks-equivalence" earns a SEC failure -- and either counts as
+            # undecided when no check in the group reached that verdict.
             best = min((c.get("advantage") for c in group
                         if c.get("advantage") is not None), default=None)
             entry = self.lib.record(
                 s["pattern"], s["strategy"],
-                sec_pass=verdict != "breaks-equivalence",
+                sec_pass=not breaks,
+                conclusive=refuted if breaks else proved,
                 advantage=best if verdict == "effective" else None,
                 design=design, iteration=iteration,
                 rationale=s.get("rationale", ""),

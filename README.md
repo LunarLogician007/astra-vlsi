@@ -595,7 +595,7 @@ tools/skills.py          the confidence-aware skill library
 tools/llm.py             `claude -p` wrapper shared by the agents
 tools/toolenv.py         dispatch EDA calls into the container
 tools/protect.py         regions the optimiser may not touch, and the gate
-tools/selftest.py        251 tests over the above (needs no EDA tools, no model)
+tools/selftest.py        255 tests over the above (needs no EDA tools, no model)
 
 docs/multi-clock.md      the clock model, and what it deliberately gives up
 docs/equivalence-contract.md   what "equivalent" means, and where it stops

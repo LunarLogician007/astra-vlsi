@@ -329,6 +329,27 @@ its own check (`DOCKER_MEM` in the Makefile).
 A decided verdict is cached by the content of both sides, so a union that
 recombines texts already checked costs nothing.
 
+**Asynchronous resets on a single clock.** Yosys 0.33's `sat` cannot import an
+async-reset flop (`$adff`), so until September 2026 every non-identical
+candidate of a single-clock design with `always @(posedge clk or posedge
+reset)` came back as a tool error, undecided, and could never be promoted.
+`vending_machine` was the first such design; the others use plain
+`posedge clk`. The single-clock miter now runs `async2sync` on both sides, as
+Yosys's own `equiv_opt -async2sync` does: the reset still forces its value
+immediately, and reset nets and values stay part of what is compared. On
+`vending_machine` the two operand-mux rewrites and six mutants (swapped `sel`,
+`+` as `-`, a different reset state, the async reset made synchronous, a
+flipped output, crossed operands) are the soundness gate: both rewrites are
+proved by temporal induction, unbounded (207 s and 229 s), and all six mutants
+are refuted by a counterexample in 2–4 s. `mac_chain`'s verdicts are unchanged
+(induction, 1.5 s and 2.3 s).
+
+Register correspondence would decide the same rewrites in 7 s each, and leaves
+all six mutants unproven rather than passing any. It is not wired into the
+single-clock path, which still runs the miter alone: the miter certifies this
+design well inside its budget, and routing `make opt` through a new engine is
+a separate decision.
+
 **The bounded fallback is always bounded.** With free clocks, temporal
 induction converges neither way — measured, not assumed — so it is skipped
 rather than run to burn the time budget. And an edge now takes two solver steps

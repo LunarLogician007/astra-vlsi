@@ -62,7 +62,7 @@ if {[catch {
     yosys design -reset
     foreach f $gold { yosys read_verilog -sv $f }
     yosys prep -flatten -top $top
-    if {$multiclock} { yosys clk2fflogic }
+    if {$multiclock} { yosys clk2fflogic } else { yosys async2sync }
     yosys design -stash gold_design
 } msg]} {
     sec_fail read_gold $msg
@@ -79,7 +79,7 @@ if {[catch {
     if {$lib ne ""} { yosys read_liberty -lib $lib }
     foreach f $gate { yosys read_verilog -sv $f }
     yosys prep -flatten -top $top
-    if {$multiclock} { yosys clk2fflogic }
+    if {$multiclock} { yosys clk2fflogic } else { yosys async2sync }
     yosys design -stash gate_design
 } msg]} {
     sec_fail read_gate $msg
@@ -92,6 +92,18 @@ if {[catch {
     return
 }
 sec_ok read_gate
+
+# --- asynchronous resets on a single clock -----------------------------------
+# `sat` cannot import an async-reset flop ($adff): Yosys 0.33 stops with
+# "Failed to import cell ... (type $adff) to SAT database", so every candidate
+# of a design with `always @(posedge clk or posedge reset)` came back as a
+# tool error -- measured on vending_machine, where two correct rewrites were
+# discarded that way. `async2sync` is Yosys's own answer (equiv_opt
+# -async2sync): the reset still forces the reset value immediately, and it is
+# applied identically to both sides, so reset nets and reset values stay part
+# of what is compared. It is a no-op on a design without async flops, so the
+# existing single-clock designs are unaffected. The multi-clock branch does
+# not need it: clk2fflogic already turns async flops into explicit logic.
 
 # --- how a multi-clock design is handled ------------------------------------
 # `sat` turns each $dff into "Q at step t+1 equals D at step t" and ignores the

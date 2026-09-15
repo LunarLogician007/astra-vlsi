@@ -2,7 +2,7 @@
 
 Context for whoever picks this up next, including me in a later session.
 
-Branch `path-portfolio`. 251 tests, all passing, none needing an EDA install
+Branch `path-portfolio`. 255 tests, all passing, none needing an EDA install
 or a model. `make opt`'s loop is unchanged; its optimiser prompt gained one
 sentence asking agents to keep register names (see below).
 
@@ -467,6 +467,26 @@ the table shows the reruns. Details in `docs/equivalence-contract.md` §2.
 - **Registers renamed or duplicated stay undecided** (`soc_bench` t1 in both
   runs), as does the CAM priority-cascade mutant's cone: that is Phase 2's
   retiming path and a harder solver, not yet built.
+
+### `vending_machine`, and two defects it exposed
+
+A user-added single-clock design: an FSM plus `total_discount`, two 1,024-bit
+sums muxed at the output, purely combinational from input to output. Baseline
+at 5.0 ns: WNS −8.03, TNS −4,416, 14,293 cells.
+
+- **Single-clock SEC could not handle an async reset.** Its first portfolio
+  run found the right rewrite twice — mux the operands into one adder — and
+  both were discarded as `error`: `sat` cannot import `$adff`. Fixed with
+  `async2sync` in the single-clock miter (`docs/equivalence-contract.md` §3).
+  Both rewrites now prove by induction in ~3.5 min and six mutants are refuted
+  in seconds. Synthesised on its own, the rewrite takes WNS to −2.34 and area
+  −32%. Register correspondence proves it in 7 s, if the single-clock path is
+  ever routed through it.
+- **The skill agent learned a crash as a refutation.** Its abstraction pass
+  recorded "breaks-equivalence" as a conclusive SEC failure without checking
+  that any check had reached that verdict, marking a sound transformation
+  "SEC pass 0/1" for every later design. `SkillLearningAgent.learn` now counts
+  an abstracted verdict as undecided unless the group established it.
 
 Unrelated, and pre-existing on `HEAD`: `TestPathSelSegments.
 test_cuts_land_on_the_cell_mix_boundaries` depends on hash order and fails

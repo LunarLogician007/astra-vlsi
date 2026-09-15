@@ -1,0 +1,24 @@
+{
+  "top": "vending_machine",
+  "description": "An 11-state vending-machine FSM with a wide combinational discount datapath: total_discount selects between two 1024-bit additions (discountA+discountB or discountC+discountD) with no register on the way from input to output. Single clock, active-high asynchronous reset. Violates timing at 5.0 ns on nangate45 by construction: baseline WNS -8.03 ns, TNS -4416.28 ns, 926 violating endpoints, 14,293 cells; worst path discountC[1] -> total_discount[1023], logic depth 542.",
+  "rtl": ["rtl/vending_machine.v"],
+  "sdc": "constraints/vending_machine.sdc",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk",
+    "port": "clk",
+    "period_ns": 5.0
+  },
+  "notes": {
+    "latency_cycles": {
+      "total_discount": 0,
+      "sell_signal": 0
+    },
+    "known_bottlenecks": [
+      "total_discount computes BOTH 1024-bit sums (A+B and C+D) and then muxes on sel, so the critical input-to-output path is a full 1024-bit carry chain plus a mux",
+      "the path is purely combinational from input ports to output ports, so it gets only the period minus input and output delay"
+    ],
+    "invariants": "rewrites must be bit-exact and keep total_discount combinational (0 cycles from inputs) and sell_signal a function of the current state; the state register and its reset value must be preserved",
+    "fsm": "states S7-S10 are unreachable from reset (S0); only S0-S6 are ever visited"
+  }
+}

@@ -2,8 +2,8 @@
   "meta": {
     "version": 1,
     "note": "Pattern-strategy skill library (paper Sec. 4.2). Entries marked source=seed are textbook transformations offered as untested suggestions: they carry zero occurrences and zero confidence and must earn their statistics from real runs, exactly like a learned entry. Entries gain occurrences, SEC-pass counts and a mean relative advantage A_i as the loop runs, and are demoted to status=invalid if they break equivalence more often than not.",
-    "updated_at": "2026-09-13T19:55:52+00:00",
-    "count": 32
+    "updated_at": "2026-09-15T15:29:32+00:00",
+    "count": 37
   },
   "skills": [
     {
@@ -101,6 +101,102 @@
       "mean_advantage": -0.7071067811865541,
       "status": "candidate",
       "updated_at": "2026-09-09T02:20:02+00:00"
+    },
+    {
+      "id": "mux-selecting-output-of-wide-parallel-adders::move-select-to-operands-before-single-addition",
+      "pattern": "Mux selecting output of wide parallel adders",
+      "strategy": "Move select to operands before single addition",
+      "rationale": "Eliminates one full 1024-bit carry chain; input muxes are shallower than two parallel carries plus output selection. Expected saving: ~45% of adder depth.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-15T15:28:46+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": -0.7071067811865476,
+        "advantage_n": 1,
+        "score_delta_sum": -0.7354007368701057,
+        "score_delta_n": 1,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T15:28:46+00:00"
+      },
+      "confidence": 0.2011,
+      "mean_advantage": -0.7071067811865476,
+      "status": "candidate",
+      "updated_at": "2026-09-15T15:28:46+00:00"
+    },
+    {
+      "id": "output-multiplexer-selecting-wide-arithmetic-res::move-mux-before-computation-into-single-path",
+      "pattern": "Output multiplexer selecting wide arithmetic results",
+      "strategy": "Move mux before computation into single path",
+      "rationale": "Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.",
+      "example": "// Before: two carries + output selection\nwire [N-1:0] sum_a = a + b;\nwire [N-1:0] sum_b = c + d;\nassign result = select ? sum_a : sum_b;\n\n// After: input mux + one carry\nwire [N-1:0] a_sel = select ? a : c;\nwire [N-1:0] b_sel = select ? b : d;\nassign result = a_sel + b_sel;",
+      "source": "learned",
+      "created_at": "2026-09-15T15:29:32+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": -0.7071067811865476,
+        "advantage_n": 1,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T15:29:32+00:00"
+      },
+      "confidence": 0.2011,
+      "mean_advantage": -0.7071067811865476,
+      "status": "candidate",
+      "updated_at": "2026-09-15T15:29:32+00:00"
+    },
+    {
+      "id": "output-mux-in-series-with-carry-chain::move-mux-to-inputs-merge-dual-additions-into-one",
+      "pattern": "Output mux in series with carry chain",
+      "strategy": "Move mux to inputs; merge dual additions into one",
+      "rationale": "The result mux in the current code forces both carry chains to complete before selection. Muxing inputs first and performing one addition removes the output mux from the critical path and permits the synthesizer to optimize a single wide-adder datapath rather than two parallel adders.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-15T15:28:46+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": -0.7071067811865476,
+        "advantage_n": 1,
+        "score_delta_sum": -0.7354007368701057,
+        "score_delta_n": 1,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T15:28:46+00:00"
+      },
+      "confidence": 0.2011,
+      "mean_advantage": -0.7071067811865476,
+      "status": "candidate",
+      "updated_at": "2026-09-15T15:28:46+00:00"
     },
     {
       "id": "40-bit-saturation-comparison-after-accumulation::remove-unused-saturation-parameters-to-prevent-i",
@@ -231,6 +327,38 @@
       "updated_at": "2026-09-09T16:03:21+00:00"
     },
     {
+      "id": "dual-parallel-carries-selected-by-output-mux::optimize-carry-propagation-depth-without-reposit",
+      "pattern": "Dual parallel carries selected by output mux",
+      "strategy": "Optimize carry propagation depth without repositioning",
+      "rationale": "Local carry-chain restructuring (carry-save, look-ahead) does not reduce critical path when the bottleneck is output mux placement. Delay is distributed across many pipeline stages rather than concentrated in a reducible hot cell that mux relocation can bypass.",
+      "example": "// Carry-lookahead applied internally, but mux gates both carries\nwire [N-1:0] cla_sum = carry_lookahead_adder(a, b);\nwire [N-1:0] other_sum = other_adder(c, d);\nassign result = select ? cla_sum : other_sum; // mux still critical",
+      "source": "learned",
+      "created_at": "2026-09-15T15:29:32+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T15:29:32+00:00"
+      },
+      "confidence": 0.125,
+      "mean_advantage": null,
+      "status": "candidate",
+      "updated_at": "2026-09-15T15:29:32+00:00"
+    },
+    {
       "id": "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
       "pattern": "Serial accumulation chain with 4 operands",
       "strategy": "Rebalance serial add chain into binary tree",
@@ -325,6 +453,38 @@
       "mean_advantage": 1.4142135623730883,
       "status": "candidate",
       "updated_at": "2026-09-09T16:09:00+00:00"
+    },
+    {
+      "id": "1024-bit-carry-propagation-in-muxed-addition::no-optimization-found-within-fixed-latency-const",
+      "pattern": "1024-bit carry propagation in muxed addition",
+      "strategy": "No optimization found within fixed-latency constraint",
+      "rationale": "Carry-save or restructuring approaches require either a final full-width adder (same critical path) or pipeline stages (disallowed). The 1024-bit addition is fundamental; moving the mux position does not reduce sequential path depth. Delay is spread evenly across 262 stages rather than concentrated in a reducible hot cell.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-15T15:28:46+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 1.414213562373095,
+        "advantage_n": 1,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 1,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T15:28:46+00:00"
+      },
+      "confidence": 0.014,
+      "mean_advantage": 1.414213562373095,
+      "status": "candidate",
+      "updated_at": "2026-09-15T15:28:46+00:00"
     },
     {
       "id": "512-bit-serial-parity-reduction::replace-serial-xor-chain-with-balanced-tree",

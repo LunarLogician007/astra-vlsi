@@ -209,20 +209,29 @@ fares, so a later run can tell which work on real designs.
 
 | pattern | transformation |
 |---|---|
+| 1024-bit carry propagation in muxed addition | No optimization found within fixed-latency constraint |
+| 40-bit carry propagation in balanced adder tree | Unable to optimize while maintaining fixed latency |
+| 40-bit carry ripple in balanced accumulator tree | No further transformation valid under constraints |
+| 40-bit saturation comparison after accumulation | Remove unused saturation parameters to prevent inadvertent synthesis |
+| 512-bit serial parity reduction | replace serial XOR chain with balanced tree |
 | Carry propagation in 40-bit final accumulate | No equivalent optimization available |
 | Carry propagation in accumulator tree | Replace multi-level add tree with carry-save 3:2 compression |
-| High-fanout multiplier operand from single register | Replicate operand register to reduce fanout cone |
+| Deep multi-level ripple adder chain in accumulator | Replace serial ripple levels with carry-save 3:2 compression |
+| Dual parallel carries selected by output mux | Optimize carry propagation depth without repositioning |
 | High-fanout operand driving multiplier with 38+ loads | Replicate operand registers to split fanout |
-| Intermediate sign-extension wires in accumulator tree | Inline sign-extension concatenations into summation expressions |
-| Multi-level addition tree in accumulator | Replace tree with carry-save 3:2 compression |
-| Ripple carry propagation in 40-bit final accumulator | Replace ripple carry with carry-save 3:2 compression tree |
+| Mux selecting output of wide parallel adders | Move select to operands before single addition |
+| Output multiplexer selecting wide arithmetic results | Move mux before computation into single path |
+| Output mux in series with carry chain | Move mux to inputs; merge dual additions into one |
+| Serial 4-term adder chain instead of balanced tree | Restructure accumulate as binary tree to parallelize carry |
+| Serial XOR reduction chain | Rebalance into binary tree to reduce depth log₂(n) |
+| Serial accumulation chain with 4 operands | Rebalance serial add chain into binary tree |
+| Serial parity chain in CDC-protected domain | Replace ripple XOR chain with balanced tree |
 | Sign-extension through intermediate wires in adder tree | Inline sign-extension expressions to reduce intermediate nodes |
 | arithmetic operator chain split across a module boundary | keep the whole chain in one hierarchy so it can merge |
 | carry propagation across a wide accumulator | accumulate in carry-save form and resolve with a single carry-propagate adder |
 | carry propagation in sequential 40-bit additions | unable to reduce depth safely while maintaining equivalence |
 | deep FSM or decode logic | pre-decode the next state one cycle early and register the decoded form |
 | hand-instantiated arithmetic component | use the inferred operator so the tool picks the architecture |
-| high-fanout operand driving 16x16 multiplier | register replication already attempted; insufficient margin |
 | high-fanout signal on the critical path | replicate the driver so each load group has its own copy |
 | intermediate arithmetic result truncated between operators | widen the intermediate so the operator chain stays one datapath |
 | long path through an operand shared by many consumers | isolate the operand per consumer so an idle consumer stops loading it |
@@ -234,7 +243,6 @@ fares, so a later run can tell which work on real designs.
 | reset logic in series with the datapath | move the reset out of the data path and onto the register's own reset |
 | saturation or clamp after a long arithmetic path | form the clamp condition beside the arithmetic and apply it as a select, not as a compare-then-select |
 | select network in series with a long arithmetic path | speculate every outcome in parallel and select at the end |
-| serial accumulate chain | rebalance the chain into an adder tree |
 | sign extension replicated before every operand of a wide add | add the narrow values and sign-extend once at the end |
 | unpipelined multiplier array in one cycle | redistribute the existing registers across the array without changing the latency |
 | wide comparison at the end of the datapath | precompute the comparison from partial results in parallel with the final arithmetic |
