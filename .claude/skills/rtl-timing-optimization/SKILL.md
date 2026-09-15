@@ -23,7 +23,10 @@ Checked by tools after you answer, so there is nothing to gain by bending them:
    behaviour is discarded no matter how much slack it recovered.
 2. **Latency and interface are fixed.** Same module name, ports, widths,
    pipeline depth. You may redistribute or duplicate registers. You may not
-   add or remove a pipeline stage.
+   add or remove a pipeline stage. Keep existing register names and rename or
+   add intermediate wires freely: the equivalence check pairs registers by
+   name, so an edit that keeps them is proved in seconds, and one that moves
+   or renames a register takes a far slower check that may not finish.
 3. **Synthesisable Verilog-2005.** No initial blocks, no delays, no testbench
    constructs.
 

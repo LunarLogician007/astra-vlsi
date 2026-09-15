@@ -16,6 +16,7 @@ import sys
 import tempfile
 import unittest
 from types import SimpleNamespace
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -27,6 +28,7 @@ import parse_sta    # noqa: E402
 import pathsel      # noqa: E402
 import portfolio    # noqa: E402
 import protect      # noqa: E402
+import regcorr      # noqa: E402
 import rtl_map      # noqa: E402
 import rtlscan      # noqa: E402
 import score        # noqa: E402
@@ -1815,9 +1817,43 @@ class TestEquivalenceContract(unittest.TestCase):
 
     `sat` models a flop as "Q at t+1 is D at t" and ignores the clock, which
     assumes every flop ticks together. That is true of one clock and false of
-    five, so a multi-clock design is checked through clk2fflogic instead --
-    every clock free, every interleaving covered.
+    five, so a multi-clock design is first put through register
+    correspondence -- unbounded, every interleaving, cost follows the edit --
+    and only what that leaves unproven goes to clk2fflogic, every clock free.
     """
+
+    def setUp(self):
+        # Verdicts are cached by file content, and these tests reuse content.
+        sec.clear_cache()
+
+    def _pair(self):
+        """Two texts that differ, so the identical-text shortcut stays out."""
+        d = Path(tempfile.mkdtemp())
+        gold, gate = d / "gold.v", d / "gate.v"
+        gold.write_text("module top(input a, output y); assign y = a; endmodule\n")
+        gate.write_text("module top(input a, output y); assign y = ~~a; endmodule\n")
+        return d, [gold], [gate]
+
+    def _engines(self, regcorr_verdict):
+        """Fake both engines; record which ran, in what order, with what."""
+        seen = {"order": []}
+
+        def fake_regcorr(top, gold, gate, workdir, timeout=300):
+            seen["order"].append("regcorr")
+            return dict(regcorr_verdict)
+
+        def fake_yosys(top, gold, gate, workdir, depth=20, liberty=None,
+                       timeout=1800, multiclock=False):
+            seen["order"].append("bounded" if multiclock else "miter")
+            seen.update(multiclock=multiclock, depth=depth, timeout=timeout)
+            return {"equivalent": True, "engine": "yosys",
+                    "method": "bounded" if multiclock else "induction"}
+
+        return seen, mock.patch.multiple(sec, check_regcorr=fake_regcorr,
+                                         check_yosys=fake_yosys)
+
+    UNPROVEN = {"equivalent": False, "method": "regcorr-unproven",
+                "engine": "yosys", "reason": "1 of 3 unproven"}
 
     def _multi(self):
         return clocks.ClockSet.from_config({"clocks": [
@@ -1835,27 +1871,32 @@ class TestEquivalenceContract(unittest.TestCase):
         f.write_text("module top(); endmodule\n")
         return d, [f]
 
-    def test_multi_clock_reaches_the_miter_with_clk2fflogic_asked_for(self):
-        """The behaviour that replaced declining: it is checked, not refused,
-        and the Tcl is told to free the clocks."""
-        seen = {}
-
-        def fake(top, gold, gate, workdir, depth=20, liberty=None,
-                 timeout=1800, multiclock=False):
-            seen["multiclock"] = multiclock
-            return {"equivalent": True, "method": "bounded", "engine": "yosys"}
-
-        d, files = self._files()
-        real = sec.check_yosys
-        try:
-            sec.check_yosys = fake
-            sec.check("top", files, files, d, clock_set=self._multi())
+    def test_multi_clock_asks_regcorr_before_clk2fflogic(self):
+        """Cheap question first. Register correspondence runs, and only what it
+        leaves unproven reaches the whole-design miter -- which is still told
+        to free the clocks. A single-clock design pays for neither."""
+        d, gold, gate = self._pair()
+        seen, patch = self._engines(self.UNPROVEN)
+        with patch:
+            v = sec.check("top", gold, gate, d, clock_set=self._multi())
+            self.assertEqual(seen["order"], ["regcorr", "bounded"])
             self.assertTrue(seen["multiclock"])
-            sec.check("top", files, files, d, clock_set=self._one())
-            self.assertFalse(seen["multiclock"],
+            self.assertIn("regcorr", v, "the regcorr attempt must stay on record")
+            seen["order"].clear()
+            sec.check("top", gold, gate, d, clock_set=self._one())
+            self.assertEqual(seen["order"], ["miter"],
                              "a single-clock design must not pay for it")
-        finally:
-            sec.check_yosys = real
+            self.assertFalse(seen["multiclock"])
+
+    def test_a_regcorr_proof_needs_no_bounded_check(self):
+        d, gold, gate = self._pair()
+        seen, patch = self._engines({"equivalent": True, "method": "regcorr",
+                                     "engine": "yosys"})
+        with patch:
+            v = sec.check("top", gold, gate, d, clock_set=self._multi())
+        self.assertEqual(seen["order"], ["regcorr"])
+        self.assertEqual(v["method"], "regcorr")
+        self.assertTrue(score.sec_passed({"sec": v}))
 
     def test_multi_clock_depth_is_not_reduced(self):
         """The trap this guards. Capping the depth so multi-clock proofs
@@ -1864,25 +1905,112 @@ class TestEquivalenceContract(unittest.TestCase):
         reach the difference, while depth 8 refutes it in 9 s. A bounded pass
         is worth only what its depth can see, so the caller's depth is passed
         through untouched -- timing out is undecided and promotes nothing,
-        which is the correct failure."""
-        seen = {}
-
-        def fake(top, gold, gate, workdir, depth=20, liberty=None,
-                 timeout=1800, multiclock=False):
-            seen["depth"] = depth
-            return {"equivalent": True, "method": "bounded", "engine": "yosys"}
-
-        d, files = self._files()
-        real = sec.check_yosys
-        try:
-            sec.check_yosys = fake
-            sec.check("top", files, files, d, depth=20, clock_set=self._multi())
+        which is the correct failure. Register correspondence is the way out,
+        not a shallower fallback."""
+        d, gold, gate = self._pair()
+        seen, patch = self._engines(self.UNPROVEN)
+        with patch:
+            sec.check("top", gold, gate, d, depth=20, clock_set=self._multi())
             self.assertEqual(seen["depth"], 20,
                              "a multi-clock check must not be quietly shallowed")
-            sec.check("top", files, files, d, depth=20, clock_set=self._one())
+            sec.check("top", gold, gate, d, depth=20, clock_set=self._one())
             self.assertEqual(seen["depth"], 20)
-        finally:
-            sec.check_yosys = real
+
+    def test_the_bounded_fallback_has_its_own_timeout(self):
+        d, gold, gate = self._pair()
+        seen, patch = self._engines(self.UNPROVEN)
+        with patch:
+            sec.check("top", gold, gate, d, clock_set=self._multi(),
+                      timeout=1800, fallback_timeout=77)
+        self.assertEqual(seen["timeout"], 77)
+
+    def test_fallback_zero_leaves_it_undecided(self):
+        """0 skips the bounded check on designs where it cannot finish. What
+        regcorr could not prove then stays undecided: not a pass, and not a
+        refutation the skill library could learn from."""
+        d, gold, gate = self._pair()
+        seen, patch = self._engines(self.UNPROVEN)
+        with patch:
+            v = sec.check("top", gold, gate, d, clock_set=self._multi(),
+                          fallback_timeout=0)
+        self.assertEqual(seen["order"], ["regcorr"])
+        self.assertFalse(score.sec_passed({"sec": v}))
+        self.assertFalse(score.sec_decided({"sec": v}))
+
+    def test_a_candidate_that_does_not_elaborate_is_not_retried(self):
+        d, gold, gate = self._pair()
+        seen, patch = self._engines({"equivalent": False, "method": "error",
+                                     "engine": "yosys", "elaboration_failed": True,
+                                     "reason": "candidate does not elaborate"})
+        with patch:
+            v = sec.check("top", gold, gate, d, clock_set=self._multi())
+        self.assertEqual(seen["order"], ["regcorr"])
+        self.assertFalse(v["equivalent"])
+
+    def test_regcorr_never_passes_with_anything_unproven(self):
+        """Whatever the Tcl's method line says, a pass needs a readable,
+        nonzero equiv count with nothing unproven."""
+        d, gold, gate = self._pair()
+        prove_outputs = [
+            "ASTRA_KV sec.equivalent 1\nASTRA_KV sec.method regcorr\n"
+            "ASTRA_KV sec.unproven 2\nASTRA_KV sec.equiv_cells 5\n",
+            "ASTRA_KV sec.equivalent 1\nASTRA_KV sec.method regcorr\n"
+            "ASTRA_KV sec.unproven 0\nASTRA_KV sec.equiv_cells 0\n",
+            "ASTRA_KV sec.equivalent 1\nASTRA_KV sec.method regcorr\n",
+        ]
+        rep = {"status": "needs_sat", "sat_ports": ["y"], "ports_total": 3,
+               "ports_structural": 2, "paired": 1, "reason": "1 differs"}
+        for prove in prove_outputs:
+            def fake_run(cmd, log, env=None, cwd=None, timeout=1800, _p=prove):
+                if env and env.get("ASTRA_REGCORR_PHASE") == "elaborate":
+                    return 0, "ASTRA_KV sec.elaborated 1\n"
+                return 0, _p
+            with mock.patch.object(sec, "_run", fake_run), \
+                    mock.patch.object(sec.toolenv, "have", lambda b: True), \
+                    mock.patch.object(sec.regcorr, "prepare", lambda *a: dict(rep)):
+                v = sec.check_regcorr("top", gold, gate, d)
+            self.assertIsNot(v["equivalent"], True, prove)
+            self.assertEqual(v["method"], "regcorr-unproven")
+
+    def test_regcorr_verdicts_are_decided_and_unproven_ones_are_not(self):
+        proved = {"equivalent": True, "method": "regcorr", "engine": "yosys"}
+        self.assertTrue(score.sec_passed({"sec": proved}))
+        self.assertTrue(score.sec_decided({"sec": proved}))
+        self.assertFalse(score.sec_passed({"sec": self.UNPROVEN}))
+        self.assertFalse(score.sec_decided({"sec": self.UNPROVEN}))
+        tally = score.sec_tally([{"id": "a", "sec": proved},
+                                 {"id": "b", "sec": self.UNPROVEN}])
+        self.assertEqual((tally["decided"], tally["undecided"]), (1, 1))
+
+    def test_identical_text_needs_no_tool(self):
+        """Every dual_clock specialist once returned its parent verbatim, and
+        each cost a full proof."""
+        d = Path(tempfile.mkdtemp())
+        a, b = d / "a.v", d / "b.v"
+        a.write_text("module top(input a, output y);\n  assign y = a; // wire\nendmodule\n")
+        b.write_text("module top(input a,\n output y); /* reflowed */ assign y = a;\nendmodule")
+        seen, patch = self._engines(self.UNPROVEN)
+        with patch:
+            v = sec.check("top", [a], [b], d, clock_set=self._multi())
+        self.assertEqual(seen["order"], [])
+        self.assertEqual(v["method"], "identical")
+        self.assertTrue(score.sec_passed({"sec": v}))
+        b.write_text("module top(input a, output y); assign y = ~a; endmodule")
+        self.assertFalse(sec.identical([a], [b]))
+
+    def test_only_decided_verdicts_are_cached(self):
+        d, gold, gate = self._pair()
+        seen, patch = self._engines(self.UNPROVEN)
+        with patch:
+            sec.check("top", gold, gate, d, clock_set=self._multi(), fallback_timeout=0)
+            sec.check("top", gold, gate, d, clock_set=self._multi(), fallback_timeout=0)
+            self.assertEqual(seen["order"], ["regcorr", "regcorr"],
+                             "an undecided verdict must be asked again")
+            seen["order"].clear()
+            sec.check("top", gold, gate, d, clock_set=self._one())
+            v = sec.check("top", gold, gate, d, clock_set=self._one())
+            self.assertEqual(seen["order"], ["miter"], "a decided one is reused")
+            self.assertTrue(v.get("cached"))
 
     def test_a_design_can_record_the_depth_it_verified(self):
         """Adequate depth is a property of the design, not a global default:
@@ -1937,6 +2065,243 @@ class TestEquivalenceContract(unittest.TestCase):
         v = sec.check("top", [d / "nope.v"], [d / "nope.v"], d,
                       clock_set=self._multi())
         self.assertEqual(v["method"], "error")
+
+
+class TestRegcorr(unittest.TestCase):
+    """tools/regcorr.py on hand-built Yosys JSON -- no Yosys needed.
+
+    The netlist: `r <= ~a` on an active-low async reset, output y = r.
+    """
+
+    def _cell(self, type_, conns, params=None, outputs=("Y",)):
+        return {"hide_name": 1, "type": type_, "parameters": params or {},
+                "attributes": {},
+                "port_directions": {p: ("output" if p in outputs else "input")
+                                    for p in conns},
+                "connections": conns}
+
+    def _design(self, off=0, not_type="$not", clk_pol="1", rst_pol="0",
+                flop="$adff", reg_name="r", extra_alias=None):
+        b = lambda i: i + off
+        ff_conns = {"CLK": [b(2)], "D": [b(5)], "Q": [b(6)]}
+        params = {"CLK_POLARITY": clk_pol, "WIDTH": "1"}
+        if flop == "$adff":
+            ff_conns["ARST"] = [b(3)]
+            params.update(ARST_POLARITY=rst_pol, ARST_VALUE="1")
+        netnames = {"clk": {"bits": [b(2)]}, "rst_n": {"bits": [b(3)]},
+                    "a": {"bits": [b(4)]}, "y": {"bits": [b(6)]},
+                    reg_name: {"bits": [b(6)]},
+                    "$0\\r": {"hide_name": 1, "bits": [b(5)]}}
+        if extra_alias:
+            netnames[extra_alias] = {"bits": [b(6)]}
+        return {
+            "ports": {"clk": {"direction": "input", "bits": [b(2)]},
+                      "rst_n": {"direction": "input", "bits": [b(3)]},
+                      "a": {"direction": "input", "bits": [b(4)]},
+                      "y": {"direction": "output", "bits": [b(6)]}},
+            "cells": {"inv": self._cell(not_type, {"A": [b(4)], "Y": [b(5)]}),
+                      "ff": self._cell(flop, ff_conns, params, outputs=("Q",))},
+            "netnames": netnames,
+        }
+
+    def _prepare(self, gold, gate):
+        d = Path(tempfile.mkdtemp())
+        for name, mod in (("gold", gold), ("gate", gate)):
+            (d / f"{name}.json").write_text(json.dumps({"modules": {"top": mod}}))
+        return regcorr.prepare(d / "gold.json", d / "gate.json", "top", d / "out"), d / "out"
+
+    def test_identical_structure_is_proven_without_a_solver(self):
+        rep, _ = self._prepare(self._design(), self._design(off=100))
+        self.assertEqual(rep["status"], "proven", rep)
+        self.assertEqual(rep["paired"], 1)
+
+    def test_changed_logic_sends_only_its_port_to_the_solver(self):
+        rep, out = self._prepare(self._design(), self._design(not_type="$pos"))
+        self.assertEqual(rep["status"], "needs_sat")
+        self.assertEqual(rep["sat_ports"], ["r[0]@d"])
+        cones = json.loads((out / "gate_cone.json").read_text())
+        self.assertEqual(list(cones["modules"]), ["gate"])
+        self.assertEqual(list(cones["modules"]["gate"]["ports"])[-1], "r[0]@d")
+
+    def test_clock_polarity_and_reset_polarity_are_obligations(self):
+        """A negedge or active-high twin of a register must not match it."""
+        for gate in (self._design(clk_pol="0"), self._design(rst_pol="1"),
+                     self._design(flop="$dff")):
+            rep, _ = self._prepare(self._design(), gate)
+            self.assertEqual(rep["status"], "needs_sat")
+            self.assertTrue(any(p.endswith(("@c", "@r")) for p in rep["sat_ports"]),
+                            rep["sat_ports"])
+
+    def test_evert_inverts_for_negedge_and_active_low(self):
+        mod = self._design(clk_pol="0", rst_pol="0")
+        ev = regcorr.evert(mod, {6: "r[0]"})
+        self.assertNotIn("ff", ev["cells"])
+        drivers = {c["connections"]["Y"][0]: c for c in ev["cells"].values()}
+        for port, want in (("r[0]@c", "$not"), ("r[0]@r", "$not"), ("r[0]@d", "$pos")):
+            bit = ev["ports"][port]["bits"][0]
+            self.assertEqual(drivers[bit]["type"], want, port)
+        self.assertEqual(ev["ports"]["r[0]@q"]["direction"], "input")
+
+    def test_an_unpaired_register_is_left_free(self):
+        ev = regcorr.evert(self._design(), {})
+        self.assertFalse(any("@" in p for p in ev["ports"]))
+        driven = {b for c in ev["cells"].values() for b in c["connections"]["Y"]}
+        self.assertNotIn(6, driven, "an unpaired Q must be a free value")
+
+    def test_pairing_uses_any_shared_alias(self):
+        gold = self._design(reg_name="acc", extra_alias="acc_view")
+        gate = self._design(reg_name="acc_view")
+        g, b, ug, ub = regcorr.pair_registers(gold, gate)
+        self.assertEqual((len(g), ug, ub), (1, [], []))
+
+    def test_an_ambiguous_match_is_not_paired(self):
+        """One gold register known as p and q; the candidate split them."""
+        gold = self._design(reg_name="p", extra_alias="q")
+        gate = self._design(reg_name="p")
+        gate["cells"]["ff2"] = self._cell("$adff", {"CLK": [2], "ARST": [3], "D": [5],
+                                                    "Q": [9]},
+                                          {"CLK_POLARITY": "1", "ARST_POLARITY": "0",
+                                           "ARST_VALUE": "1", "WIDTH": "1"},
+                                          outputs=("Q",))
+        gate["netnames"]["q"] = {"bits": [9]}
+        g, b, ug, ub = regcorr.pair_registers(gold, gate)
+        self.assertEqual(g, {})
+        self.assertEqual(len(ub), 2)
+
+    def test_commutativity_is_not_assumed(self):
+        """equiv_struct's mistake, not repeated: `a & b` vs `b & a` must go to
+        the solver rather than be declared the same structure."""
+        def mod(order):
+            return {"ports": {"a": {"direction": "input", "bits": [2]},
+                              "b": {"direction": "input", "bits": [3]},
+                              "y": {"direction": "output", "bits": [4]}},
+                    "cells": {"g": self._cell("$and", {"A": [order[0]], "B": [order[1]],
+                                                       "Y": [4]})},
+                    "netnames": {}}
+        differ, total = regcorr.differing_outputs(mod([2, 3]), mod([3, 2]))
+        self.assertEqual((differ, total), (["y"], 1))
+
+    def _macc(self, operands, subtract=(), width=4):
+        """A $macc summing 2-bit operands given as [bit, bit] input ids."""
+        cfg = [0, 1, 0, 0]                                    # field width 2, LSB first
+        a = []
+        for i, op in enumerate(operands):
+            cfg += [0, 1 if i in subtract else 0, 0, 1, 0, 0]  # size_a 2, size_b 0
+            a += op
+        return {"ports": {**{f"i{b}": {"direction": "input", "bits": [b]}
+                             for op in operands for b in op},
+                          "y": {"direction": "output", "bits": list(range(90, 90 + width))}},
+                "cells": {"m": self._cell("$macc", {"A": a, "B": [], "Y": list(range(90, 90 + width))},
+                                          {"CONFIG": "".join(map(str, cfg))[::-1],
+                                           "CONFIG_WIDTH": len(cfg), "A_WIDTH": len(a),
+                                           "B_WIDTH": 0, "Y_WIDTH": width})},
+                "netnames": {}}
+
+    def test_a_sum_matches_whatever_the_order_of_its_terms(self):
+        """A serial accumulate and a balanced tree over the same terms become
+        one $macc each under alumacc, differing only in term order. Measured on
+        a real netproc candidate: 260 ports that timed out the solver."""
+        ops = [[2, 3], [4, 5], [6, 7]]
+        differ, _ = regcorr.differing_outputs(self._macc(ops), self._macc(ops[::-1]))
+        self.assertEqual(differ, [])
+
+    def test_a_sum_still_differs_when_a_term_does(self):
+        ops = [[2, 3], [4, 5], [6, 7]]
+        for other in (self._macc(ops, subtract={1}),          # + became -
+                      self._macc([[2, 3], [5, 4], [6, 7]]),   # an operand's bits swapped
+                      self._macc(ops[:2]),                    # a term dropped
+                      self._macc(ops, width=3)):              # output width
+            differ, _ = regcorr.differing_outputs(self._macc(ops), other)
+            self.assertEqual(differ, ["y"])
+
+    def _macc_terms(self, terms, width=4):
+        """A $macc from explicit (signed, [operand bits]) terms, field width 3."""
+        cfg, a = [1, 1, 0, 0], []
+        for signed, bits in terms:
+            n = len(bits)
+            cfg += [1 if signed else 0, 0, n & 1, (n >> 1) & 1, (n >> 2) & 1, 0, 0, 0]
+            a += bits
+        ins = sorted({b for _, bits in terms for b in bits if isinstance(b, int)})
+        return {"ports": {**{f"i{b}": {"direction": "input", "bits": [b]} for b in ins},
+                          "y": {"direction": "output", "bits": list(range(90, 90 + width))}},
+                "cells": {"m": self._cell("$macc", {"A": a, "B": [], "Y": list(range(90, 90 + width))},
+                                          {"CONFIG": "".join(map(str, cfg))[::-1]})},
+                "netnames": {}}
+
+    def test_sign_extension_by_hand_is_the_same_term(self):
+        """soc_bench's sys accumulate: gold extends by concatenation, the tree
+        lets $macc extend a signed operand. Same value mod 2^width."""
+        by_hand = self._macc_terms([(False, [2, 3, 3, 3]), (False, [4, 5, 5, 5])])
+        by_cell = self._macc_terms([(True, [2, 3]), (True, [4, 5])])
+        self.assertEqual(regcorr.differing_outputs(by_hand, by_cell)[0], [])
+
+    def test_zero_extension_is_not_sign_extension(self):
+        zero = self._macc_terms([(False, [2, 3]), (False, [4, 5])])
+        sign = self._macc_terms([(True, [2, 3]), (True, [4, 5])])
+        self.assertEqual(regcorr.differing_outputs(zero, sign)[0], ["y"])
+        half = self._macc_terms([(True, [2, 3]), (False, [4, 5])])
+        self.assertEqual(regcorr.differing_outputs(half, sign)[0], ["y"])
+
+    def test_an_undecodable_macc_keeps_its_exact_order(self):
+        broken = self._macc([[2, 3], [4, 5]])
+        broken["cells"]["m"]["parameters"]["CONFIG"] = "1"
+        swapped = self._macc([[4, 5], [2, 3]])
+        swapped["cells"]["m"]["parameters"]["CONFIG"] = "1"
+        differ, _ = regcorr.differing_outputs(broken, swapped)
+        self.assertEqual(differ, ["y"])
+
+    def test_undriven_and_x_become_free_inputs_unique_to_a_side(self):
+        """The dual_clock false pass, pinned. A candidate that read an
+        undeclared wire, against a reference whose registers went unpaired,
+        must not reach the solver with two undriven values to compare."""
+        def mod(reader):
+            return {"ports": {"a": {"direction": "input", "bits": [2]},
+                              "y": {"direction": "output", "bits": [4]}},
+                    "cells": {"g": self._cell("$and", {"A": [2], "B": [reader], "Y": [4]})},
+                    "netnames": {"u": {"bits": [3]} if reader == 3 else {"bits": [2]}}}
+        gold, gate = mod(3), mod("x")                     # undriven vs x constant
+        g, b, gn, bn = regcorr.free_values(gold, gate)
+        self.assertEqual((gn, bn), (1, 1))
+        self.assertEqual(set(g["ports"]), set(b["ports"]),
+                         "equiv_make needs identical port lists")
+        g_b = g["cells"]["g"]["connections"]["B"][0]
+        b_b = b["cells"]["g"]["connections"]["B"][0]
+        g_port = next(n for n, p in g["ports"].items() if p["bits"] == [g_b])
+        b_port = next(n for n, p in b["ports"].items() if p["bits"] == [b_b])
+        self.assertNotEqual(g_port, b_port, "a free value must not be shared")
+        self.assertTrue(g_port.startswith("gold@") and b_port.startswith("gate@"))
+        self.assertNotIn("u", g["netnames"])
+
+    def test_an_undriven_output_is_driven_from_a_free_input(self):
+        mod = {"ports": {"y": {"direction": "output", "bits": [5]}},
+               "cells": {}, "netnames": {}}
+        g, b, gn, bn = regcorr.free_values(mod, {"ports": {"y": {"direction": "output",
+                                                                 "bits": ["0"]}},
+                                                 "cells": {}, "netnames": {}})
+        self.assertEqual((gn, bn), (1, 0))
+        drivers = [c for c in g["cells"].values() if c["connections"]["Y"] == [5]]
+        self.assertEqual(len(drivers), 1)
+
+    def test_stateful_cells_it_cannot_model_are_refused(self):
+        gate = self._design()
+        gate["cells"]["latch"] = self._cell("$dlatch", {"EN": [2], "D": [4], "Q": [7]},
+                                            outputs=("Q",))
+        rep, _ = self._prepare(self._design(), gate)
+        self.assertEqual(rep["status"], "unsupported")
+        self.assertIn("$dlatch", rep["reason"])
+
+    def test_an_interface_change_is_refused(self):
+        gate = self._design()
+        gate["ports"]["y"]["bits"] = [6, 6]
+        rep, _ = self._prepare(self._design(), gate)
+        self.assertEqual(rep["status"], "unsupported")
+
+    def test_a_combinational_loop_is_refused_not_hung(self):
+        gate = self._design()
+        gate["cells"]["inv"]["connections"]["A"] = [5]
+        rep, _ = self._prepare(self._design(), gate)
+        self.assertEqual(rep["status"], "unsupported")
+        self.assertIn("loop", rep["reason"])
 
 
 class TestMerge(unittest.TestCase):

@@ -172,6 +172,11 @@ Hard constraints, all checked by tools after you answer:
 2. LATENCY AND INTERFACE ARE FIXED. Same module name, same port names, same
    port widths, same pipeline depth. You may redistribute or duplicate
    registers; you may not add or remove a pipeline stage.
+   Keep existing register names; rename or add intermediate wires freely. The
+   equivalence check pairs registers by name, so an edit that keeps them is
+   proved in seconds, while one that moves or renames a register takes a far
+   slower check that may not finish -- and an unfinished check promotes
+   nothing.
 3. SCOPE. Change only the logic your target names. Other agents are working on
    the other targets in parallel, right now, and their edits will be combined
    with yours by splicing text. An edit outside your target collides with a

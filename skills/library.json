@@ -2,8 +2,8 @@
   "meta": {
     "version": 1,
     "note": "Pattern-strategy skill library (paper Sec. 4.2). Entries marked source=seed are textbook transformations offered as untested suggestions: they carry zero occurrences and zero confidence and must earn their statistics from real runs, exactly like a learned entry. Entries gain occurrences, SEC-pass counts and a mean relative advantage A_i as the loop runs, and are demoted to status=invalid if they break equivalence more often than not.",
-    "updated_at": "2026-09-09T16:20:09+00:00",
-    "count": 27
+    "updated_at": "2026-09-13T19:55:52+00:00",
+    "count": 32
   },
   "skills": [
     {
@@ -15,9 +15,9 @@
       "source": "learned",
       "created_at": "2026-09-09T02:13:35+00:00",
       "stats": {
-        "occurrences": 7,
+        "occurrences": 9,
         "sec_pass": 7,
-        "sec_fail": 0,
+        "sec_fail": 2,
         "inconclusive": 0,
         "advantage_sum": -3.4738058526759783,
         "advantage_n": 6,
@@ -26,17 +26,17 @@
         "designs": [
           "mac_chain"
         ],
-        "iterations": 7
+        "iterations": 9
       },
       "last_seen": {
         "design": "mac_chain",
         "iteration": 1,
-        "at": "2026-09-09T16:20:09+00:00"
+        "at": "2026-09-13T10:40:40+00:00"
       },
-      "confidence": 0.5327,
+      "confidence": 0.4439,
       "mean_advantage": -0.578967642112663,
       "status": "candidate",
-      "updated_at": "2026-09-09T16:20:09+00:00"
+      "updated_at": "2026-09-13T10:40:40+00:00"
     },
     {
       "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
@@ -101,6 +101,38 @@
       "mean_advantage": -0.7071067811865541,
       "status": "candidate",
       "updated_at": "2026-09-09T02:20:02+00:00"
+    },
+    {
+      "id": "40-bit-saturation-comparison-after-accumulation::remove-unused-saturation-parameters-to-prevent-i",
+      "pattern": "40-bit saturation comparison after accumulation",
+      "strategy": "Remove unused saturation parameters to prevent inadvertent synthesis",
+      "rationale": "The SAT_MAX, SAT_MIN, and LIMIT parameters are defined but never used in the RTL. The sat_flag is always 0, and sat_val is just s3 with no actual saturation logic. These unused parameters may trigger synthesis to generate unnecessary comparison logic on the critical path.",
+      "example": "// Before:\nalways @(*) begin\n  sat_val = (s3 > SAT_MAX) ? SAT_MAX : s3;\n  sat_flag = (s3 > SAT_MAX) || (s3 < SAT_MIN);\nend\n\n// After:\n// Remove SAT_MAX, SAT_MIN, LIMIT params; sat_flag always 0; assign sat_val = s3;",
+      "source": "learned",
+      "created_at": "2026-09-13T10:40:15+00:00",
+      "stats": {
+        "occurrences": 2,
+        "sec_pass": 2,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 2,
+        "score_delta_sum": -0.46583554599233723,
+        "score_delta_n": 1,
+        "designs": [
+          "mac_chain"
+        ],
+        "iterations": 2
+      },
+      "last_seen": {
+        "design": "mac_chain",
+        "iteration": 1,
+        "at": "2026-09-13T10:40:40+00:00"
+      },
+      "confidence": 0.2,
+      "mean_advantage": 0.0,
+      "status": "candidate",
+      "updated_at": "2026-09-13T10:40:40+00:00"
     },
     {
       "id": "serial-4-term-adder-chain-instead-of-balanced-tr::restructure-accumulate-as-binary-tree-to-paralle",
@@ -239,9 +271,9 @@
       "source": "learned",
       "created_at": "2026-09-09T02:13:35+00:00",
       "stats": {
-        "occurrences": 5,
+        "occurrences": 6,
         "sec_pass": 5,
-        "sec_fail": 0,
+        "sec_fail": 1,
         "inconclusive": 0,
         "advantage_sum": 2.766699071489424,
         "advantage_n": 2,
@@ -250,17 +282,17 @@
         "designs": [
           "mac_chain"
         ],
-        "iterations": 5
+        "iterations": 6
       },
       "last_seen": {
         "design": "mac_chain",
         "iteration": 1,
-        "at": "2026-09-09T16:20:09+00:00"
+        "at": "2026-09-13T10:40:15+00:00"
       },
-      "confidence": 0.037,
+      "confidence": 0.0329,
       "mean_advantage": 1.383349535744712,
       "status": "candidate",
-      "updated_at": "2026-09-09T16:20:09+00:00"
+      "updated_at": "2026-09-13T10:40:15+00:00"
     },
     {
       "id": "sign-extension-through-intermediate-wires-in-add::inline-sign-extension-expressions-to-reduce-inte",
@@ -293,6 +325,38 @@
       "mean_advantage": 1.4142135623730883,
       "status": "candidate",
       "updated_at": "2026-09-09T16:09:00+00:00"
+    },
+    {
+      "id": "512-bit-serial-parity-reduction::replace-serial-xor-chain-with-balanced-tree",
+      "pattern": "512-bit serial parity reduction",
+      "strategy": "replace serial XOR chain with balanced tree",
+      "rationale": "Serial chain is O(n) depth; balanced tree reduces to O(log n). For 512 bits, 512 stages \u2192 9 stages, eliminating the ripple delay through independent bit positions.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-13T19:23:12+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 3,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "netproc"
+        ],
+        "iterations": 3
+      },
+      "last_seen": {
+        "design": "netproc",
+        "iteration": 1,
+        "at": "2026-09-13T19:55:36+00:00"
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate",
+      "updated_at": "2026-09-13T19:55:36+00:00"
     },
     {
       "id": "arithmetic-operator-chain-split-across-a-module-::keep-the-whole-chain-in-one-hierarchy-so-it-can-",
@@ -365,6 +429,38 @@
       "confidence": 0.0,
       "mean_advantage": null,
       "status": "candidate"
+    },
+    {
+      "id": "deep-multi-level-ripple-adder-chain-in-accumulat::replace-serial-ripple-levels-with-carry-save-3-2",
+      "pattern": "Deep multi-level ripple adder chain in accumulator",
+      "strategy": "Replace serial ripple levels with carry-save 3:2 compression",
+      "rationale": "Three cascaded 40-bit ripple additions (52 AOI/OAI cells, ~66 gate stages) was targeted for replacement with constant-depth 3:2 carry-save compression using XOR for sum and majority for carry. However, this breaks equivalence, suggesting the custom accumulation logic depends on intermediate carry propagation patterns or the accumulator state update rule is not commutative with carry representation.",
+      "example": "// Carry-save strategy (breaks equivalence):\n// sum1, carry1 = CSA_32(a, b, c)  // constant depth\n// sum2, carry2 = CSA_32(sum1, carry1, d)\n// result = sum2 + carry2  // one ripple\n// Problem: breaks if accumulator logic expects specific bit-by-bit propagation order",
+      "source": "learned",
+      "created_at": "2026-09-13T10:40:40+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 0,
+        "sec_fail": 1,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "mac_chain"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "mac_chain",
+        "iteration": 1,
+        "at": "2026-09-13T10:40:40+00:00"
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate",
+      "updated_at": "2026-09-13T10:40:40+00:00"
     },
     {
       "id": "hand-instantiated-arithmetic-component::use-the-inferred-operator-so-the-tool-picks-the-",
@@ -653,6 +749,70 @@
       "confidence": 0.0,
       "mean_advantage": null,
       "status": "candidate"
+    },
+    {
+      "id": "serial-parity-chain-in-cdc-protected-domain::replace-ripple-xor-chain-with-balanced-tree",
+      "pattern": "Serial parity chain in CDC-protected domain",
+      "strategy": "Replace ripple XOR chain with balanced tree",
+      "rationale": "Tree rebalancing (512 stages \u2192 9 stages) is logically sound via XOR associativity and would reduce critical-path delay. However, parity signals used in cross-clock-domain protection are guarded regions: modifications break SEC equivalence. CDC monitors require exact signal ancestry; tree replication introduces new paths.",
+      "example": "// BREAKS EQUIVALENCE:\nalways @(*) xfrm_par <= par_tree_final ^ cdc_xfrm_from_look[1];  // was: par_chain[XW]",
+      "source": "learned",
+      "created_at": "2026-09-13T19:23:37+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 0,
+        "sec_fail": 1,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "netproc"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "netproc",
+        "iteration": 1,
+        "at": "2026-09-13T19:23:37+00:00"
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate",
+      "updated_at": "2026-09-13T19:23:37+00:00"
+    },
+    {
+      "id": "serial-xor-reduction-chain::rebalance-into-binary-tree-to-reduce-depth-log-n",
+      "pattern": "Serial XOR reduction chain",
+      "strategy": "Rebalance into binary tree to reduce depth log\u2082(n)",
+      "rationale": "XOR tree depth falls from 512 to 9 logic levels, removing ~84 gate delays from the critical path. Equivalence is assured by XOR associativity\u2014reordering the computation preserves the result.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-13T19:55:36+00:00",
+      "stats": {
+        "occurrences": 0,
+        "sec_pass": 0,
+        "sec_fail": 0,
+        "inconclusive": 1,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "netproc"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "netproc",
+        "iteration": 1,
+        "at": "2026-09-13T19:55:36+00:00"
+      },
+      "confidence": 0.0,
+      "mean_advantage": null,
+      "status": "candidate",
+      "updated_at": "2026-09-13T19:55:36+00:00"
     },
     {
       "id": "sign-extension-replicated-before-every-operand-o::add-the-narrow-values-and-sign-extend-once-at-th",

@@ -1,0 +1,53 @@
+pre-synthesis scan of mac_chain.v
+39 assignment(s), 39 declaration(s)
+
+findings, worst first (each is a hypothesis with its evidence, not a measurement):
+
+  [high  ] unpipelined multiply in one cycle
+    at mac_chain.v:51
+    1 multiply(s) at 16 bits on `p0` -- a 16x16 array is roughly 8 levels before anything downstream starts
+
+  [high  ] unpipelined multiply in one cycle
+    at mac_chain.v:56
+    1 multiply(s) at 16 bits on `p1` -- a 16x16 array is roughly 8 levels before anything downstream starts
+
+  [high  ] unpipelined multiply in one cycle
+    at mac_chain.v:57
+    1 multiply(s) at 16 bits on `p2` -- a 16x16 array is roughly 8 levels before anything downstream starts
+
+  [high  ] unpipelined multiply in one cycle
+    at mac_chain.v:58
+    1 multiply(s) at 16 bits on `p3` -- a 16x16 array is roughly 8 levels before anything downstream starts
+
+  [high  ] serial reduction chain written as a chain, not a tree
+    at mac_chain.v:63-65
+    3 '+' operations in series at width 40 (s1, s2, s3) -- depth 3 where a balanced tree of the same terms is depth 2
+
+  [high  ] comparison against an unreachable bound
+    at mac_chain.v:66
+    `s3 > LIMIT` compares a value whose magnitude cannot exceed 2^33 against 137438953471 -- 16x of headroom, so the comparison's result is fixed
+
+  [high  ] comparison against an unreachable bound
+    at mac_chain.v:69
+    `s3 < -LIMIT` compares a value whose magnitude cannot exceed 2^33 against -137438953471 -- 16x of headroom, so the comparison's result is fixed
+
+  [medium] wide arithmetic in one expression
+    at mac_chain.v:63
+    1 add/subtract at 40 bits on `s1` -- 7 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at mac_chain.v:64
+    1 add/subtract at 40 bits on `s2` -- 7 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at mac_chain.v:65
+    1 add/subtract at 40 bits on `s3` -- 7 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at mac_chain.v:70
+    1 add/subtract at 40 bits on `sat_val` -- 7 levels of carry each
+
+  [low   ] hand-written sign extension repeated across the datapath
+    at mac_chain.v:59-65
+    4 replicated-bit extensions (s0, s1, s2, s3) -- widening by hand before each operation, rather than once at the boundary
+

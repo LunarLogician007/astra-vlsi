@@ -1,0 +1,14 @@
+{
+  "id": "t1",
+  "target_id": "T1",
+  "target_kind": "segment",
+  "target_value": 0.418046330877067,
+  "pattern": "high-fanout operand register driving multiplier",
+  "strategy": "replicate input register, split multiplier bits across copies",
+  "rationale": "two registers halve per-driver fanout from 38 to ~19; synthesis routes upper multiplier bits to b0_q_dup, lower bits to b0_q, reducing slew and capacitance on each launch path from the flop",
+  "target": "b0 input pipeline (mac_chain.v:38-49), b0_q register (mac_chain.v:45), p0 multiplier (mac_chain.v:62)",
+  "expected_slack_recovery_ns": 0.18,
+  "area_cost": "small\u2014one additional 16-bit register",
+  "equivalence_argument": "b0_q_dup is reset and loaded identically to b0_q in the same always block. The multiplier p0 uses {b0_q_dup[W-1:W/2], b0_q[W/2-1:0]}, which reconstructs the full 16-bit b0 value identically. Since both register copies hold the same value in every cycle, the multiplier product is identical to the original. Saturation and outputs depend only on s3, which transitively depends only on the value of the 16-bit b0 input\u2014not on which physical register copy carries which bits. Reset, widths, and pipeline latency (2 cycles) are unchanged.",
+  "declared_changed": true
+}

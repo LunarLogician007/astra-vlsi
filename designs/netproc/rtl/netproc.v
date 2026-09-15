@@ -186,6 +186,15 @@ module netproc #(
         end
     endgenerate
 
+    // The CRC result is named here, off the protected line below. That line
+    // mentions cdc_rx_from_tx, so protect.py forbids changing it -- and a
+    // rewrite of the shift chain above would have had to change it, if it
+    // read crc_chain[8] directly. Naming the result keeps the chain editable
+    // and the crossing untouched. parse/look/tx already get this for free
+    // from a pipeline register; rx and xfrm are combinational into the
+    // protected line, so a wire carries it instead. Latency is unchanged.
+    wire [31:0] crc_next = crc_chain[8];
+
     always @(posedge clk_rx or negedge rst_n) begin
         if (!rst_n) begin
             rx_state <= S_IDLE; rx_len <= 8'b0; rx_count <= 8'b0;
@@ -197,7 +206,7 @@ module netproc #(
                 S_DATA: if (rx_valid) rx_count <= rx_count + 8'd1;
                 default: ;
             endcase
-            if (rx_valid) rx_crc <= crc_chain[8] ^ {31'b0, cdc_rx_from_tx[1]};
+            if (rx_valid) rx_crc <= crc_next ^ {31'b0, cdc_rx_from_tx[1]};
             rx_frame_ok <= (rx_state == S_EOF);
         end
     end
@@ -315,13 +324,19 @@ module netproc #(
         end
     endgenerate
 
+    // Same reason as crc_next above: the xfrm_par line mentions
+    // cdc_xfrm_from_look and so may not be edited, which would have frozen
+    // the 512-deep reduction feeding it. Rewrite par_chain into a tree and
+    // drive par_chain_out; the protected line never has to move.
+    wire par_chain_out = par_chain[XW];
+
     always @(posedge clk_xfrm or negedge rst_n)
         if (!rst_n) xfrm_out <= {DW{1'b0}};
         else if (xv_q) xfrm_out <= rot_s5;
 
     always @(posedge clk_xfrm_div2_r or negedge rst_n)
         if (!rst_n) xfrm_par <= 1'b0;
-        else xfrm_par <= par_chain[XW] ^ cdc_xfrm_from_look[1];
+        else xfrm_par <= par_chain_out ^ cdc_xfrm_from_look[1];
 
     // =======================================================================
     // TX DOMAIN — serial accumulate over TAPS terms instead of a tree.

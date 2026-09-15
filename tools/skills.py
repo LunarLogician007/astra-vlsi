@@ -487,7 +487,7 @@ def render(entries: list[dict[str, Any]], with_examples: bool = True) -> str:
                 f"{st.get('sec_pass', 0)}/{n or 0}, "
                 f"confidence {e.get('confidence', 0.0):.2f}")
         if st.get("inconclusive"):
-            stat += f", {st['inconclusive']} undecided (solver timeout)"
+            stat += f", {st['inconclusive']} undecided (timeout, tool error or unproven)"
         if adv is not None:
             stat += f", mean advantage {adv:+.3f}"
         if st.get("designs"):

@@ -2,16 +2,26 @@
 
 Context for whoever picks this up next, including me in a later session.
 
-Branch `path-portfolio`, 13 commits ahead of `main`. 225 tests, all passing,
-none needing an EDA install or a model. `make opt` is unchanged and tested to
-be so.
+Branch `path-portfolio`. 251 tests, all passing, none needing an EDA install
+or a model. `make opt`'s loop is unchanged; its optimiser prompt gained one
+sentence asking agents to keep register names (see below).
 
-**Since the last handoff:** §6.1 (multi-clock) and §6.3 (the equivalence
-contract) are done — see `docs/multi-clock.md` and
-`docs/equivalence-contract.md`. §6.2's benchmark design is **built and timing**
-(`designs/soc_bench/`, 49,935 cells, 13 clocks). What still blocks objective 6
-is the SEC partitioner, and one conceptual gap the benchmark exposed in
-`criticality()` — both in §6.4.
+**Since the last handoff: multi-clock SEC certifies.** The whole-design
+`clk2fflogic` miter cost what the *design* cost, so a correct candidate on a
+50K-cell benchmark timed out or was OOM-killed. Multi-clock SEC now runs
+**register correspondence first** (`tools/regcorr.py`,
+`flow/scripts/sec_regcorr.tcl`): registers are paired by name and cut open,
+unchanged logic is settled by exact structural hashing, and only the edited
+cone reaches `equiv_simple`. `alumacc` plus order-free `$macc` hashing does the
+same for adder chains rebuilt as trees. All six real `netproc` parity rewrites
+prove in **~8 s each**, unbounded, for every clock interleaving, and a cleanup
+candidate that also rebuilt a 16-term 260-bit accumulate proves in 8.5 s;
+thirteen deliberately broken cases across three designs all stay unproven
+(`tools/secbench.py`). **All four Phase-4 designs now promote on a sound
+verdict** — see "September 2026 runs" in §6.4, which also records one false
+pass that was found, fixed and withdrawn. The bounded check is
+kept as the fallback that refutes. The reasoning, the dead ends and the
+measurements are in `docs/equivalence-contract.md` §2.
 
 ---
 
@@ -154,8 +164,8 @@ and prefer the edit tools over heredoc rewrites.
 | 2 | Identify critical paths and violations | done |
 | 3 | GenAI recommends optimizations | **2 of 4** (FSM now has a testbed — `soc_bench`) |
 | 4 | Evaluate timing / area / performance | done |
-| 5 | Formally verify equivalence | **unbounded** (induction) on single-clock; **bounded, refute-biased** on multi-clock via `clk2fflogic` — see §6.3 and the depth warning in §6.4 |
-| 6 | Benchmark: 5 async domains, CDC, dividers, ~50K cells | **design built and timing** (`soc_bench`, 49,935 cells, 13 clocks); the loop runs on it and rejects bad candidates, but at that size a proof does not close — see §6.4 |
+| 5 | Formally verify equivalence | **unbounded** on both: induction on single-clock, **register correspondence** (`regcorr`) on multi-clock; bounded `clk2fflogic` remains the multi-clock fallback for retimed candidates and for refutation — see `docs/equivalence-contract.md` §2 and the depth warning in §6.4 |
+| 6 | Benchmark: 5 async domains, CDC, dividers, ~50K cells | **SEC certifies** on `netproc` (50,502 cells, 13 clocks) and `soc_bench` (49,935 cells) via `regcorr` in seconds when register names are kept — see §6.4 |
 
 Objective 3 detail: logic restructuring ✅, retiming ✅, **pipelining ✗**,
 **FSM optimization ✗**.
@@ -375,7 +385,14 @@ dominate. Induction would exploit their structural similarity, but with free
 clocks it converges neither way (measured twice, on both designs). Yosys's
 structural `equiv_*` flow was tried as an alternative and could not even
 separate the good candidate from the broken one — both left ~6,800 cells
-unproven — so it is not the answer either.
+unproven. **That diagnosis is now understood, and fixed** (September 2026):
+`equiv_simple` never proves a register output at all (it will not reason
+through a flop), and `equiv_struct -icells` pairs cells by structure, so it
+matched `a & b` against `b & a` and even `clk` against `clk2`, creating
+obligations that are false by construction. Register correspondence avoids
+both — flops are cut open in Python so the solver only ever sees combinational
+logic, and structural matching is exact hashing that never guesses at
+commutativity. See `docs/equivalence-contract.md` §2.
 
 **The trap, and the most important thing on this page.** The obvious fix is to
 cap the multi-clock depth so proofs finish. It was implemented, measured, and
@@ -393,13 +410,75 @@ correct failure; passing wrongly promotes a broken candidate, which is not.
 `tools/sec.py` carries the measurement and a test guards against reintroducing
 the cap.
 
-So expect this shape: on a multiplier-heavy multi-clock design the loop
-**filters** bad candidates but does not **certify** good ones. On designs
-without heavy arithmetic it does both, in under a second. `eqy`, which
-partitions, is the documented escape and is **absent from the image** --
-`/etc/astra-tools.txt` records `eqy=unavailable`, so its build failed when the
-image was made and the Dockerfile downgraded rather than failed. `make build
-EQY=1` is the first thing to try.
+That shape — the loop **filters** bad candidates but does not **certify** good
+ones — is what register correspondence removed for any candidate that keeps
+register names. It remains true of the bounded fallback, so a *retimed*
+candidate on a multiplier-heavy design is still likely to be undecided.
+
+Memory is the other limit on that fallback. On a 7.6 GB WSL host with
+`DOCKER_MEM=6g`, the whole-design miter on `netproc` was **OOM-killed for all
+three mutants tried**, even run one at a time. There a broken `netproc`
+candidate is undecided rather than refuted, so the September runs used
+`--sec-fallback-timeout 0`. The cap confines each kill to its own container.
+
+### September 2026 runs (haiku, one iteration, `DOCKER_MEM=6g`)
+
+| design | run | promoted | WNS (ns) | TNS (ns) | SEC decided: specialists / unions |
+|---|---|---|---|---|---|
+| `netproc` | `pf-20260915-095208` | t1, parity tree | −17.83 → **−4.84** | −764.3 → −303.7 | 3/3 / 1/1 |
+| `soc_bench` | `pf-20260915-114830` | t2, sys accumulate tree | −6.51 → −6.51 | −65.14 → **−38.10** | 1/1 / — |
+| `dual_clock` | `pf-20260915-113841` | t2, adder tree | −0.052 → **+0.399** (met) | −0.68 → 0 | 2/2 / 2/2 |
+| `mac_chain` (`make opt`, single clock) | `opt-20260915-103411` | cand0 | −0.357 → −0.162 | −3.74 → −1.55 | 4/4 |
+
+No run had a `not_generated` candidate. Every multi-clock promotion above is
+`regcorr`: the `dual_clock` and `soc_bench` winners matched **every** output
+structurally with no solver; `netproc`'s left one parity port for it. `netproc`
+and `soc_bench` ran with `--sec-fallback-timeout 0` (see the OOM note above).
+
+**Cone selection fired for the first time** (the claim §4 had never measured):
+on `netproc` the pool of 330 paths held 75 violating, in **32 distinct cones**;
+cone 0 limits the clock 100% of the time, so the portfolio cut it into three
+segments rather than spending agents on the other 31.
+
+**A false pass, withdrawn.** The first `dual_clock` run
+(`pf-20260915-102658`) promoted `u13`, a mechanical union that read an
+undeclared `acc_final`; synthesis then deleted the accumulate (1,307 → 103
+cells). regcorr had certified it because Yosys does not treat undriven bits as
+free values. Fixed (`regcorr.free_values`), pinned by tests and two permanent
+`fail` bench cases, and a scan of all 69 recorded cones found four other passes
+the defect touched: `u23` in the same run, and a `soc_bench` register
+duplication that is undecided on the fixed code — which withdraws the first
+`soc_bench` run's promotion (`pf-20260915-101229`). Both designs were rerun;
+the table shows the reruns. Details in `docs/equivalence-contract.md` §2.
+
+**What the runs exposed that is not SEC's to fix:**
+
+- **`soc_bench` has no seam between its aux chains and their protected line.**
+  `aux_parity <= aux_par_chain[XW] ^ cdc_aux_from_dsp[1]` mentions `cdc_`, so
+  any rewrite of the parity chain must edit it and is rejected by
+  `tools/protect.py` — both cleanup candidates were. `netproc` avoids this with
+  the named `par_chain_out` / `crc_next` wires; `soc_bench` needs the same.
+- **The reply parser trusts a `// FILE:` header.** haiku twice opened its
+  `soc_bench` rewrite with `// FILE: designs/netproc/rtl/netproc.v` (a path it
+  was never shown; tools are disabled), the design was written out again under
+  that name, and the duplicate module failed elaboration — two of six
+  `soc_bench` specialists lost. A single-file design should map any file name
+  onto its one file, or reject a name it does not know.
+- **Registers renamed or duplicated stay undecided** (`soc_bench` t1 in both
+  runs), as does the CAM priority-cascade mutant's cone: that is Phase 2's
+  retiming path and a harder solver, not yet built.
+
+Unrelated, and pre-existing on `HEAD`: `TestPathSelSegments.
+test_cuts_land_on_the_cell_mix_boundaries` depends on hash order and fails
+under `PYTHONHASHSEED=4` (passes for 0–3 and 5–7). `pathsel.split_points` has
+an iteration-order dependency somewhere; the suite is otherwise green.
+
+`eqy` is **absent from the image** — `/etc/astra-tools.txt` records
+`eqy=unavailable`. The previous advice here was that `make build EQY=1` is the
+first thing to try. **It would not help**: `sec.check` refuses eqy on any
+multi-clock design (it partitions against a common clock and has no multiclock
+mode), so an installed eqy is only ever used on single-clock designs. Do not
+spend a ten-minute image rebuild on it for objective 6.
 
 **Per-domain synthesis targets.** `abc -D` takes the tightest period across all
 clocks, so slow domains are over-constrained and may show inflated area. Fine

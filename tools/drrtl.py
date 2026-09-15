@@ -173,7 +173,9 @@ class EvaluationAgent:
 
     def __init__(self, cfg: dict[str, Any], period: float, npaths: int,
                  sec_depth: int, sec_engine: str, sec_timeout: int,
-                 no_flatten: bool = False, quiet: bool = True) -> None:
+                 no_flatten: bool = False, quiet: bool = True,
+                 sec_regcorr_timeout: int = sec_mod.REGCORR_TIMEOUT,
+                 sec_fallback_timeout: int = sec_mod.FALLBACK_TIMEOUT) -> None:
         self.cfg = cfg
         self.period = period
         self.clocks = astra.design_clocks(cfg, period)
@@ -182,6 +184,8 @@ class EvaluationAgent:
         self.sec_depth = sec_depth
         self.sec_engine = sec_engine
         self.sec_timeout = sec_timeout
+        self.sec_regcorr_timeout = sec_regcorr_timeout
+        self.sec_fallback_timeout = sec_fallback_timeout
 
     # -- synthesis + STA ----------------------------------------------------
 
@@ -266,7 +270,9 @@ class EvaluationAgent:
         return sec_mod.check(self.cfg["top"], gold, gate, workdir,
                              depth=self.sec_depth, engine=self.sec_engine,
                              timeout=self.sec_timeout,
-                             clock_set=self.clocks)
+                             clock_set=self.clocks,
+                             regcorr_timeout=self.sec_regcorr_timeout,
+                             fallback_timeout=self.sec_fallback_timeout)
 
 
 # ===========================================================================
@@ -430,6 +436,11 @@ Hard constraints, all of them checked by tools after you answer:
 2. LATENCY AND INTERFACE ARE FIXED. Same module name, same port names, same
    port widths, same pipeline depth. You may redistribute or duplicate
    registers; you may not add or remove a pipeline stage.
+   Keep existing register names; rename or add intermediate wires freely. The
+   equivalence check pairs registers by name, so an edit that keeps them is
+   proved in seconds, while one that moves or renames a register takes a far
+   slower check that may not finish -- and an unfinished check promotes
+   nothing.
 3. SYNTHESISABLE VERILOG-2005 ONLY. No initial blocks, no delays, no
    testbench constructs, no SystemVerilog interfaces.
 4. You must return the COMPLETE file, not a diff and not an excerpt.
@@ -807,7 +818,9 @@ class Orchestrator:
         self.lib = skills_mod.SkillLibrary(args.skills)
         self.evaluator = EvaluationAgent(
             self.cfg, self.period, args.npaths, self.sec_depth,
-            args.sec_engine, args.sec_timeout, args.no_flatten, quiet=True)
+            args.sec_engine, args.sec_timeout, args.no_flatten, quiet=True,
+            sec_regcorr_timeout=args.sec_regcorr_timeout,
+            sec_fallback_timeout=args.sec_fallback_timeout)
         self.analyst = TimingAnalysisAgent(
             not args.no_llm, args.model, args.timeout, args.top_k)
         self.optimizer = RtlOptimizationAgent(args.model, args.timeout)
@@ -1331,7 +1344,15 @@ def build_parser() -> argparse.ArgumentParser:
     # apart from the fallback -- see Orchestrator.__init__.
     p.add_argument("--sec-depth", type=int, default=None,
                    help="cycles for the bounded equivalence check")
-    p.add_argument("--sec-timeout", type=int, default=1800)
+    p.add_argument("--sec-timeout", type=int, default=1800,
+                   help="single-clock equivalence check")
+    # Multi-clock designs are asked two questions, cheap one first -- see
+    # sec.check. The fallback is the whole-design bounded check; 0 skips it,
+    # which leaves anything register correspondence cannot prove undecided.
+    p.add_argument("--sec-regcorr-timeout", type=int, default=sec_mod.REGCORR_TIMEOUT,
+                   help="multi-clock register-correspondence stage")
+    p.add_argument("--sec-fallback-timeout", type=int, default=sec_mod.FALLBACK_TIMEOUT,
+                   help="multi-clock bounded fallback; 0 skips it")
 
     p.add_argument("--model", default="opus")
     p.add_argument("--timeout", type=int, default=900, help="per model call")

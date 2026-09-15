@@ -280,7 +280,10 @@ def sec_decided(cand: dict[str, Any]) -> bool:
         return sec is not None
     if sec.get("equivalent") is True:
         return True
-    return sec.get("method") not in ("error", "skipped", "unsupported", None)
+    # `regcorr-unproven`: register correspondence could not finish the proof.
+    # It never refutes -- an unproven cone may just be a renamed register.
+    return sec.get("method") not in ("error", "skipped", "unsupported",
+                                     "regcorr-unproven", None)
 
 
 def select_best(candidates: Iterable[dict[str, Any]]) -> dict[str, Any] | None:
@@ -377,7 +380,7 @@ def render_sec_tally(t: dict[str, Any]) -> str:
     if t["not_generated"]:
         extra.append(f"{t['not_generated']} never generated")
     if t["undecided"]:
-        extra.append(f"{t['undecided']} undecided (solver timeout)")
+        extra.append(f"{t['undecided']} undecided (timeout, tool error or unproven)")
     if extra:
         out += " -- " + ", ".join(extra) + ", excluded"
     return out

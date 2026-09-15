@@ -44,7 +44,12 @@ RUN_FLAGS = --rm -it $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work
 
 # Same mount without a TTY: what the host-side orchestrator prepends to every
 # EDA invocation. See tools/toolenv.py.
-TOOL_PREFIX = $(DOCKER) run --rm $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work $(IMAGE)
+#
+# DOCKER_MEM caps each tool container, so a runaway SAT run is killed inside
+# its own container instead of taking the Colima VM (or WSL) down with every
+# other job. Keep it below the VM's memory: DOCKER_MEM=6g on an 8 GB host.
+DOCKER_MEM ?= 12g
+TOOL_PREFIX = $(DOCKER) run --rm --memory=$(DOCKER_MEM) $(PLATFORM_FLAG) -v "$(CURDIR)":/work -w /work $(IMAGE)
 
 .PHONY: build shell doctor run syn pnr list advise save clean-runs help \
         selftest localise skills score sec opt clean clean-skills \

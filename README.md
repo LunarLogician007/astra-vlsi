@@ -301,12 +301,15 @@ Same method, weaker instruments, and the gaps are worth stating plainly:
   the point explicitly: weak synthesis makes trivial rewrites look effective.
   Yosys is weaker, so a slack win here is a smaller claim than the same
   number would be there.
-- **Equivalence checking is best-effort.** With `eqy` installed you get its
-  partitioned SEC. Without it the fallback is a Yosys miter discharged by
-  Yosys's own SAT engine, which tries temporal induction first (an unbounded
-  proof) and falls back to a bounded check of `--sec-depth` cycles. A bounded
-  pass is recorded as `method: bounded`, not silently promoted to a proof —
-  read that field before trusting a result.
+- **Equivalence checking is best-effort.** On a single clock, with `eqy`
+  installed you get its partitioned SEC. Without it the fallback is a Yosys
+  miter discharged by Yosys's own SAT engine, which tries temporal induction
+  first (an unbounded proof) and falls back to a bounded check of
+  `--sec-depth` cycles. On several clocks, register correspondence runs first
+  (`method: regcorr`, unbounded) and the bounded whole-design check only
+  covers what it cannot prove. A bounded pass is recorded as
+  `method: bounded`, not silently promoted to a proof — read that field
+  before trusting a result.
 - **Scale.** The paper evaluates 20 designs averaging 812 lines. This repo
   ships two designs of ~90 lines. The loop is the same; the evidence it
   produces is not comparable.
@@ -570,6 +573,7 @@ flow/scripts/*.tcl       synth.tcl, sta.tcl, doctor.tcl
 flow/scripts/sta_common.tcl  shared reporting procs, incl. per-clock-group slack
 
 flow/scripts/sec.tcl     equivalence miter, discharged by Yosys's SAT engine
+flow/scripts/sec_regcorr.tcl  register-correspondence SEC: elaborate, then prove the cones
 
 tools/astra.py           the CLI
 tools/clocks.py          the clock model — periods, groups, SDC generation
@@ -584,12 +588,14 @@ tools/merge.py           order-independent mechanical union + conflict report
 tools/skillgen.py        renders SKILL.md, routes sections per agent role
 tools/score.py           Eq. 1/3/4/5 — objective, selection, advantage
 tools/rtl_map.py         critical path → RTL lines + structural root causes
-tools/sec.py             SEC driver (eqy, else the Yosys miter)
+tools/sec.py             SEC driver (regcorr on multi-clock, eqy, else the Yosys miter)
+tools/regcorr.py         pair registers, cut them open, structural hash, SAT cones
+tools/secbench.py        SEC over fixed candidates with no model: inner loop + soundness gate
 tools/skills.py          the confidence-aware skill library
 tools/llm.py             `claude -p` wrapper shared by the agents
 tools/toolenv.py         dispatch EDA calls into the container
 tools/protect.py         regions the optimiser may not touch, and the gate
-tools/selftest.py        225 tests over the above (needs no EDA tools, no model)
+tools/selftest.py        251 tests over the above (needs no EDA tools, no model)
 
 docs/multi-clock.md      the clock model, and what it deliberately gives up
 docs/equivalence-contract.md   what "equivalent" means, and where it stops
@@ -723,16 +729,24 @@ period of the clock that captured it, not the design's primary one — see
 [`docs/multi-clock.md`](docs/multi-clock.md) for why that matters and what the
 model deliberately gives up.
 
-> **Sequential equivalence on a multi-clock design is bounded, not proved.**
-> A miter normally assumes every flop ticks together, which is false with five
-> clocks, so these designs are checked through `clk2fflogic`: every clock
-> becomes a free input, and a pass holds for *every* interleaving of the
-> domains. Temporal induction does not converge with free clocks, so the
-> verdict is always `bounded` — a weaker claim than the single-clock path's
-> `induction`, and reported as such.
+> **Sequential equivalence on a multi-clock design asks two questions, cheap
+> one first.** A miter normally assumes every flop ticks together, which is
+> false with five clocks. So registers are first paired by name and cut open
+> (*register correspondence*): each pair must have the same clock, reset,
+> reset value and next state, which holds for every interleaving of the
+> domains and needs no depth. Unchanged logic is settled by structural
+> hashing, so only the edited cone reaches a solver — seconds on a 50K-cell
+> design. A pass is `method: regcorr`, unbounded. Whatever it cannot prove
+> (typically a retimed candidate) goes to the whole-design `clk2fflogic`
+> check, where every clock is a free input and the verdict is `bounded`.
 > [`docs/equivalence-contract.md`](docs/equivalence-contract.md) is the
-> reasoning. Note `--engine eqy` declines on multi-clock; it has no multiclock
-> mode.
+> reasoning. `--sec-regcorr-timeout` and `--sec-fallback-timeout` bound the two
+> stages; `--sec-fallback-timeout 0` skips the bounded one. Note
+> `--engine eqy` declines on multi-clock; it has no multiclock mode.
+>
+> To work on SEC itself without a model in the loop:
+> `python3 tools/secbench.py netproc --case good:pass:path/to/cand.v --case bug:fail:path/to/mutant.v`.
+> It exits non-zero if any `fail` case is reported equivalent.
 
 Four things bite when writing a multi-clock SDC, all of which fail loudly but
 uninformatively. They are indexed by symptom in `HANDOFF.md` §7; the shortest
@@ -781,9 +795,11 @@ per solver step, and unpipelined multipliers make that intractable, so
 proved. `dual_clock` exists so the multi-clock loop can be exercised where the
 proof actually closes. It is not a substitute for the benchmark.
 
-Read the caveat in [More than one clock](#more-than-one-clock) before pointing a
-loop at it: SEC declines on multi-clock designs, so no candidate can be
-promoted yet.
+Register correspondence has since removed most of that asymmetry: a rewrite
+that keeps register names is proved in seconds on `netproc` and `soc_bench`
+alike, multipliers included, because unchanged logic never reaches the solver.
+Read the caveat in [More than one clock](#more-than-one-clock) for what is
+still bounded.
 
 ---
 
