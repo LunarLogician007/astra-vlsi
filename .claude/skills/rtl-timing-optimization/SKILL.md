@@ -209,9 +209,6 @@ fares, so a later run can tell which work on real designs.
 
 | pattern | transformation |
 |---|---|
-| 1024-bit carry propagation in muxed addition | No optimization found within fixed-latency constraint |
-| 40-bit carry propagation in balanced adder tree | Unable to optimize while maintaining fixed latency |
-| 40-bit carry ripple in balanced accumulator tree | No further transformation valid under constraints |
 | 40-bit saturation comparison after accumulation | Remove unused saturation parameters to prevent inadvertent synthesis |
 | 512-bit serial parity reduction | replace serial XOR chain with balanced tree |
 | Carry propagation in 40-bit final accumulate | No equivalent optimization available |
