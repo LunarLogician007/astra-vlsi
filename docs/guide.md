@@ -1,475 +1,226 @@
-# ASTRA — detailed guide
+# ASTRA guide
 
-The full manual: every command, how the two optimisation loops work, the
-equations, costs, the multi-clock model and the example designs. For setup and a
-quick tour, start with the [README](../README.md). For development history,
-measured runs and known pitfalls, see [HANDOFF.md](HANDOFF.md).
+The full manual: every command, how both optimisation loops work, costs, and how
+to add a design. For setup, start with the [README](../README.md). For
+development history and known pitfalls, see [HANDOFF.md](HANDOFF.md).
 
-## Every command
+## Commands
 
-Inside the container (`make shell`), or from the host via the `make` target on
-the right. `DESIGN=` defaults to `mac_chain`.
+Run inside the container (`make shell`) as `astra ...`, or from the host with
+the `make` target. `DESIGN=` defaults to `mac_chain`.
 
-**Flow — no model, no API key.**
+**Flow (no model calls)**
 
 | command | make | what it does |
 |---|---|---|
 | `astra doctor` | `make doctor` | check tools, PDKs and that every design resolves |
-| `astra list` | `make list` | designs and past runs, with each design's clocks |
+| `astra list` | `make list` | designs, their clocks, and past runs |
 | `astra syn <d>` | `make syn` | Yosys synthesis only |
-| `astra sta <d>` | — | OpenSTA timing only, on the last synthesis |
-| `astra run <d>` | `make run` | synthesis + timing |
-| `astra run <d> --pnr` | `make pnr` | + OpenROAD place & route (needs the ORFS image) |
+| `astra sta <d>` | — | OpenSTA timing on the last synthesis |
+| `astra run <d>` | `make run` | synthesis + timing (`--period 1.8` to change the clock) |
+| `astra run <d> --pnr` | `make pnr` | + place & route (needs the ORFS image) |
 | `astra report <d>` | — | print `metrics.json`; `--timing` for the report |
-| `astra localise <d>` | `make localise` | critical path → RTL lines + structural root causes |
-| `astra score <d>` | `make score` | Eq. 3 for one run against a baseline run |
+| `astra localise <d>` | `make localise` | critical path → RTL lines + root causes |
+| `astra score <d>` | `make score` | score a run against a baseline run |
 | `astra sec <top>` | `make sec` | sequential equivalence between two designs |
-| `astra scan <d>` | `make scan` | pre-synthesis structural smells, lexical — runs with no tools at all |
-| `astra paths <d>` | `make paths` | the distinct critical-path targets worth an agent call |
-| `astra skills` | `make skills` | inspect the learned skill library |
-| `astra skilldoc` | `make skilldoc` | rebuild the RTL timing-optimisation skill document |
+| `astra scan <d>` | `make scan` | slow RTL constructs, before synthesis |
+| `astra paths <d>` | `make paths` | the distinct bottlenecks worth an agent |
+| `astra skills` | `make skills` | the learned skill library |
+| `astra skilldoc` | `make skilldoc` | rebuild the skill document |
 
-**Loops — these call a model and cost tokens.**
+**Loops (call Claude)**
 
 | command | make | what it does |
 |---|---|---|
-| `astra opt <d>` | `make opt` | Dr. RTL: analyse → N rewrites → verify → keep the best |
-| `astra portfolio <d>` | `make portfolio` | the addon: k scoped specialists, then a merge |
+| `astra opt <d>` | `make opt` | Dr. RTL: analyse → N rewrites → verify → keep best |
+| `astra portfolio <d>` | `make portfolio` | k scoped specialists, then combine |
 
-Both take `--dry-run`, which writes the prompts and skips the model calls — but
-**still needs the container**, because it evaluates the baseline for real.
+Both accept `--model`, `--iters` and `--dry-run` (writes prompts, skips model
+calls, but still needs the container to evaluate the baseline). Pass them via
+`OPT_ARGS="..."` / `PF_ARGS="..."`.
 
-**Verify without any tools or a model:**
+**Tests:** `python3 tools/selftest.py` runs 255 tests with no EDA tools, model
+or network.
 
-```bash
-python3 tools/selftest.py         # 255 tests: no EDA install, no model, no network
-make selftest                     # the same, inside the container
-```
+## Where things run
 
----
+The EDA tools live in the container; `claude` and its login live on your host.
+`make opt`, `make portfolio` and `make advise` run on the host and send each
+tool call into the image (see `tools/toolenv.py`). The repo is mounted into the
+container, so both sides read and write the same `runs/` folder.
 
-## Timing advisor (optional)
+The loops call `claude -p`, which draws from your Claude plan limits rather than
+billing per token. For CI or large sweeps, use an API key instead.
 
-`make advise` hands a finished run to Claude and asks what to change to close
-timing. It reads the artifacts the run already produced — `metrics.json`, the
-parsed `02_sta/timing.json`, the RTL, the SDC, and the `notes` block from
-`config.json` — and writes `advice.md` into the run directory.
+## Timing advisor
 
-```bash
-make run    DESIGN=mac_chain
-make advise DESIGN=mac_chain
-```
+`make advise DESIGN=x` sends a finished run (metrics, parsed critical paths, RTL,
+SDC, and the `notes` in `config.json`) to Claude and writes `advice.md` into the
+run folder. One call per run; `ADVISE_ARGS=--force` re-advises,
+`ADVISE_ARGS=--dry-run` prints the prompt only.
 
-It runs **on the host, not in the container** — the image has no `claude`
-binary and no credentials. The repo is bind-mounted at `/work`, so the host
-reads the same run directory the container wrote.
+The advisor does not edit RTL and its claims are unverified. Treat it as a
+reviewer, not an oracle.
 
-```bash
-make advise DESIGN=mac_chain ADVISE_ARGS=--dry-run   # print the prompt, call nothing
-make advise DESIGN=mac_chain ADVISE_ARGS=--force     # re-advise an already-advised run
-python3 tools/astra_advise.py mac_chain --run 20260824-132334
-```
+## Dr. RTL loop (`make opt`)
 
-### What it costs
+Reimplements *Dr. RTL: Autonomous Agentic RTL Optimization through
+Tool-Grounded Self-Improvement* (Fang et al., 2026). Each iteration uses four
+strictly separated roles:
 
-It shells out to `claude -p`, which authenticates with your Claude
-subscription rather than an API key — no per-token bill, but the usage draws
-from the **same plan limits as your interactive Claude sessions**. Note that
-the separate Agent SDK credit announced for June 15 2026 was paused and is not
-available; there is nothing to claim.
-
-So the tool is built to be frugal, and those choices are deliberate:
-
-- **One call per finished run.** It is not wired into `make run`, and it
-  refuses to re-advise a run that already has `advice.md` unless you pass
-  `--force`.
-- **The prompt is a digest, not a dump.** A 91-stage OpenSTA path becomes a
-  cell-type histogram, the top stages by delay, and the ordered cell walk —
-  about 2k tokens instead of 20k. Each invocation also carries ~10k tokens of
-  Claude Code harness overhead, which the digest is sized against.
-- **No tools, no MCP.** The advisor gets every fact inline and is denied file
-  and network tools, so one call stays one call instead of turning into an
-  agent that greps the repo.
-- **Cost is printed** after each call — notional USD plus token counts — so
-  you can see what a run drew from your plan.
-
-If you want this in CI or on a nightly sweep across many designs, put it on an
-API key instead. Unattended automation is exactly the workload that drains a
-subscription and leaves you rate-limited in your own editor.
-
-### Worth knowing
-
-The advisor is a reviewer, not an oracle — it does not edit RTL, and its
-suggestions are unverified until you re-run the flow. Treat `advice.md` as a
-starting point and check the claims. On the shipped `mac_chain` it correctly
-identified that the saturation compare is dead logic (`|s3| ≤ 2³²` against a
-`LIMIT` of `2³⁷−1`, 32× of headroom), which is a real finding sitting in the
-critical-path tail — but verify that kind of claim yourself before acting on it.
-
----
-
-## Dr. RTL optimisation loop
-
-`make opt` runs the closed loop from **Dr. RTL: Autonomous Agentic RTL
-Optimization through Tool-Grounded Self-Improvement** (Fang et al., HKUST,
-2026) — analyse the critical path, write several rewrites in parallel, verify
-each one, keep the best, and learn from the comparison.
-
-```bash
-make run DESIGN=mac_chain                        # see the starting point
-make opt DESIGN=mac_chain                        # the loop
-make opt DESIGN=mac_chain OPT_ARGS="-n 6 --iters 4"
-make opt DESIGN=mac_chain OPT_ARGS=--dry-run     # write the prompts, call nothing
-```
-
-The paper's loop is Eq. 2 — `D_t → {D_t^(i)}_{i=1..N} → D_{t+1}` — run by an
-orchestrator over four roles that are kept strictly apart:
-
-| role | does | does not |
+| role | does | never |
 |---|---|---|
-| **Timing Analysis** (§4.1.2) | localises the top-*k* paths back to RTL lines, names root causes | propose fixes |
-| **RTL Optimization** (§4.1.3) | writes *N* candidate rewrites in parallel, guided by the skill library | run any tool |
-| **Evaluation** (§4.1.4) | Yosys, OpenSTA, equivalence check | read reports or reason |
-| **Skill Learning** (§4.2) | compares the group, distils pattern→strategy pairs | see a single candidate alone |
-
-The separation is the point: the agent that decides never runs the tools, and
-the agent that runs the tools never interprets them, so no optimisation
-decision can rest on a misread report.
-
-### The equations
-
-Every candidate is scored by **Eq. 3**, and lower is better:
-
-```
-Score_i = α·WNS^norm + β·TNS^norm + γ·Area^norm + penalty_i
-          α=0.50      β=0.35      γ=0.15
-          penalty_i = 0.5  when Area^norm > 0.10, else 0
-```
-
-**Eq. 4** promotes `argmin Score_i` *subject to* `SEC_i = 1` — a rewrite that
-changed the design's behaviour is discarded no matter how much slack it
-recovered. **Eq. 5** then z-scores the group, `A_i = (score_i − μ_t)/σ_t`, and
-that relative signal — not the raw PPA — is what the skill library learns
-from. Absolute slack numbers are noisy and design-specific; "this
-transformation beat its siblings under identical conditions" transfers.
-
-Any of it can be run on its own:
+| Timing analysis | maps the top paths to RTL lines, names root causes | proposes fixes |
+| RTL optimisation | writes N rewrites in parallel, guided by the skill library | runs tools |
+| Evaluation | Yosys, OpenSTA, equivalence check | interprets results |
+| Skill learning | compares the group, extracts pattern→strategy pairs | sees one candidate alone |
 
 ```bash
-astra localise mac_chain                       # path → RTL lines + root causes
-astra score mac_chain --baseline <run-id>      # Eq. 3, with the breakdown
-astra sec mac_chain --gold a.v --gate b.v      # the SEC constraint alone
-astra skills                                   # the library and its statistics
-make selftest                                  # the maths, no container needed
+make opt DESIGN=mac_chain OPT_ARGS="-n 4 --iters 3"
 ```
 
-### The skill library
+Cost: N candidates × iterations, plus one analysis call per iteration. The
+default `-n 4 --iters 3` is up to 15 calls.
 
-`skills/library.json` persists across runs *and across designs* — it is what
-makes the loop self-improving rather than merely iterative. Each entry is one
-pattern→strategy pair carrying the three statistics the paper names:
-occurrence count, SEC-pass count, and mean relative advantage. Those fold into
-a confidence:
+### Scoring
+
+Each candidate gets a score (Eq. 3 in the paper); lower is better:
 
 ```
-confidence = sec_pass_rate  ×  logistic(−mean A_i)  ×  n/(n+3)
-             correctness       benefit                support
+Score = 0.50·WNS_norm + 0.35·TNS_norm + 0.15·Area_norm + penalty
+penalty = 0.5 if area grows more than 10%, else 0
 ```
 
-A product rather than a sum, so each factor can veto on its own: a
-transformation that breaks equivalence is worth nothing however fast it was,
-and one lucky trial stays provisional. Entries that fail SEC more often than
-not are marked `invalid` and are shown to the optimiser *as* known-bad, which
-is more useful than hiding them and letting it rediscover the same dead end.
+Values are normalised against the starting design. The best-scoring candidate
+**that passes equivalence** is kept (Eq. 4). Candidates are also ranked
+against each other (Eq. 5, a z-score), and that relative signal is what the
+skill library learns from.
 
-Seed entries (`source: seed`) start with zero occurrences and zero
-confidence. They are textbook transformations offered as untested suggestions
-and must earn their statistics from real runs — the paper's own 47 entries
-were learned from its runs, and shipping look-alike statistics would be
-fabricated evidence. `make clean` keeps the library; `make clean-skills`
-resets it.
+One deviation from the paper: timing terms use `−(x−x_base)/|x_base|`, which
+equals the paper's formula whenever the baseline is negative, but keeps the
+right sign once a design meets timing.
 
-### Where it runs
+### Skill library
 
-`make opt` is the one target needing both halves at once: `claude` and its
-credentials on the host, Yosys/OpenSTA/eqy in the container. It runs host-side
-and dispatches each tool call into the image (`ASTRA_TOOL_PREFIX`, see
-`tools/toolenv.py`). Nothing is copied — the repo is bind-mounted, so both
-sides read and write the same `runs/` directory.
+`skills/library.json` persists across runs and designs. Each entry is a
+pattern→strategy pair with occurrence count, equivalence pass count and mean
+relative advantage, combined into:
 
-Cost scales as *N* candidates × *K* iterations, plus one analysis call per
-iteration — so the default `-n 4 --iters 3` is up to 15 model calls, not one.
-Everything in the [advisor's cost notes](#what-it-costs) applies with that
-multiplier.
+```
+confidence = sec_pass_rate × logistic(−mean_advantage) × n/(n+3)
+```
 
-### Honest differences from the paper
+A transformation that breaks equivalence scores zero however fast it was, and a
+single lucky trial stays provisional. Entries that usually fail are marked
+`invalid` and shown to agents as known-bad. Seed entries start at zero
+confidence and must earn it. `make clean` keeps the library;
+`make clean-skills` resets it.
 
-Same method, weaker instruments, and the gaps are worth stating plainly:
+## Path-portfolio loop (`make portfolio`)
 
-- **Open-source synthesis.** The paper uses commercial synthesis and argues
-  the point explicitly: weak synthesis makes trivial rewrites look effective.
-  Yosys is weaker, so a slack win here is a smaller claim than the same
-  number would be there.
-- **Equivalence checking is best-effort.** On a single clock, with `eqy`
-  installed you get its partitioned SEC. Without it the fallback is a Yosys
-  miter discharged by Yosys's own SAT engine, which tries temporal induction
-  first (an unbounded proof) and falls back to a bounded check of
-  `--sec-depth` cycles. On several clocks, register correspondence runs first
-  (`method: regcorr`, unbounded) and the bounded whole-design check only
-  covers what it cannot prove. A bounded pass is recorded as
-  `method: bounded`, not silently promoted to a proof — read that field
-  before trusting a result.
-- **Scale.** The paper evaluates 20 designs averaging 812 lines. Most designs
-  here are far smaller, though `soc_bench` and `netproc` reach ~50K cells. The loop is the same; the evidence it
-  produces is not comparable.
-- **One generalisation of Eq. 3.** The paper's `(x−x_base)/x_base`
-  normalisation is only well-behaved while the timing baseline is negative,
-  which is its regime. Timing terms here use `−(x−x_base)/|x_base|` —
-  algebraically identical whenever `x_base < 0`, and still correct once a
-  design closes and the sign would otherwise invert. `make selftest` asserts
-  the equivalence.
-
-
----
-
-## Path-portfolio mode
-
-`make portfolio` is an addon to the loop above. It changes three things and
-reuses everything else — `make opt` is untouched.
+An extension built on the Dr. RTL loop. It exists because in plain `make opt`
+all N candidates attack the same path, and each rewrites the whole file, so two
+good partial fixes can never be combined.
 
 ```bash
-make skilldoc                                   # once: build the skill document
-make portfolio DESIGN=mac_chain
-make portfolio DESIGN=mac_chain PF_ARGS="--model haiku"
-make portfolio DESIGN=mac_chain PF_ARGS="-k 2 --iters 1 --clean 0"
-make portfolio DESIGN=mac_chain PF_ARGS=--dry-run
+make portfolio DESIGN=mac_chain PF_ARGS="--model haiku --iters 1"
+make portfolio DESIGN=mac_chain PF_ARGS="-k 2 --iters 1"
 ```
 
-### Why
+Each iteration:
 
-The base loop's ceiling is visible in its own artifacts. In an early `make opt`
-run on `mac_chain` (`opt-20260901-025558`), WNS improved 13.5% and TNS
-47.6%, the SEC pass rate was 5/12, and iteration 3 produced four candidates of
-which all four failed. Two structural reasons:
+1. **Pre-synthesis cleanup** (first iteration only). `tools/rtlscan.py` flags
+   slow constructs in the source (serial chains, wide operators, compares that
+   can never fire); one agent fixes them. Kept only if it measurably beats the
+   original. `--clean 0` skips it, but that tends to make later agents converge
+   on the same fix.
+2. **Pick distinct targets.** `tools/pathsel.py` clusters critical paths into
+   logic cones and picks up to `k` that are both important and different from
+   each other. Each cone is scored on *impact* (how likely it is to hold the
+   clock-limiting path), *severity* (how close it is to the constraint) and
+   *tractability* (whether it maps cleanly to RTL). If there are fewer cones
+   than agents, the worst path is cut into segments where its cell mix changes.
+3. **One agent per target.** Each is told to change only its target's logic.
+4. **Combine.** Every subset of successful fixes is spliced together and
+   evaluated at no model cost; a merge agent handles overlaps. The best of
+   specialists, unions and the parent wins, so a union has to earn it.
 
-**All N candidates attack the same thing.** They share one analysis and differ
-only by a directive string. The "top 3 critical paths" they are handed are, on
-`mac_chain`, twenty bit-slices of one logic cone — same startpoint, endpoints
-`acc_out[20..39]`, and a pairwise region-set Jaccard of 1.00.
+On `mac_chain`, step 2 recovers the three hand-documented bottlenecks from the
+timing report alone:
 
-**Whole-file rewrites.** Each candidate risks the whole design's equivalence to
-fix one thing, and two good partial fixes in different candidates can never be
-combined.
+| target | share of delay | cell signature | actual bottleneck |
+|---|---|---|---|
+| T1 | 36% | AND/OR, fanout 42 | four 16×16 multipliers |
+| T2 | 28% | AOI/OAI, XOR | serial adder chain |
+| T3 | 36% | AOI/OAI | 40-bit saturation compare |
 
-### The three changes
-
-**1. `pathsel` picks *distinct* targets.** Paths are clustered into logic cones
-by how much RTL, which cone-origin nets and which cell mix they share, and
-selection is maximal-marginal-relevance, so the second target is the best one
-that is also *different* from the first. Each cone is scored on three terms:
-
-| term | what it is |
-|---|---|
-| **impact** | P(this cone holds the path that limits the clock) — see below |
-| **severity** | how close its worst path is to the constraint: 0 = a full period of headroom, 0.5 = exactly at it, 1.0 = a period over |
-| **tractability** | localisation coverage × whether a structural finding fired × whether the library knows this shape |
-
-Neither term is gated on a violation, deliberately. **The target here is a
-timing constraint, not a violation** — a design that already meets timing is
-still worth speeding up if you want a tighter period, and that is the case
-where "which path is worst" still matters but "which path is failing" has no
-answer at all.
-
-`k` is a ceiling, not a quota. On `mac_chain` the twenty paths correctly
-collapse to **one** cone, and the selector says so rather than padding.
-
-### Which path limits the clock
-
-STA is deterministic: a slack is computed, not estimated, and the worst path is
-known exactly. So the distribution below is **not** a probability that the
-design fails, and it is not statistical STA over process variation.
-
-It answers a question that *is* open before layout. Post-synthesis timing
-contains no real wire delay, so two paths a few picoseconds apart are not yet
-reliably ordered — and committing three agents to the nominally-worst one is a
-bet on an ordering the flow has not established. Each path delay is treated as
-`-slack + noise` and the noise is sampled:
-
-```
-noise_i = sigma · ( sqrt(rho)·z_cone(i)  +  sqrt(1-rho)·z_i )
-```
-
-`sigma` is a fraction of the clock period (`--delay-sigma`, default 0.05) and
-`rho` is how much of that uncertainty a whole cone shares (`--cone-rho`,
-default 0.7). The cone term matters: without it, twenty bit-slices of one
-bottleneck would each be assigned 1/20 of the criticality and the cone that
-owns all of it would look unimportant.
-
-```
-Which cone limits the clock (delay sigma 5% of the period, correlation 0.70):
-  cone 0   100.0%    20 path(s)   worst slack -0.3573
-
-Per path, most likely first:
-   13.3%  slack -0.3573  (VIOLATED)  cone 0  -> acc_out[33]_DFF_X1_Q
-   13.2%  slack -0.3573  (VIOLATED)  cone 0  -> acc_out[35]_DFF_X1_Q
-   ...
-```
-
-Two properties worth knowing. `--delay-sigma 0` collapses it to the
-deterministic answer exactly — all the weight on the worst path's cone. And it
-works unchanged on a design that **meets** timing, because it ranks by slack
-rather than by violation: two cones with +0.05 ns and +0.30 ns of headroom come
-out at 97% and 3%, where the old violation-gated score could not separate them
-at all.
-
-Sensitivity is what you would want it to be — two cones 15 ps apart:
-
-| `--delay-sigma` | cone A (+0.100) | cone B (+0.115) |
-|---|---|---|
-| 0 (deterministic) | 100% | 0% |
-| 0.01 | 71% | 29% |
-| 0.05 (default) | 55% | 45% |
-| 0.20 | 51% | 49% |
-
-The numbers are only as good as `sigma`, which is an assumption about how much
-the estimate can move before layout, not a measurement. Set it to 0 if you want
-the report taken at face value.
-
-**When a design has fewer cones than agents, the cone's path is cut into
-segments instead.** A long path is not homogeneous, and the cut is made where
-its cell-family signature changes. On `mac_chain` that recovers exactly the
-three bottlenecks `config.json` declares by hand — from the STA report alone,
-without ever reading that field:
-
-| target | stages | delay | signature | declared bottleneck |
-|---|---|---|---|---|
-| T1 | 0–24 | 36% | 18× AND/OR, **fanout 42** | four unpipelined 16×16 multipliers |
-| T2 | 24–50 | 28% | 14× AOI/OAI, 12× XOR | serial adder chain |
-| T3 | 50–91 | 36% | 36× AOI/OAI | 40-bit saturation compare |
-
-Run it yourself against the committed artifact — no tools, no model:
+Check it yourself, with no tools or model:
 
 ```bash
 python3 tools/pathsel.py results/mac_chain/opt-20260915-103411/baseline -k 3
 ```
 
-**2. One specialist per target, scoped to it.** Each agent is told to change
-only its target's logic and leave every other line byte-identical. Smaller
-edits are likelier to survive the equivalence check, and they are what makes
-step 3 possible at all. Scope is checked mechanically against the diff and
-recorded — never auto-rejected, because discarding good work over an added
-`wire` is worse than the ambiguity.
+### Which path limits the clock
 
-**3. The fixes are recombined, and measurement picks the winner.** Every subset
-of the surviving candidates that composes by text splicing is assembled and
-evaluated — four extra fully-evaluated designs per iteration for **zero model
-calls**. A merge agent then reconciles the parts that genuinely overlap. Eq. 4
-selects over `{specialists, mechanical unions, agent union, parent}`, so a union
-does not win for being a union: combined fixes can trip the area penalty, or
-expose a fourth path neither agent saw.
+Post-synthesis timing has no wire delay, so paths a few picoseconds apart are
+not reliably ordered yet. `pathsel` adds sampled noise to each path's delay
+(`--delay-sigma`, default 5% of the period, correlated within a cone by
+`--cone-rho`, default 0.7) and reports how often each cone ends up worst. This
+works the same on designs that already meet timing. `--delay-sigma 0` gives the
+plain deterministic ranking.
 
-The mechanical unions are also the control on the merge agent. `summary.md`
-reports `score(agent union) − score(best mechanical union)` every iteration. If
-that is never negative, the merge call is not paying for itself.
+### Skill document
 
-### A pre-synthesis pass
-
-`tools/rtlscan.py` reads the source before any tool has run and flags
-constructs that synthesise into deep logic — serial reduction chains, chains
-elaborated by a `generate` loop, wide operators, comparisons against bounds the
-operand cannot reach. On `mac_chain` it finds the serial chain, the four
-multiplies, and the dead saturation compare; on `alu32` it finds nothing
-serious, which is the negative control.
-
-```bash
-make scan DESIGN=mac_chain
-```
-
-One agent then acts on it, and **it is adopted only if it measurably beats
-D_0** under Eq. 3. This is the blindest step in the pipeline — there is no
-timing report yet — and the [advisor's own recorded failure](#worth-knowing) is
-exactly its failure mode. `--clean 0` skips it.
-
-### The skill document
-
-`.claude/skills/rtl-timing-optimization/SKILL.md` is rendered from the skill
-library plus a written preamble, and concatenated into every agent's system
-prompt. It has to be injected rather than loaded, because these agents run with
-all tools denied — there is no Read tool to load a skill with, and giving one
-back would turn a one-shot call into an agent that greps the repo.
-
-`make skilldoc SKILLDOC_ARGS=--llm` adds one research call that may consult
-public sources. It is the only place in this repo a model is given network
-tools, and it is quarantined in `tools/skillgen.py` for that reason. Whatever
-it finds enters the library as a **seed** — zero occurrences, zero confidence —
-like everything else.
+`.claude/skills/rtl-timing-optimization/SKILL.md` is generated from the skill
+library and pasted into every agent's prompt (agents have no tools, so they
+cannot load it themselves). `make skilldoc SKILLDOC_ARGS=--llm` adds one
+research call that may use web sources; results enter the library as
+zero-confidence seeds.
 
 ### Cost
 
-| step | calls |
-|---|---|
-| path selection | **0** — it is arithmetic |
-| specialists | k |
-| mechanical unions, and evaluating them | **0** |
-| merge agent | 1 |
-| skill learning | 1 |
-| **per iteration** | **k + 2 = 5** |
+Per iteration: `k` specialists + 1 merge + 1 skill learning = **k + 2** calls
+(path selection and mechanical unions are free). Defaults
+(`-k 3 --iters 4`) plan up to 21 calls; `--patience 3` stops a stalled run
+early and `--max-calls N` refuses to start over budget. In every recorded run
+the best result came from iteration 1.
 
-Defaults (`-k 3 --iters 4 --clean 1`) plan **21 calls**, but that is a ceiling:
-`--patience 3` ends a run that has stopped earning, so the extra iterations
-cost calls only when they are finding something. `--max-calls N` refuses to
-start over budget; the plan is printed before anything runs and written to
-`budget.json`.
-
-Worth knowing before reading too much into a long run: across every run
-recorded here, the best score came from **iteration 1**, and no later iteration
-improved on it — the one exception being an early Opus run where iteration 2
-did. The headroom is there for the cases where iterating pays, not because it
-usually does.
-
-### For a head-to-head
-
-`--model` is plumbed through both loops, so the comparison measures the method
-rather than the model:
+### Comparing the two loops fairly
 
 ```bash
-make clean-skills          # the library persists; reset it between arms
+make clean-skills
 make opt       DESIGN=mac_chain OPT_ARGS="--model haiku --iters 3"
 make clean-skills
 make portfolio DESIGN=mac_chain PF_ARGS="--model haiku --iters 3"
 ```
 
-Match `--iters` explicitly: the two loops ship different defaults (3 and 4), so
-leaving them out compares different budgets rather than different methods.
+Reset the library between runs and set `--iters` explicitly: the defaults
+differ (3 vs 4).
 
-Compare the two `summary.md` files on WNS/TNS/area, and on SEC pass rate — the
-scoped edits are the change most likely to move that number, and 5/12 is the
-figure to beat.
+## Equivalence checking
 
-### What this does not yet show
+Every candidate must be proven to behave like the original before it can win.
 
-**Cone selection has fired once.** On `netproc` (run
-`results/netproc/pf-20260915-095208`) the path pool held 75 violating paths in
-32 distinct cones; one cone limited the clock 100% of the time, so the portfolio
-still cut it into segments rather than spending agents on the other 31. A run
-where *several* cones each get an agent has not been recorded yet.
-`designs/dual_path/` exists for exactly that — two unrelated slow datapaths
-that share no signal. Its acceptance criterion is that
-`astra paths dual_path -k 3` returns **two** cone targets whose pairwise
-similarity is below `--cluster-at`, and that their mechanical union applies
-with no conflicts. That has not been run.
+- **Single clock:** `eqy` if installed, otherwise a Yosys miter proved by
+  induction, falling back to a bounded check of `--sec-depth` cycles.
+- **Multiple clocks:** registers are first paired by name and compared
+  structurally (*register correspondence*); only edited logic reaches a solver,
+  so a 50K-cell design proves in seconds. Anything left over goes to a bounded
+  whole-design check. `--sec-regcorr-timeout` and `--sec-fallback-timeout`
+  limit each stage.
 
-**Segmentation is a heuristic with a validation set of one.** It reproduces
-`mac_chain`'s hand-declared bottlenecks, which is suggestive, not proof.
+Results record `method: regcorr`, `induction` or `bounded`. A bounded pass is
+not a full proof, so check that field. Details:
+[`equivalence-contract.md`](equivalence-contract.md).
 
-**Post-place-and-route is not built.** `rtl_map.from_run` and `pathsel.from_run`
-take a `stage` argument and `--stage pnr` reads `03_pnr/timing.json`, which
-`astra run --pnr` already writes in an identical shape. The second pass over it
-is not wired up.
+To test the checker itself without a model, run it against the known-good and
+broken cases in `benchmarks/sec_cases/`:
 
-**Yosys remains the ceiling**, exactly as [noted above](#honest-differences-from-the-paper).
+```bash
+python3 tools/secbench.py netproc --case bug:fail:benchmarks/sec_cases/netproc/m1_parity_xnor.v
+```
 
----
+It exits non-zero if a broken case is reported equivalent.
 
 ## Adding a design
 
@@ -489,23 +240,13 @@ mkdir -p designs/mydesign/{rtl,constraints}
 }
 ```
 
-Copy `designs/alu32/constraints/alu32.sdc` as your SDC starting point. Two
-things about it worth knowing:
+Start the SDC from `designs/alu32/constraints/alu32.sdc`. Write `@CLK_PERIOD@`
+where the period goes, so `--period` works without editing files. Then run
+`astra doctor`.
 
-- Write `@CLK_PERIOD@` where the period goes. `--period 1.8` then updates both
-  the constraint and the Yosys delay target, so sweeping frequency needs no
-  file edits.
-- It uses a `foreach` name filter to exclude the clock port from
-  `set_input_delay`, **not** `remove_from_collection` — that's a Synopsys
-  command and OpenSTA doesn't have it.
+### Multiple clocks
 
-Then `astra doctor` to confirm it resolves.
-
-### More than one clock
-
-Replace the singular `clock` with a `clocks` list. The singular form still
-works and is kept as a one-element alias, so nothing below is required for a
-single-clock design.
+Replace `clock` with a `clocks` list:
 
 ```json
 "clocks": [
@@ -516,128 +257,69 @@ single-clock design.
 ]
 ```
 
-A generated clock states its ratio instead of its period, and the period is
-derived — including along a chain, so a ripple divider's second stage works.
-Its `port` is the post-synthesis **pin** its divider flop drives.
-
-Three SDC placeholders:
+A generated clock gives a ratio instead of a period; its `port` is the
+post-synthesis pin of its divider flop. SDC placeholders:
 
 | placeholder | expands to |
 |---|---|
-| `@CLK_PERIOD@` | the primary clock's period — what every single-clock design uses |
-| `@CLK_PERIOD:<name>@` | one named clock's period |
-| `@ASTRA_CLOCK_DEFS@` | `create_clock` per master, `create_generated_clock` per divider, and `set_clock_groups -asynchronous` across independent masters |
+| `@CLK_PERIOD@` | the primary clock's period |
+| `@CLK_PERIOD:<name>@` | a named clock's period |
+| `@ASTRA_CLOCK_DEFS@` | all `create_clock` / `create_generated_clock` lines, plus async clock groups |
 
-Placeholders inside `#` comments are left alone, so documenting them in a
-header is safe.
-
-Declare anything the optimiser must not touch — clock domain crossings and
-clock generation, which the equivalence check cannot see:
+Protect logic the optimiser must not touch (clock-domain crossings, clock
+dividers):
 
 ```json
 "protected": ["cdc_*", "clk_*_div*"]
 ```
 
-A candidate that adds, removes or alters any line mentioning a matching
-identifier is rejected mechanically, **before** synthesis.
+Any candidate that edits a line mentioning a matching name is rejected before
+synthesis. Each path is timed against the clock that captures it; see
+[`multi-clock.md`](multi-clock.md).
 
-Then `astra run <design>`, and check the per-clock-group slack in
-`02_sta/timing.json` under `clock_groups`. Each path is ranked against the
-period of the clock that captured it, not the design's primary one — see
-[`multi-clock.md`](multi-clock.md) for why that matters and what the
-model deliberately gives up.
+OpenSTA pitfall: it cannot parse bus subscripts like `get_ports {foo[*]}`
+(fails with a bare `Error: stoi`), so write clock dividers as simple toggle
+flops. More pitfalls in [`HANDOFF.md`](HANDOFF.md) §7.
 
-> **Sequential equivalence on a multi-clock design asks two questions, cheap
-> one first.** A miter normally assumes every flop ticks together, which is
-> false with five clocks. So registers are first paired by name and cut open
-> (*register correspondence*): each pair must have the same clock, reset,
-> reset value and next state, which holds for every interleaving of the
-> domains and needs no depth. Unchanged logic is settled by structural
-> hashing, so only the edited cone reaches a solver — seconds on a 50K-cell
-> design. A pass is `method: regcorr`, unbounded. Whatever it cannot prove
-> (typically a retimed candidate) goes to the whole-design `clk2fflogic`
-> check, where every clock is a free input and the verdict is `bounded`.
-> [`equivalence-contract.md`](equivalence-contract.md) is the
-> reasoning. `--sec-regcorr-timeout` and `--sec-fallback-timeout` bound the two
-> stages; `--sec-fallback-timeout 0` skips the bounded one. Note
-> `--engine eqy` declines on multi-clock; it has no multiclock mode.
->
-> To work on SEC itself without a model in the loop:
-> `python3 tools/secbench.py netproc --case good:pass:path/to/cand.v --case bug:fail:benchmarks/sec_cases/netproc/m1_parity_xnor.v`.
-> It exits non-zero if any `fail` case is reported equivalent.
+## Example designs
 
-Four things bite when writing a multi-clock SDC, all of which fail loudly but
-uninformatively. They are indexed by symptom in [`HANDOFF.md`](HANDOFF.md) §7; the shortest
-version is that OpenSTA cannot parse a bus subscript in a `get_ports` pattern
-(`Error: stoi`), which also means an instance name containing `[` is unusable —
-so write clock dividers as pure toggle flops.
-
----
-
-## The example designs
-
-| design | clocks | result |
+| design | clock(s) | baseline |
 |---|---|---|
-| `alu32` | 2.5 ns | **MET**, WNS +0.3701, 1318 cells, 1871 µm² |
-| `mac_chain` | 2.0 ns | **VIOLATED**, WNS −0.3573, TNS −3.7438, 15 endpoints |
-| `dual_path` | 1.5 ns | not yet run — see [path-portfolio mode](#what-this-does-not-yet-show) |
-| `soc_bench` | 13 clocks, 5 async | **VIOLATED**, WNS −6.5126, TNS −65.1401, 60 endpoints, 49,935 cells |
-| `dual_clock` | 3 clocks, 2 async | **VIOLATED**, WNS −0.0523, TNS −0.6798, 13 endpoints, 1,307 cells |
-| `netproc` | 13 clocks, 5 async | **VIOLATED** in 4 groups, WNS −17.83, TNS −764.26, 184 endpoints, 50,502 cells |
-| `vending_machine` | 5.0 ns | **VIOLATED**, WNS −8.03, TNS −4,416, 926 endpoints, 14,293 cells |
+| `alu32` | 2.5 ns | met, WNS +0.37, 1,318 cells |
+| `mac_chain` | 2.0 ns | WNS −0.357, TNS −3.74, 15 failing endpoints |
+| `dual_path` | 1.5 ns | not yet run |
+| `dual_clock` | 3 clocks, 2 async | WNS −0.052, TNS −0.68, 1,307 cells |
+| `soc_bench` | 13 clocks, 5 async | WNS −6.51, TNS −65.1, 49,935 cells |
+| `netproc` | 13 clocks, 5 async | WNS −17.83, TNS −764, 50,502 cells |
+| `vending_machine` | 5.0 ns | WNS −8.03, TNS −4,416, 14,293 cells |
 
-`alu32` is the sanity check. Its critical path is the 32-bit ripple-carry adder
-Yosys infers — ~70 gates deep, which is why it needs 2.5 ns and not 1.0.
-Yosys produces weaker arithmetic than commercial synthesis; expect that.
+- **`alu32`** — sanity check; a 32-bit adder that meets timing.
+- **`mac_chain`** — 4-tap 16×16 multiply-accumulate with a serial adder chain
+  and saturation compare. Violates on purpose.
+- **`dual_path`** — two unrelated slow datapaths, meant to exercise picking
+  several cones at once (not yet demonstrated).
+- **`dual_clock`** — small multi-clock design, no multipliers, so equivalence
+  proofs close quickly.
+- **`soc_bench`** — scale test: five async domains, generated clocks, CDC
+  synchronisers, ~50K cells. Synthesis takes ~2 min per candidate.
+- **`netproc`** — like `soc_bench` without multipliers.
+- **`vending_machine`** — from `benchmarks/rtl_dataset/`; an FSM whose output
+  computes two 1,024-bit sums and muxes them.
 
-`mac_chain` is the interesting one: a 4-tap 16×16 MAC with a serial accumulate
-chain and a saturation compare at the end of the path, 86 gates deep. It
-violates on purpose, so there's something real in the report to look at.
+## Known gaps
 
-`soc_bench` is the scale-and-clocks benchmark: five independent asynchronous
-masters (2, 3, 4, 5, 8 ns), eight generated clocks at ratios 2/4/8, six
-two-flop synchronisers plus a gray-coded bus crossing between them, a seven-state
-packet framer, and ~50K cells. Each of its five domains carries one deliberate
-bottleneck that RTL can fix without changing latency. Synthesis takes ~125 s, so
-budget about two minutes per candidate evaluation.
+- Yosys is weaker than commercial synthesis, so gains are smaller claims than
+  the paper's.
+- Place-and-route timing is not used by the loops yet.
+- Picking several independent cones has only fired once (on `netproc`, where one
+  cone still dominated).
+- Path segmentation is validated on `mac_chain` only.
 
-```bash
-astra run soc_bench                        # ~2 min: synthesis + multi-clock STA
-python3 tools/pathsel.py runs/soc_bench/<run> -k 3
-```
-
-`dual_clock` is the small multi-clock design: two asynchronous domains, one
-generated clock, one CDC crossing, ~1.3K cells and **no multipliers**. That
-last part is deliberate — a bounded equivalence check unrolls the design once
-per solver step, and unpipelined multipliers make that intractable, so
-`soc_bench` can have a bad candidate refuted quickly but cannot have a good one
-proved. `dual_clock` exists so the multi-clock loop can be exercised where the
-proof actually closes. It is not a substitute for the benchmark.
-
-Register correspondence has since removed most of that asymmetry: a rewrite
-that keeps register names is proved in seconds on `netproc` and `soc_bench`
-alike, multipliers included, because unchanged logic never reaches the solver.
-Read the caveat in [More than one clock](#more-than-one-clock) for what is
-still bounded.
-
-`vending_machine` comes from the real-world RTL dataset in
-`benchmarks/rtl_dataset/`: an FSM plus a purely combinational output that
-computes two 1,024-bit sums and muxes between them, with an asynchronous reset.
-Muxing the operands into a single adder is the obvious fix; the portfolio found
-it and took WNS from −8.03 to −2.34 ns with 32% less area
-(`results/vending_machine/pf-20260915-223543`).
-
----
-
-## Variants
+## Build variants
 
 ```bash
 make build PDKS="nangate45 sky130hd"          # add another PDK
-make build PLATFORM=linux/amd64               # image for x86 teammates
-make build DOCKERFILE=docker/Dockerfile.orfs  # + OpenROAD place & route
+make build PLATFORM=linux/amd64               # cross-build for x86
+make build DOCKERFILE=docker/Dockerfile.orfs  # + OpenROAD place & route (20 GB+, amd64 only)
+make build EQY=0                              # skip building eqy
 ```
-
-The lean image is synthesis and timing only. `docker/Dockerfile.orfs` builds on
-`openroad/orfs` instead, which adds OpenROAD and all four PDKs — but it's 20 GB+
-and amd64-only, so only reach for it when you actually need place & route
-(`astra run <design> --pnr`).
