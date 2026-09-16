@@ -1,0 +1,7 @@
+Contested regions -- more than one candidate edited these, so no mechanical union can include them:
+  netproc.v:301-302  claimed by t1, t2, t3
+  netproc.v:319-320  claimed by t1, t2, t3
+  netproc.v:322-323  claimed by t1, t2, t3
+  netproc.v:327-331  claimed by t1, t2, t3
+
+1 uncontested edit region(s) across all candidates.

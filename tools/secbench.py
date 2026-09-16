@@ -8,8 +8,8 @@ and if any of them comes back equivalent the bench exits non-zero, because a
 false pass would promote a broken candidate.
 
     python3 tools/secbench.py netproc \\
-        --case good_t2:pass:runs/netproc/.../t2/rtl/netproc.v \\
-        --case xnor:fail:runs/_secbench/mutants/m1_parity_xnor.v
+        --case good_t1:pass:results/netproc/pf-20260915-095208/iter_01/t1/rtl/netproc.v \\
+        --case xnor:fail:benchmarks/sec_cases/netproc/m1_parity_xnor.v
 
 A case is ``LABEL:EXPECT:PATH`` with EXPECT one of pass | fail | any. Results
 go to ``runs/_secbench/<design>-<stamp>/results.json`` and a table on stdout.

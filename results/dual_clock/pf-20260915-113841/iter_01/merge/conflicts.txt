@@ -1,0 +1,5 @@
+Contested regions -- more than one candidate edited these, so no mechanical union can include them:
+  dual_clock.v:103-109  claimed by t1, t2
+  dual_clock.v:114-114  claimed by t1, t2
+
+1 uncontested edit region(s) across all candidates.

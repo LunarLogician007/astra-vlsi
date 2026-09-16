@@ -1,0 +1,19 @@
+{
+  "top": "dual_clock",
+  "flop_bits": {
+    "gold": 258,
+    "gate": 258
+  },
+  "paired": 258,
+  "unpaired_gold": 0,
+  "unpaired_gate": 0,
+  "unpaired_examples": {
+    "gold": [],
+    "gate": []
+  },
+  "ports_total": 1035,
+  "ports_structural": 1035,
+  "sat_ports": [],
+  "status": "proven",
+  "reason": "all 1035 outputs of 258 paired register bits and the module match structurally"
+}

@@ -1,0 +1,206 @@
+{
+  "design": "netproc",
+  "run_id": "eval",
+  "label": "t2",
+  "pdk": "nangate45",
+  "top": "netproc",
+  "clock": {
+    "name": "clk_rx",
+    "period_ns": 2.0
+  },
+  "clocks": [
+    {
+      "name": "clk_rx",
+      "period_ns": 2.0,
+      "port": "clk_rx"
+    },
+    {
+      "name": "clk_parse",
+      "period_ns": 3.0,
+      "port": "clk_parse"
+    },
+    {
+      "name": "clk_look",
+      "period_ns": 4.0,
+      "port": "clk_look"
+    },
+    {
+      "name": "clk_xfrm",
+      "period_ns": 5.0,
+      "port": "clk_xfrm"
+    },
+    {
+      "name": "clk_tx",
+      "period_ns": 7.0,
+      "port": "clk_tx"
+    },
+    {
+      "name": "clk_rx_div2",
+      "period_ns": 4.0,
+      "port": "clk_rx_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_rx",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_parse_div2",
+      "period_ns": 6.0,
+      "port": "clk_parse_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_parse",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_parse_div4",
+      "period_ns": 12.0,
+      "port": "clk_parse_div2_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_parse_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_look_div2",
+      "period_ns": 8.0,
+      "port": "clk_look_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_look",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_look_div4",
+      "period_ns": 16.0,
+      "port": "clk_look_div4_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_look_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_look_div8",
+      "period_ns": 32.0,
+      "port": "clk_look_div4_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_look_div4",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_xfrm_div2",
+      "period_ns": 10.0,
+      "port": "clk_xfrm_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_xfrm",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_tx_div2",
+      "period_ns": 14.0,
+      "port": "clk_tx_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_tx",
+      "divide_by": 2
+    }
+  ],
+  "created_at": "2026-09-15T10:05:16",
+  "inputs": {
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval/00_inputs/netproc.v"
+    ],
+    "sdc": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval/00_inputs/netproc.sdc"
+  },
+  "synth": {
+    "status": "ok",
+    "runtime_s": 79.85,
+    "netlist": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval/01_synth/netlist.v",
+    "wires": 67404,
+    "cells": 51525,
+    "area_um2": 120706.012
+  },
+  "sta": {
+    "status": "ok",
+    "runtime_s": 33.38,
+    "wns_ns": -4.835153303485357,
+    "tns_ns": -303.71243446492076,
+    "violating_endpoints": 140,
+    "hold_wns_ns": 0.00941800830646686,
+    "clock_groups": {
+      "source": "sta",
+      "complete": true,
+      "groups": {
+        "clk_rx": {
+          "endpoints": 63,
+          "wns_ns": 1.282301,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_parse": {
+          "endpoints": 2,
+          "wns_ns": 2.809476,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_look": {
+          "endpoints": 8173,
+          "wns_ns": -4.835153,
+          "tns_ns": -43.117843,
+          "violating_endpoints": 9
+        },
+        "clk_xfrm": {
+          "endpoints": 260,
+          "wns_ns": 1.267041,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_tx": {
+          "endpoints": 4103,
+          "wns_ns": -4.460366,
+          "tns_ns": -258.252771,
+          "violating_endpoints": 118
+        },
+        "clk_rx_div2": {
+          "endpoints": 8,
+          "wns_ns": 1.777987,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_parse_div2": {
+          "endpoints": 1,
+          "wns_ns": 5.843854,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_parse_div4": {
+          "endpoints": 7,
+          "wns_ns": 2.759883,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_look_div2": {
+          "endpoints": 1,
+          "wns_ns": 7.843854,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_look_div4": {
+          "endpoints": 1,
+          "wns_ns": 15.843857,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_look_div8": {
+          "endpoints": 9,
+          "wns_ns": 3.755155,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_xfrm_div2": {
+          "endpoints": 1,
+          "wns_ns": 4.364375,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_tx_div2": {
+          "endpoints": 260,
+          "wns_ns": -0.345925,
+          "tns_ns": -2.3418330000000003,
+          "violating_endpoints": 13
+        }
+      },
+      "agrees_with_design_wns": true,
+      "group_wns_ns": -4.835153,
+      "design_wns_ns": -4.835153303485357
+    },
+    "report": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval/02_sta/timing.rpt",
+    "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval/02_sta/timing.json"
+  }
+}

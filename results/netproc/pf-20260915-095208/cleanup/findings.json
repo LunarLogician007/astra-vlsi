@@ -1,0 +1,221 @@
+{
+  "files": [
+    "netproc.v"
+  ],
+  "findings": [
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`crc_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "crc_chain",
+        "width": 32
+      },
+      "file": "netproc.v",
+      "line": 183,
+      "end_line": 185,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`rx_count` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "rx_count",
+        "width": 8
+      },
+      "file": "netproc.v",
+      "line": 205,
+      "end_line": 206,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`p_any` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "p_any",
+        "width": 1
+      },
+      "file": "netproc.v",
+      "line": 226,
+      "end_line": 229,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`p_sel` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "p_sel",
+        "width": 8
+      },
+      "file": "netproc.v",
+      "line": 229,
+      "end_line": 231,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`tags` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "tags",
+        "width": 32
+      },
+      "file": "netproc.v",
+      "line": 259,
+      "end_line": 260,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`l_any` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "l_any",
+        "width": 1
+      },
+      "file": "netproc.v",
+      "line": 275,
+      "end_line": 278,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`l_idx` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "l_idx",
+        "width": 8
+      },
+      "file": "netproc.v",
+      "line": 278,
+      "end_line": 280,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`par_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "par_chain",
+        "width": 1
+      },
+      "file": "netproc.v",
+      "line": 320,
+      "end_line": 323,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`tx_line` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "tx_line",
+        "width": 256
+      },
+      "file": "netproc.v",
+      "line": 353,
+      "end_line": 354,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`t_acc` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "t_acc",
+        "width": 260
+      },
+      "file": "netproc.v",
+      "line": 362,
+      "end_line": 363,
+      "severity": "high"
+    },
+    {
+      "pattern": "deep single-cycle expression",
+      "evidence": "`cdc_gray_nxt` estimates 12 levels in one assignment (operators: + >> ^)",
+      "metric": {
+        "depth": 12,
+        "width": 8,
+        "ops": [
+          "+",
+          ">>",
+          "^"
+        ]
+      },
+      "file": "netproc.v",
+      "line": 138,
+      "end_line": 138,
+      "severity": "medium"
+    },
+    {
+      "pattern": "one register broadcast to every stage of a chain",
+      "evidence": "`xd_q` (512 bits) is read inside the loop that builds `par_chain`, so every elaborated stage loads it at once",
+      "metric": {
+        "signal": "xd_q",
+        "width": 512,
+        "chain": "par_chain"
+      },
+      "file": "netproc.v",
+      "line": 320,
+      "end_line": 320,
+      "severity": "medium"
+    },
+    {
+      "pattern": "one register broadcast to every stage of a chain",
+      "evidence": "`tx_line` (256 bits) is read inside the loop that builds `t_acc`, so every elaborated stage loads it at once",
+      "metric": {
+        "signal": "tx_line",
+        "width": 256,
+        "chain": "t_acc"
+      },
+      "file": "netproc.v",
+      "line": 362,
+      "end_line": 362,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 260 bits on `t_acc` -- 10 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 260,
+        "levels_each": 10
+      },
+      "file": "netproc.v",
+      "line": 362,
+      "end_line": 362,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 260 bits on `tx_sum` -- 10 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 260,
+        "levels_each": 10
+      },
+      "file": "netproc.v",
+      "line": 373,
+      "end_line": 373,
+      "severity": "medium"
+    }
+  ],
+  "counts": {
+    "declarations": 83,
+    "assignments": 118,
+    "parameters": 8
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "cand3",
+  "directive_index": 3,
+  "directive": "Combine fixes for more than one bottleneck in a single rewrite. Higher risk of an area regression or a SEC failure -- take it anyway; the group comparison is what decides whether the risk paid off.",
+  "pattern": "Serial accumulation chain with ripple carry",
+  "strategy": "Rebalance 4-term sum into binary tree",
+  "rationale": "Changes dependency from s3 = ((s0 + p1) + p2) + p3 (depth 3 carries) to s3 = (s0 + p1) + (s2 + p3) (depth 2 carries). Two independent 40-bit adds compute in parallel, halving critical carry stages and uncovering slack for downstream saturation logic. Typical recovery ~0.4 ns on this path.",
+  "target": "mac_chain.v:68-72 (serial chain s0\u2192s1\u2192s2\u2192s3 replaced with tree: s01 = p0_ext + p1_ext, s23 = p2_ext + p3_ext in parallel, s3 = s01 + s23)",
+  "expected_slack_recovery_ns": 0.4,
+  "area_cost": "none \u2014 same 3 adders, better balanced; synthesis may reduce area due to improved timing allowing gate optimization",
+  "equivalence_argument": "Both compute s3 = p0_ext + p1_ext + p2_ext + p3_ext (addition is associative). Saturation logic (over, under, sat_val) operates identically on the final s3. Output registers acc_out, sat_flag, valid_out capture the same values. Reset behavior unchanged. Outputs are bit-identical, cycle for cycle."
+}

@@ -1,0 +1,44 @@
+--- dual_clock.v (parent)
++++ dual_clock.v (t1)
+@@ -88,9 +88,6 @@
+         end
+     end
+ 
+-    // Deliberately serial: each add waits on the one before it, so the depth
+-    // is TAPS adders rather than log2(TAPS). Balancing it into a tree is the
+-    // fix, and it changes neither latency nor the result.
+     wire signed [2*W+3:0] term [0:TAPS-1];
+     genvar g;
+     generate
+@@ -100,6 +97,22 @@
+         end
+     endgenerate
+ 
++    // Balanced tree instead of serial chain: log2(TAPS) depth vs TAPS.
++    wire signed [2*W+3:0] tree_l1_01, tree_l1_23, tree_l1_45, tree_l1_67;
++    wire signed [2*W+3:0] tree_l2_0123, tree_l2_4567;
++    wire signed [2*W+3:0] acc_final;
++
++    assign tree_l1_01 = term[0] + term[1];
++    assign tree_l1_23 = term[2] + term[3];
++    assign tree_l1_45 = term[4] + term[5];
++    assign tree_l1_67 = term[6] + term[7];
++
++    assign tree_l2_0123 = tree_l1_01 + tree_l1_23;
++    assign tree_l2_4567 = tree_l1_45 + tree_l1_67;
++
++    assign acc_final = tree_l2_0123 + tree_l2_4567;
++
++    // Keep original acc[] for equivalence compatibility (not actively used).
+     wire signed [2*W+3:0] acc [0:TAPS-1];
+     generate
+         for (g = 0; g < TAPS; g = g + 1) begin : g_add
+@@ -111,7 +124,7 @@
+     reg signed [2*W+3:0] f_acc_p;
+     always @(posedge clk_fast or negedge rst_n)
+         if (!rst_n) f_acc_p <= {(2*W+4){1'b0}};
+-        else if (f_valid_q) f_acc_p <= acc[TAPS-1];
++        else if (f_valid_q) f_acc_p <= acc_final;
+ 
+     // Output stage on the generated clock: half the frequency budget of
+     // everything above it, which is why each path is ranked against its own.

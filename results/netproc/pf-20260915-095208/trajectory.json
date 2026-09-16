@@ -1,0 +1,3374 @@
+{
+  "design": "netproc",
+  "top": "netproc",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk_rx",
+    "period_ns": 2.0
+  },
+  "clocks": [
+    {
+      "name": "clk_rx",
+      "period_ns": 2.0,
+      "port": "clk_rx"
+    },
+    {
+      "name": "clk_parse",
+      "period_ns": 3.0,
+      "port": "clk_parse"
+    },
+    {
+      "name": "clk_look",
+      "period_ns": 4.0,
+      "port": "clk_look"
+    },
+    {
+      "name": "clk_xfrm",
+      "period_ns": 5.0,
+      "port": "clk_xfrm"
+    },
+    {
+      "name": "clk_tx",
+      "period_ns": 7.0,
+      "port": "clk_tx"
+    },
+    {
+      "name": "clk_rx_div2",
+      "period_ns": 4.0,
+      "port": "clk_rx_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_rx",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_parse_div2",
+      "period_ns": 6.0,
+      "port": "clk_parse_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_parse",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_parse_div4",
+      "period_ns": 12.0,
+      "port": "clk_parse_div2_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_parse_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_look_div2",
+      "period_ns": 8.0,
+      "port": "clk_look_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_look",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_look_div4",
+      "period_ns": 16.0,
+      "port": "clk_look_div4_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_look_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_look_div8",
+      "period_ns": 32.0,
+      "port": "clk_look_div4_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_look_div4",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_xfrm_div2",
+      "period_ns": 10.0,
+      "port": "clk_xfrm_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_xfrm",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_tx_div2",
+      "period_ns": 14.0,
+      "port": "clk_tx_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_tx",
+      "divide_by": 2
+    }
+  ],
+  "weights": {
+    "alpha": 0.5,
+    "beta": 0.35,
+    "gamma": 0.15,
+    "area_penalty": 0.5,
+    "area_threshold": 0.1
+  },
+  "config": {
+    "candidates_per_iteration": 4,
+    "max_iterations": 1,
+    "top_k_paths": 3,
+    "sec": {
+      "engine": "auto",
+      "depth": 6
+    },
+    "model": "haiku",
+    "llm": true,
+    "targets_per_iteration": 3,
+    "mmr_lambda": 0.5,
+    "cluster_at": 0.65,
+    "delay_sigma": 0.05,
+    "cone_rho": 0.7,
+    "cleanup_candidates": 1,
+    "merge_agent": true,
+    "stage": "sta",
+    "skill_document": "/home/sreeavyay/astra-vlsi/.claude/skills/rtl-timing-optimization/SKILL.md"
+  },
+  "created_at": "2026-09-15T09:52:08",
+  "baseline": {
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -17.82622100388811,
+      "tns_ns": -764.2635398640576,
+      "violating_endpoints": 184,
+      "hold_wns_ns": 0.00941800830646686,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk_rx": {
+            "endpoints": 63,
+            "wns_ns": 1.282301,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_parse": {
+            "endpoints": 2,
+            "wns_ns": 2.809476,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look": {
+            "endpoints": 8173,
+            "wns_ns": -4.97092,
+            "tns_ns": -44.448209999999996,
+            "violating_endpoints": 9
+          },
+          "clk_xfrm": {
+            "endpoints": 260,
+            "wns_ns": 1.267041,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_tx": {
+            "endpoints": 4103,
+            "wns_ns": -7.846966,
+            "tns_ns": -701.6076520000001,
+            "violating_endpoints": 169
+          },
+          "clk_rx_div2": {
+            "endpoints": 8,
+            "wns_ns": 1.777987,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_parse_div2": {
+            "endpoints": 1,
+            "wns_ns": 5.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_parse_div4": {
+            "endpoints": 7,
+            "wns_ns": 2.759883,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look_div2": {
+            "endpoints": 1,
+            "wns_ns": 7.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look_div4": {
+            "endpoints": 1,
+            "wns_ns": 15.843857,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look_div8": {
+            "endpoints": 9,
+            "wns_ns": 3.757081,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_xfrm_div2": {
+            "endpoints": 1,
+            "wns_ns": -17.826221,
+            "tns_ns": -17.826221,
+            "violating_endpoints": 1
+          },
+          "clk_tx_div2": {
+            "endpoints": 260,
+            "wns_ns": -0.115829,
+            "tns_ns": -0.381469,
+            "violating_endpoints": 5
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -17.826221,
+        "design_wns_ns": -17.82622100388811
+      },
+      "area_um2": 119537.208,
+      "cells": 50502,
+      "runtime_s": 62.04,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/baseline",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/baseline/02_sta/timing.json"
+    },
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/designs/netproc/rtl/netproc.v"
+    ],
+    "score": 0.0
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "parent": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/baseline",
+      "stage": "sta",
+      "portfolio": {
+        "k_requested": 3,
+        "k_effective": 3,
+        "collapsed": true,
+        "cluster_count": 32,
+        "pool": {
+          "paths": 330,
+          "violating": 75,
+          "tns_ns": -764.2635398640576,
+          "truncated": true
+        },
+        "targets": [
+          {
+            "id": "T1",
+            "kind": "segment",
+            "rank": 1,
+            "slack_ns": -17.8262,
+            "value": 0.5394442361964628,
+            "value_terms": {
+              "impact": 0.18765385821436162,
+              "severity": 1.0,
+              "tractability": 0.525
+            },
+            "p_critical": 1.0,
+            "tns_share": 0.004376965579040795,
+            "tns_share_truncated": true,
+            "mass_ns": 3.345155207300853,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "xfrm_data[1]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "xfrm_par_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_xfrm_div2",
+              "path_type": "max",
+              "slack_ns": -17.8262,
+              "status": "VIOLATED",
+              "arrival_ns": 27.7455,
+              "required_ns": 9.9192,
+              "logic_depth": 1024
+            },
+            "member_count": 1,
+            "members": [
+              {
+                "slack_ns": -17.8262,
+                "endpoint": "xfrm_par_DFFR_X1_Q",
+                "startpoint": "xfrm_data[1]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              0,
+              8
+            ],
+            "delay_ns": 5.2064,
+            "delay_share": 0.1877,
+            "cell_families": {
+              "xor": 4,
+              "flop": 2
+            },
+            "cell_walk": [
+              "DFFR_X1",
+              "DFFR_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1"
+            ],
+            "max_fanout": 3,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "netproc.v",
+                "line": 63,
+                "end_line": 63,
+                "via": "declaration via cone origin",
+                "stages": 2,
+                "delay_ns": 0.1197,
+                "source": [
+                  "   63 |     input  wire [XW-1:0]     xfrm_data,"
+                ]
+              },
+              {
+                "file": "netproc.v",
+                "line": 309,
+                "end_line": 309,
+                "via": "driver via cone origin",
+                "stages": 4,
+                "delay_ns": 0.0867,
+                "source": [
+                  "  309 |         else begin xd_q <= xfrm_data; rot_q <= xfrm_rot; xv_q <= xfrm_valid; end"
+                ]
+              }
+            ],
+            "signals": [
+              "xfrm_data",
+              "xd_q"
+            ],
+            "findings": [
+              {
+                "pattern": "delay concentrated in a few stages",
+                "evidence": "100% of the path delay sits in 5 of 8 stages -- a local fix can recover most of it",
+                "metric": {
+                  "top5_fraction": 1.0
+                }
+              }
+            ],
+            "skills": [],
+            "allowed_lines": {
+              "netproc.v": [
+                [
+                  60,
+                  66
+                ],
+                [
+                  306,
+                  312
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_xfrm_div2",
+            "period_ns": 10.0,
+            "brief": "## Target T1 -- segment, 0% of reported TNS\n\nrepresentative  xfrm_data[1]_DFFR_X1_D -> xfrm_par_DFFR_X1_Q\nslack           -17.8262 ns (178% short of a 10 ns cycle)\nclock           clk_xfrm_div2, 10 ns period\nsegment         stages 0-8 of 1029 on the worst path\n                5.2064 ns, 19% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.539  (impact 0.19, severity 1.00, tractability 0.53)\n\ncell mix        4x xor, 2x flop\n\nroot causes (mechanical, from the STA report):\n  - delay concentrated in a few stages: 100% of the path delay sits in 5 of 8 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  DFFR_X1 -> DFFR_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1\n\nRTL this target resolves to:\n  netproc.v:63  2 stage(s), 0.1197 ns via declaration via cone origin\n       63 |     input  wire [XW-1:0]     xfrm_data,\n  netproc.v:309  4 stage(s), 0.0867 ns via driver via cone origin\n      309 |         else begin xd_q <= xfrm_data; rot_q <= xfrm_rot; xv_q <= xfrm_valid; end\n  signals: xfrm_data, xd_q\n"
+          },
+          {
+            "id": "T2",
+            "kind": "segment",
+            "rank": 2,
+            "slack_ns": -17.8262,
+            "value": 0.7028078876325928,
+            "value_terms": {
+              "impact": 0.4062397502946508,
+              "severity": 1.0,
+              "tractability": 0.8500000000000001
+            },
+            "p_critical": 1.0,
+            "tns_share": 0.009475410848449755,
+            "tns_share_truncated": true,
+            "mass_ns": 7.241711036702505,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "xfrm_data[1]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "xfrm_par_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_xfrm_div2",
+              "path_type": "max",
+              "slack_ns": -17.8262,
+              "status": "VIOLATED",
+              "arrival_ns": 27.7455,
+              "required_ns": 9.9192,
+              "logic_depth": 1024
+            },
+            "member_count": 1,
+            "members": [
+              {
+                "slack_ns": -17.8262,
+                "endpoint": "xfrm_par_DFFR_X1_Q",
+                "startpoint": "xfrm_data[1]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              8,
+              519
+            ],
+            "delay_ns": 11.271,
+            "delay_share": 0.4062,
+            "cell_families": {
+              "xor": 511
+            },
+            "cell_walk": [
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1"
+            ],
+            "max_fanout": 1,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "netproc.v",
+                "line": 309,
+                "end_line": 309,
+                "via": "driver via cone origin",
+                "stages": 511,
+                "delay_ns": 11.271,
+                "source": [
+                  "  309 |         else begin xd_q <= xfrm_data; rot_q <= xfrm_rot; xv_q <= xfrm_valid; end"
+                ]
+              }
+            ],
+            "signals": [
+              "xd_q"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "511 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 511,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "wide arithmetic / carry propagation",
+                "evidence": "0 adder cells, 511 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                "metric": {
+                  "adder": 0,
+                  "xor": 511,
+                  "aoi_oai": 0
+                }
+              },
+              {
+                "pattern": "delay spread evenly along the path",
+                "evidence": "the 5 worst of 511 stages hold only 2% of the delay -- no single hot cell; the depth itself is the problem",
+                "metric": {
+                  "top5_fraction": 0.02
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+                "pattern": "carry propagation across a wide accumulator",
+                "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+                "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+                "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.5
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+                "pattern": "Carry propagation in accumulator tree",
+                "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+                "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+                "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 5,
+                  "sec_pass": 5,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 2.766699071489424,
+                  "advantage_n": 2,
+                  "score_delta_sum": 0.009092027113597176,
+                  "score_delta_n": 2,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 5
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.037,
+                "mean_advantage": 1.383349535744712,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.333
+              },
+              {
+                "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+                "pattern": "carry propagation in sequential 40-bit additions",
+                "strategy": "unable to reduce depth safely while maintaining equivalence",
+                "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.8904758344281221,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T02:13:35+00:00"
+                },
+                "confidence": 0.214,
+                "mean_advantage": -0.8904758344281221,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:13:35+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+                "pattern": "Carry propagation in 40-bit final accumulate",
+                "strategy": "No equivalent optimization available",
+                "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:20:02+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.7071067811865541,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 2,
+                  "at": "2026-09-09T02:20:02+00:00"
+                },
+                "confidence": 0.2011,
+                "mean_advantage": -0.7071067811865541,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:20:02+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+                "pattern": "40-bit carry propagation in balanced adder tree",
+                "strategy": "Unable to optimize while maintaining fixed latency",
+                "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T16:03:21+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.4599339721746848,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:03:21+00:00"
+                },
+                "confidence": 0.125,
+                "mean_advantage": 0.0,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:03:21+00:00",
+                "match_score": 0.25
+              }
+            ],
+            "allowed_lines": {
+              "netproc.v": [
+                [
+                  306,
+                  312
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_xfrm_div2",
+            "period_ns": 10.0,
+            "brief": "## Target T2 -- segment, 1% of reported TNS\n\nrepresentative  xfrm_data[1]_DFFR_X1_D -> xfrm_par_DFFR_X1_Q\nslack           -17.8262 ns (178% short of a 10 ns cycle)\nclock           clk_xfrm_div2, 10 ns period\nsegment         stages 8-519 of 1029 on the worst path\n                11.2710 ns, 41% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.703  (impact 0.41, severity 1.00, tractability 0.85)\n\ncell mix        511x xor\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 511 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 511 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 511 stages hold only 2% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1  ... 471 more ...  XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1\n\nRTL this target resolves to:\n  netproc.v:309  511 stage(s), 11.2710 ns via driver via cone origin\n      309 |         else begin xd_q <= xfrm_data; rot_q <= xfrm_rot; xv_q <= xfrm_valid; end\n  signals: xd_q\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+          },
+          {
+            "id": "T3",
+            "kind": "segment",
+            "rank": 3,
+            "slack_ns": -17.8262,
+            "value": 0.7027478761709444,
+            "value_terms": {
+              "impact": 0.40610639149098743,
+              "severity": 1.0,
+              "tractability": 0.8500000000000001
+            },
+            "p_critical": 1.0,
+            "tns_share": 0.00947230029746588,
+            "tns_share_truncated": true,
+            "mass_ns": 7.23933375599664,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "xfrm_data[1]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "xfrm_par_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_xfrm_div2",
+              "path_type": "max",
+              "slack_ns": -17.8262,
+              "status": "VIOLATED",
+              "arrival_ns": 27.7455,
+              "required_ns": 9.9192,
+              "logic_depth": 1024
+            },
+            "member_count": 1,
+            "members": [
+              {
+                "slack_ns": -17.8262,
+                "endpoint": "xfrm_par_DFFR_X1_Q",
+                "startpoint": "xfrm_data[1]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              519,
+              1029
+            ],
+            "delay_ns": 11.2673,
+            "delay_share": 0.4061,
+            "cell_families": {
+              "xor": 509,
+              "flop": 1
+            },
+            "cell_walk": [
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "DFFR_X1"
+            ],
+            "max_fanout": 1,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "netproc.v",
+                "line": 309,
+                "end_line": 309,
+                "via": "driver via cone origin",
+                "stages": 507,
+                "delay_ns": 11.2268,
+                "source": [
+                  "  309 |         else begin xd_q <= xfrm_data; rot_q <= xfrm_rot; xv_q <= xfrm_valid; end"
+                ]
+              },
+              {
+                "file": "netproc.v",
+                "line": 128,
+                "end_line": 128,
+                "via": "driver via cone origin",
+                "stages": 2,
+                "delay_ns": 0.0405,
+                "source": [
+                  "  128 |         else        cdc_xfrm_from_look <= {cdc_xfrm_from_look[0], look_hit};"
+                ]
+              },
+              {
+                "file": "netproc.v",
+                "line": 337,
+                "end_line": 339,
+                "via": "src attribute (cell)",
+                "stages": 1,
+                "delay_ns": 0.0,
+                "source": [
+                  "  337 |     always @(posedge clk_xfrm_div2_r or negedge rst_n)",
+                  "  338 |         if (!rst_n) xfrm_par <= 1'b0;",
+                  "  339 |         else xfrm_par <= par_chain_out ^ cdc_xfrm_from_look[1];"
+                ]
+              }
+            ],
+            "signals": [
+              "xd_q",
+              "cdc_xfrm_from_look",
+              "xfrm_par"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "509 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 509,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "wide arithmetic / carry propagation",
+                "evidence": "0 adder cells, 509 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                "metric": {
+                  "adder": 0,
+                  "xor": 509,
+                  "aoi_oai": 0
+                }
+              },
+              {
+                "pattern": "delay spread evenly along the path",
+                "evidence": "the 5 worst of 510 stages hold only 2% of the delay -- no single hot cell; the depth itself is the problem",
+                "metric": {
+                  "top5_fraction": 0.02
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+                "pattern": "carry propagation across a wide accumulator",
+                "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+                "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+                "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.5
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+                "pattern": "Carry propagation in accumulator tree",
+                "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+                "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+                "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 5,
+                  "sec_pass": 5,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 2.766699071489424,
+                  "advantage_n": 2,
+                  "score_delta_sum": 0.009092027113597176,
+                  "score_delta_n": 2,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 5
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.037,
+                "mean_advantage": 1.383349535744712,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.333
+              },
+              {
+                "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+                "pattern": "carry propagation in sequential 40-bit additions",
+                "strategy": "unable to reduce depth safely while maintaining equivalence",
+                "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.8904758344281221,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T02:13:35+00:00"
+                },
+                "confidence": 0.214,
+                "mean_advantage": -0.8904758344281221,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:13:35+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+                "pattern": "Carry propagation in 40-bit final accumulate",
+                "strategy": "No equivalent optimization available",
+                "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:20:02+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.7071067811865541,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 2,
+                  "at": "2026-09-09T02:20:02+00:00"
+                },
+                "confidence": 0.2011,
+                "mean_advantage": -0.7071067811865541,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:20:02+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+                "pattern": "40-bit carry propagation in balanced adder tree",
+                "strategy": "Unable to optimize while maintaining fixed latency",
+                "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T16:03:21+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.4599339721746848,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:03:21+00:00"
+                },
+                "confidence": 0.125,
+                "mean_advantage": 0.0,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:03:21+00:00",
+                "match_score": 0.25
+              }
+            ],
+            "allowed_lines": {
+              "netproc.v": [
+                [
+                  125,
+                  131
+                ],
+                [
+                  306,
+                  312
+                ],
+                [
+                  334,
+                  342
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_xfrm_div2",
+            "period_ns": 10.0,
+            "brief": "## Target T3 -- segment, 1% of reported TNS\n\nrepresentative  xfrm_data[1]_DFFR_X1_D -> xfrm_par_DFFR_X1_Q\nslack           -17.8262 ns (178% short of a 10 ns cycle)\nclock           clk_xfrm_div2, 10 ns period\nsegment         stages 519-1029 of 1029 on the worst path\n                11.2673 ns, 41% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.703  (impact 0.41, severity 1.00, tractability 0.85)\n\ncell mix        509x xor, 1x flop\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 509 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 509 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 510 stages hold only 2% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1  ... 470 more ...  XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> DFFR_X1\n\nRTL this target resolves to:\n  netproc.v:309  507 stage(s), 11.2268 ns via driver via cone origin\n      309 |         else begin xd_q <= xfrm_data; rot_q <= xfrm_rot; xv_q <= xfrm_valid; end\n  netproc.v:128  2 stage(s), 0.0405 ns via driver via cone origin\n      128 |         else        cdc_xfrm_from_look <= {cdc_xfrm_from_look[0], look_hit};\n  netproc.v:337-339  1 stage(s), 0.0000 ns via src attribute (cell)\n      337 |     always @(posedge clk_xfrm_div2_r or negedge rst_n)\n      338 |         if (!rst_n) xfrm_par <= 1'b0;\n      339 |         else xfrm_par <= par_chain_out ^ cdc_xfrm_from_look[1];\n  signals: xd_q, cdc_xfrm_from_look, xfrm_par\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+          }
+        ]
+      },
+      "group_stats": {
+        "n": 3,
+        "mean": -0.3615070825499955,
+        "std": 0.0
+      },
+      "candidates": [
+        {
+          "id": "t1",
+          "target_id": "T1",
+          "target_kind": "segment",
+          "target_value": 0.5394442361964628,
+          "pattern": "Ripple XOR chain in 512-bit parity reduction",
+          "strategy": "Balanced tree reduction instead of serial cascade",
+          "rationale": "Serial XOR depth scales linearly (512 stages); a balanced tree reduces it to log\u2082(512)=9 levels. The measured segment (stages 0\u20138, 5.2 ns) represents the beginning of a chain where 4 gates at depth 4 take 1.3 ns each\u2014each stage depends on all prior stages. A tree decouples this: all bits pair in parallel at level 0 (depth 1), then pairs of pairs (depth 2), etc. The final output remains identical\u2014XOR of all inputs\u2014but arrives 50\u00d7 deeper in the logic instead of 500\u00d7, so the first few stages now run at ~0.5\u20130.6 ns each rather than ~1.3 ns.",
+          "target": "Lines 322\u2013329 (par_chain ripple generate loop and par_chain_out assignment)",
+          "expected_slack_recovery_ns": 4.2,
+          "area_cost": "small: a balanced tree uses the same total number of XOR gates (511 gates for 512 inputs, one fewer than the ripple chain, actually), just reorganized in width instead of depth.",
+          "equivalence_argument": "The ripple chain computes par_chain[XW] = xd_q[0] \u2295 xd_q[1] \u2295 \u2026 \u2295 xd_q[XW-1]. The balanced tree pairs all inputs, then recursively XORs the results, computing the same final XOR. Reset is identical: xfrm_par_par_chain_out enters a flop clocked on clk_xfrm_div2 with standard asynchronous reset, unchanged. Intermediate widths are all single-bit signals; the tree output is a single bit matching par_chain[XW]. No sign extension or truncation.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/sec/regcorr",
+            "paired": 13720,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 54889,
+            "ports_structural": 54888,
+            "sat_ports": [
+              "xfrm_par[0]@d"
+            ],
+            "equivalent": true,
+            "method": "regcorr",
+            "reason": "54888 of 54889 outputs matched structurally; register correspondence: all 805 matched signals in the differing cones proven (named); unbounded, holds for every clock interleaving",
+            "unproven": 0,
+            "equiv_cells": 805,
+            "attempt": null,
+            "runtime_s": 10.39,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "ok",
+                "error": null
+              }
+            ]
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -4.835153303485357,
+            "tns_ns": -303.71243446492076,
+            "violating_endpoints": 140,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_rx": {
+                  "endpoints": 63,
+                  "wns_ns": 1.282301,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse": {
+                  "endpoints": 2,
+                  "wns_ns": 2.809476,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look": {
+                  "endpoints": 8173,
+                  "wns_ns": -4.835153,
+                  "tns_ns": -43.117843,
+                  "violating_endpoints": 9
+                },
+                "clk_xfrm": {
+                  "endpoints": 260,
+                  "wns_ns": 1.267041,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx": {
+                  "endpoints": 4103,
+                  "wns_ns": -4.460366,
+                  "tns_ns": -258.252771,
+                  "violating_endpoints": 118
+                },
+                "clk_rx_div2": {
+                  "endpoints": 8,
+                  "wns_ns": 1.777987,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 5.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div4": {
+                  "endpoints": 7,
+                  "wns_ns": 2.759883,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 7.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div4": {
+                  "endpoints": 1,
+                  "wns_ns": 15.843857,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div8": {
+                  "endpoints": 9,
+                  "wns_ns": 3.755155,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_xfrm_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 4.364375,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx_div2": {
+                  "endpoints": 260,
+                  "wns_ns": -0.345925,
+                  "tns_ns": -2.3418330000000003,
+                  "violating_endpoints": 13
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -4.835153,
+              "design_wns_ns": -4.835153303485357
+            },
+            "area_um2": 120706.012,
+            "cells": 51525,
+            "runtime_s": 113.14,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/eval/02_sta/timing.json",
+            "wns_cycles": -1.20878825,
+            "tns_cycles": -47.839987535714286
+          },
+          "score": -0.3615070825499955,
+          "score_detail": {
+            "score": -0.3615070825499955,
+            "terms": {
+              "wns": -0.160952186669289,
+              "tns": -0.20202155720677664,
+              "area": 0.0014666613260701266,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.321904373338578,
+              "tns": -0.577204449162219,
+              "area": 0.009777742173800844
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": 0.0,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "netproc.v": [
+                [
+                  60,
+                  66
+                ],
+                [
+                  306,
+                  312
+                ]
+              ]
+            },
+            "outside": [
+              "netproc.v:301-302",
+              "netproc.v:319-320",
+              "netproc.v:322-323",
+              "netproc.v:327-331"
+            ],
+            "violation": true,
+            "changed_lines": 11
+          }
+        },
+        {
+          "id": "t2",
+          "target_id": "T2",
+          "target_kind": "segment",
+          "target_value": 0.7028078876325928,
+          "pattern": "512-bit serial XOR chain",
+          "strategy": "Replace ripple chain with balanced binary tree",
+          "rationale": "512 dependent XOR stages collapse to 9 when rebalanced as a binary tree. XOR associativity guarantees identical results. Depth from 512 \u2192 9 saves ~58 gate delays.",
+          "target": "par_chain combinational logic (lines 393-404), produces par_chain_out",
+          "expected_slack_recovery_ns": 8.5,
+          "area_cost": "none \u2014 same gate count, only topology changes",
+          "equivalence_argument": "XOR is associative. The serial chain computes parity left-to-right; the balanced tree computes the same parity with intermediate groups XORed in parallel, then combined. All 512 input bits, same single-bit output, no truncation. Reset: par_chain had no register, only driven by xd_q and constants, so reset unchanged.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/sec/regcorr",
+            "paired": 13720,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 54889,
+            "ports_structural": 54888,
+            "sat_ports": [
+              "xfrm_par[0]@d"
+            ],
+            "equivalent": true,
+            "method": "regcorr",
+            "reason": "54888 of 54889 outputs matched structurally; register correspondence: all 805 matched signals in the differing cones proven (named); unbounded, holds for every clock interleaving",
+            "unproven": 0,
+            "equiv_cells": 805,
+            "attempt": null,
+            "runtime_s": 10.26,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "ok",
+                "error": null
+              }
+            ]
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -4.835153303485357,
+            "tns_ns": -303.71243446492076,
+            "violating_endpoints": 140,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_rx": {
+                  "endpoints": 63,
+                  "wns_ns": 1.282301,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse": {
+                  "endpoints": 2,
+                  "wns_ns": 2.809476,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look": {
+                  "endpoints": 8173,
+                  "wns_ns": -4.835153,
+                  "tns_ns": -43.117843,
+                  "violating_endpoints": 9
+                },
+                "clk_xfrm": {
+                  "endpoints": 260,
+                  "wns_ns": 1.267041,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx": {
+                  "endpoints": 4103,
+                  "wns_ns": -4.460366,
+                  "tns_ns": -258.252771,
+                  "violating_endpoints": 118
+                },
+                "clk_rx_div2": {
+                  "endpoints": 8,
+                  "wns_ns": 1.777987,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 5.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div4": {
+                  "endpoints": 7,
+                  "wns_ns": 2.759883,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 7.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div4": {
+                  "endpoints": 1,
+                  "wns_ns": 15.843857,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div8": {
+                  "endpoints": 9,
+                  "wns_ns": 3.755155,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_xfrm_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 4.364375,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx_div2": {
+                  "endpoints": 260,
+                  "wns_ns": -0.345925,
+                  "tns_ns": -2.3418330000000003,
+                  "violating_endpoints": 13
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -4.835153,
+              "design_wns_ns": -4.835153303485357
+            },
+            "area_um2": 120706.012,
+            "cells": 51525,
+            "runtime_s": 113.24,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/eval/02_sta/timing.json",
+            "wns_cycles": -1.20878825,
+            "tns_cycles": -47.839987535714286
+          },
+          "score": -0.3615070825499955,
+          "score_detail": {
+            "score": -0.3615070825499955,
+            "terms": {
+              "wns": -0.160952186669289,
+              "tns": -0.20202155720677664,
+              "area": 0.0014666613260701266,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.321904373338578,
+              "tns": -0.577204449162219,
+              "area": 0.009777742173800844
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": 0.0,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "netproc.v": [
+                [
+                  306,
+                  312
+                ]
+              ]
+            },
+            "outside": [
+              "netproc.v:301-301",
+              "netproc.v:319-320",
+              "netproc.v:322-323",
+              "netproc.v:326-326",
+              "netproc.v:331-331"
+            ],
+            "violation": true,
+            "changed_lines": 7
+          }
+        },
+        {
+          "id": "t3",
+          "target_id": "T3",
+          "target_kind": "segment",
+          "target_value": 0.7027478761709444,
+          "pattern": "Serial XOR reduction in parity tree",
+          "strategy": "Replace depth-512 chain with balanced binary XOR tree",
+          "rationale": "XOR is associative and commutative. A 512-input parity tree computed as a balanced binary tree has depth ceil(log2(512)) = 9 instead of 512, reducing critical path by ~500 XOR gate delays (~10 ns in a modern cell library). The value computed is identical: XOR of all 512 bits.",
+          "target": "par_chain combinational logic at lines 345-360, output wire par_chain_out assignment",
+          "expected_slack_recovery_ns": 9.5,
+          "area_cost": "none \u2014 replacing 512 serial gates with 509 total tree gates (9 levels, roughly 256+128+64+32+16+8+4+2+1). Gate count is identical, layout improves.",
+          "equivalence_argument": "The tree computes XOR(xd_q[511:0]). Since XOR is associative and commutative, ((a^b)^(c^d)) = a^b^c^d, and the tree result is bit-identical to the serial chain for all possible inputs. Reset behavior: xd_q resets to 0, so the tree result is 0 (same as serial chain starting value). No width truncation or sign issues \u2014 all operations are single-bit XOR.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t3/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t3/sec/regcorr",
+            "paired": 13720,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 54889,
+            "ports_structural": 54888,
+            "sat_ports": [
+              "xfrm_par[0]@d"
+            ],
+            "equivalent": true,
+            "method": "regcorr",
+            "reason": "54888 of 54889 outputs matched structurally; register correspondence: all 805 matched signals in the differing cones proven (named); unbounded, holds for every clock interleaving",
+            "unproven": 0,
+            "equiv_cells": 805,
+            "attempt": null,
+            "runtime_s": 7.92,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "ok",
+                "error": null
+              }
+            ]
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -4.835153303485357,
+            "tns_ns": -303.71243446492076,
+            "violating_endpoints": 140,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_rx": {
+                  "endpoints": 63,
+                  "wns_ns": 1.282301,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse": {
+                  "endpoints": 2,
+                  "wns_ns": 2.809476,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look": {
+                  "endpoints": 8173,
+                  "wns_ns": -4.835153,
+                  "tns_ns": -43.117843,
+                  "violating_endpoints": 9
+                },
+                "clk_xfrm": {
+                  "endpoints": 260,
+                  "wns_ns": 1.267041,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx": {
+                  "endpoints": 4103,
+                  "wns_ns": -4.460366,
+                  "tns_ns": -258.252771,
+                  "violating_endpoints": 118
+                },
+                "clk_rx_div2": {
+                  "endpoints": 8,
+                  "wns_ns": 1.777987,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 5.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div4": {
+                  "endpoints": 7,
+                  "wns_ns": 2.759883,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 7.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div4": {
+                  "endpoints": 1,
+                  "wns_ns": 15.843857,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div8": {
+                  "endpoints": 9,
+                  "wns_ns": 3.755155,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_xfrm_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 4.364375,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx_div2": {
+                  "endpoints": 260,
+                  "wns_ns": -0.345925,
+                  "tns_ns": -2.3418330000000003,
+                  "violating_endpoints": 13
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -4.835153,
+              "design_wns_ns": -4.835153303485357
+            },
+            "area_um2": 120706.012,
+            "cells": 51525,
+            "runtime_s": 93.25,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t3/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t3/eval/02_sta/timing.json",
+            "wns_cycles": -1.20878825,
+            "tns_cycles": -47.839987535714286
+          },
+          "score": -0.3615070825499955,
+          "score_detail": {
+            "score": -0.3615070825499955,
+            "terms": {
+              "wns": -0.160952186669289,
+              "tns": -0.20202155720677664,
+              "area": 0.0014666613260701266,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.321904373338578,
+              "tns": -0.577204449162219,
+              "area": 0.009777742173800844
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": 0.0,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "netproc.v": [
+                [
+                  125,
+                  131
+                ],
+                [
+                  306,
+                  312
+                ],
+                [
+                  334,
+                  342
+                ]
+              ]
+            },
+            "outside": [
+              "netproc.v:301-302",
+              "netproc.v:319-320",
+              "netproc.v:322-323",
+              "netproc.v:327-331"
+            ],
+            "violation": true,
+            "changed_lines": 11
+          }
+        }
+      ],
+      "unions": [
+        {
+          "id": "u123",
+          "kind": "union",
+          "union_source": "mechanical",
+          "union_members": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "applied": [
+            "t2"
+          ],
+          "dropped_hunks": 12,
+          "pattern": "combined fixes from several targets",
+          "strategy": "mechanical union of t1, t2, t3",
+          "rationale": "assembled by splicing non-conflicting text; no model was involved",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/u123/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/u123/sec/regcorr",
+            "paired": 13720,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 54889,
+            "ports_structural": 54888,
+            "sat_ports": [
+              "xfrm_par[0]@d"
+            ],
+            "equivalent": false,
+            "method": "regcorr-unproven",
+            "reason": "register correspondence left 1 of 1 matched signals unproven; undecided, not a refutation; the bounded fallback is disabled (timeout 0)",
+            "unproven": 1,
+            "equiv_cells": 1,
+            "attempt": "ports",
+            "runtime_s": 8.31,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "failed",
+                "error": "unproven 1 of 1"
+              }
+            ]
+          },
+          "metrics": {
+            "status": "sec_failed",
+            "reason": "register correspondence left 1 of 1 matched signals unproven; undecided, not a refutation; the bounded fallback is disabled (timeout 0)"
+          },
+          "score": null,
+          "score_detail": null,
+          "advantage": null
+        },
+        {
+          "id": "umerge",
+          "kind": "union",
+          "union_source": "agent",
+          "pattern": "combined fixes from several targets",
+          "strategy": "union of independently verified rewrites",
+          "included": [
+            "t2"
+          ],
+          "excluded": [
+            "t1",
+            "t3"
+          ],
+          "rationale": "All three candidates measure identically (WNS -4.8352, TNS -303.7124, area 120706.0120, score -0.3615 \u2014 a -0.3615 improvement over the parent), so the choice is based on code clarity and maintainability. t2 is selected because: (1) it preserves the crucial explanatory comment block ('Same reason as crc_next above...') that documents why par_chain_out must be a named wire to keep the protected cdc_xfrm_from_look line unedited; (2) it provides the clearest level-by-level inline comments describing each reduction stage; (3) it uses conventional naming (par_l1 through par_l8) and separates wire declaration from assignment, maintaining consistency with the original par_chain_out pattern; (4) t1 is more compact but lacks the explanatory comment context; (5) t3 adds an unnecessary explicit passthrough (par_l0 = xd_q[511:0]) and loses the protective comment. Since functional equivalence and timing are identical across all three, code maintainability and clarity determine the best choice.",
+          "conflicts_resolved": "All four contested regions (301-302, 319-320, 322-323, 327-331) are identical in substance across all three candidates \u2014 each replaces the serial par_chain with the same 9-level balanced binary tree topology. The differences are purely stylistic (naming convention, comment placement, and inline vs. separate assignment). t2's approach is selected for the superior comment structure that explains the architecture constraint.",
+          "expected_vs_mechanical": "No mechanical union was possible due to universal overlap. t2 provides not only the tree implementation but also preserves the critical architectural explanation: why par_chain_out is a wire rather than a direct assignment, which is enforced by the protection of the cdc_xfrm_from_look line. This context prevents future maintainers from 'optimizing' the code back into an unusable form.",
+          "equivalence_argument": "The balanced binary tree computes the XOR of all 512 bits of xd_q over log\u2082(512) = 9 stages instead of 512. Each stage combines pairs with XOR: par_l1[i] = xd_q[2i] \u2295 xd_q[2i+1], then par_l2[i] = par_l1[2i] \u2295 par_l1[2i+1], etc. The final result par_l8[0] \u2295 par_l8[1] is the XOR of all 512 bits, identical to the original par_chain[512] which accumulated the same result serially. XOR is associative and commutative, so any binary tree computing all-bits-XOR is functionally equivalent. No reset logic is affected (all wires are combinational), and there is no width-extension concern (XOR preserves 1-bit width at each stage). Equivalence holds cycle-for-cycle.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/umerge/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/sec/regcorr",
+            "paired": 13720,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 54889,
+            "ports_structural": 54888,
+            "sat_ports": [
+              "xfrm_par[0]@d"
+            ],
+            "equivalent": true,
+            "method": "regcorr",
+            "reason": "54888 of 54889 outputs matched structurally; register correspondence: all 805 matched signals in the differing cones proven (named); unbounded, holds for every clock interleaving",
+            "unproven": 0,
+            "equiv_cells": 805,
+            "attempt": null,
+            "runtime_s": 10.26,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "ok",
+                "error": null
+              }
+            ],
+            "cached": true
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -4.835153303485357,
+            "tns_ns": -303.71243446492076,
+            "violating_endpoints": 140,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_rx": {
+                  "endpoints": 63,
+                  "wns_ns": 1.282301,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse": {
+                  "endpoints": 2,
+                  "wns_ns": 2.809476,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look": {
+                  "endpoints": 8173,
+                  "wns_ns": -4.835153,
+                  "tns_ns": -43.117843,
+                  "violating_endpoints": 9
+                },
+                "clk_xfrm": {
+                  "endpoints": 260,
+                  "wns_ns": 1.267041,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx": {
+                  "endpoints": 4103,
+                  "wns_ns": -4.460366,
+                  "tns_ns": -258.252771,
+                  "violating_endpoints": 118
+                },
+                "clk_rx_div2": {
+                  "endpoints": 8,
+                  "wns_ns": 1.777987,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 5.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div4": {
+                  "endpoints": 7,
+                  "wns_ns": 2.759883,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 7.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div4": {
+                  "endpoints": 1,
+                  "wns_ns": 15.843857,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div8": {
+                  "endpoints": 9,
+                  "wns_ns": 3.755155,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_xfrm_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 4.364375,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx_div2": {
+                  "endpoints": 260,
+                  "wns_ns": -0.345925,
+                  "tns_ns": -2.3418330000000003,
+                  "violating_endpoints": 13
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -4.835153,
+              "design_wns_ns": -4.835153303485357
+            },
+            "area_um2": 120706.012,
+            "cells": 51525,
+            "runtime_s": 93.63,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/umerge/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/umerge/eval/02_sta/timing.json"
+          },
+          "score": -0.3615070825499955,
+          "score_detail": {
+            "score": -0.3615070825499955,
+            "terms": {
+              "wns": -0.160952186669289,
+              "tns": -0.20202155720677664,
+              "area": 0.0014666613260701266,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.321904373338578,
+              "tns": -0.577204449162219,
+              "area": 0.009777742173800844
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": null
+        }
+      ],
+      "merge": {
+        "eligible": [
+          "t1",
+          "t2",
+          "t3"
+        ],
+        "mechanical": [
+          {
+            "id": "u12",
+            "members": [
+              "t1",
+              "t2"
+            ],
+            "duplicate_of": "u123"
+          },
+          {
+            "id": "u23",
+            "members": [
+              "t2",
+              "t3"
+            ],
+            "duplicate_of": "u123"
+          },
+          {
+            "id": "u123",
+            "kind": "union",
+            "union_source": "mechanical",
+            "union_members": [
+              "t1",
+              "t2",
+              "t3"
+            ],
+            "applied": [
+              "t2"
+            ],
+            "dropped_hunks": 12,
+            "pattern": "combined fixes from several targets",
+            "strategy": "mechanical union of t1, t2, t3",
+            "rationale": "assembled by splicing non-conflicting text; no model was involved",
+            "rtl": [
+              "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/u123/rtl/netproc.v"
+            ],
+            "changed_files": [
+              "netproc.v"
+            ],
+            "protected": {
+              "ok": true,
+              "patterns": [
+                "cdc_*",
+                "clk_*_div*"
+              ],
+              "files": {}
+            },
+            "sec": {
+              "engine": "yosys",
+              "stage": "regcorr",
+              "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/u123/sec/regcorr",
+              "paired": 13720,
+              "unpaired_gold": 0,
+              "unpaired_gate": 0,
+              "ports_total": 54889,
+              "ports_structural": 54888,
+              "sat_ports": [
+                "xfrm_par[0]@d"
+              ],
+              "equivalent": false,
+              "method": "regcorr-unproven",
+              "reason": "register correspondence left 1 of 1 matched signals unproven; undecided, not a refutation; the bounded fallback is disabled (timeout 0)",
+              "unproven": 1,
+              "equiv_cells": 1,
+              "attempt": "ports",
+              "runtime_s": 8.31,
+              "steps": [
+                {
+                  "name": "prove",
+                  "status": "failed",
+                  "error": "unproven 1 of 1"
+                }
+              ]
+            },
+            "metrics": {
+              "status": "sec_failed",
+              "reason": "register correspondence left 1 of 1 matched signals unproven; undecided, not a refutation; the bounded fallback is disabled (timeout 0)"
+            },
+            "score": null,
+            "score_detail": null,
+            "advantage": null
+          }
+        ],
+        "agent": {
+          "id": "umerge",
+          "kind": "union",
+          "union_source": "agent",
+          "pattern": "combined fixes from several targets",
+          "strategy": "union of independently verified rewrites",
+          "included": [
+            "t2"
+          ],
+          "excluded": [
+            "t1",
+            "t3"
+          ],
+          "rationale": "All three candidates measure identically (WNS -4.8352, TNS -303.7124, area 120706.0120, score -0.3615 \u2014 a -0.3615 improvement over the parent), so the choice is based on code clarity and maintainability. t2 is selected because: (1) it preserves the crucial explanatory comment block ('Same reason as crc_next above...') that documents why par_chain_out must be a named wire to keep the protected cdc_xfrm_from_look line unedited; (2) it provides the clearest level-by-level inline comments describing each reduction stage; (3) it uses conventional naming (par_l1 through par_l8) and separates wire declaration from assignment, maintaining consistency with the original par_chain_out pattern; (4) t1 is more compact but lacks the explanatory comment context; (5) t3 adds an unnecessary explicit passthrough (par_l0 = xd_q[511:0]) and loses the protective comment. Since functional equivalence and timing are identical across all three, code maintainability and clarity determine the best choice.",
+          "conflicts_resolved": "All four contested regions (301-302, 319-320, 322-323, 327-331) are identical in substance across all three candidates \u2014 each replaces the serial par_chain with the same 9-level balanced binary tree topology. The differences are purely stylistic (naming convention, comment placement, and inline vs. separate assignment). t2's approach is selected for the superior comment structure that explains the architecture constraint.",
+          "expected_vs_mechanical": "No mechanical union was possible due to universal overlap. t2 provides not only the tree implementation but also preserves the critical architectural explanation: why par_chain_out is a wire rather than a direct assignment, which is enforced by the protection of the cdc_xfrm_from_look line. This context prevents future maintainers from 'optimizing' the code back into an unusable form.",
+          "equivalence_argument": "The balanced binary tree computes the XOR of all 512 bits of xd_q over log\u2082(512) = 9 stages instead of 512. Each stage combines pairs with XOR: par_l1[i] = xd_q[2i] \u2295 xd_q[2i+1], then par_l2[i] = par_l1[2i] \u2295 par_l1[2i+1], etc. The final result par_l8[0] \u2295 par_l8[1] is the XOR of all 512 bits, identical to the original par_chain[512] which accumulated the same result serially. XOR is associative and commutative, so any binary tree computing all-bits-XOR is functionally equivalent. No reset logic is affected (all wires are combinational), and there is no width-extension concern (XOR preserves 1-bit width at each stage). Equivalence holds cycle-for-cycle.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/umerge/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t2/sec/regcorr",
+            "paired": 13720,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 54889,
+            "ports_structural": 54888,
+            "sat_ports": [
+              "xfrm_par[0]@d"
+            ],
+            "equivalent": true,
+            "method": "regcorr",
+            "reason": "54888 of 54889 outputs matched structurally; register correspondence: all 805 matched signals in the differing cones proven (named); unbounded, holds for every clock interleaving",
+            "unproven": 0,
+            "equiv_cells": 805,
+            "attempt": null,
+            "runtime_s": 10.26,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "ok",
+                "error": null
+              }
+            ],
+            "cached": true
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -4.835153303485357,
+            "tns_ns": -303.71243446492076,
+            "violating_endpoints": 140,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_rx": {
+                  "endpoints": 63,
+                  "wns_ns": 1.282301,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse": {
+                  "endpoints": 2,
+                  "wns_ns": 2.809476,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look": {
+                  "endpoints": 8173,
+                  "wns_ns": -4.835153,
+                  "tns_ns": -43.117843,
+                  "violating_endpoints": 9
+                },
+                "clk_xfrm": {
+                  "endpoints": 260,
+                  "wns_ns": 1.267041,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx": {
+                  "endpoints": 4103,
+                  "wns_ns": -4.460366,
+                  "tns_ns": -258.252771,
+                  "violating_endpoints": 118
+                },
+                "clk_rx_div2": {
+                  "endpoints": 8,
+                  "wns_ns": 1.777987,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 5.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_parse_div4": {
+                  "endpoints": 7,
+                  "wns_ns": 2.759883,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 7.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div4": {
+                  "endpoints": 1,
+                  "wns_ns": 15.843857,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_look_div8": {
+                  "endpoints": 9,
+                  "wns_ns": 3.755155,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_xfrm_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 4.364375,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_tx_div2": {
+                  "endpoints": 260,
+                  "wns_ns": -0.345925,
+                  "tns_ns": -2.3418330000000003,
+                  "violating_endpoints": 13
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -4.835153,
+              "design_wns_ns": -4.835153303485357
+            },
+            "area_um2": 120706.012,
+            "cells": 51525,
+            "runtime_s": 93.63,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/umerge/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/merge/umerge/eval/02_sta/timing.json"
+          },
+          "score": -0.3615070825499955,
+          "score_detail": {
+            "score": -0.3615070825499955,
+            "terms": {
+              "wns": -0.160952186669289,
+              "tns": -0.20202155720677664,
+              "area": 0.0014666613260701266,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.321904373338578,
+              "tns": -0.577204449162219,
+              "area": 0.009777742173800844
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": null,
+          "vs_mechanical": null,
+          "best_mechanical": null
+        }
+      },
+      "selected": "t1",
+      "skill_learning": {
+        "recorded": [
+          "ripple-xor-chain-in-512-bit-parity-reduction::balanced-tree-reduction-instead-of-serial-cascad",
+          "512-bit-serial-xor-chain::replace-ripple-chain-with-balanced-binary-tree",
+          "serial-xor-reduction-in-parity-tree::replace-depth-512-chain-with-balanced-binary-xor"
+        ],
+        "abstracted": [
+          {
+            "id": "512-bit-serial-xor-chain::replace-ripple-chain-with-balanced-binary-tree",
+            "verdict": "effective",
+            "evidence": "All three candidates (t1, t2, t3) identified and applied this transformation. Identical outcomes: WNS=-4.8352ns, TNS=-303.7124ns, area=120706um\u00b2, SEC PASS. A_i=0 (tied); sigma=0 (zero variance)."
+          }
+        ],
+        "observations": "All three candidates converged on the same transformation with zero differentiation (sigma=0.0000, A_i=0 for all). This group provides no relative-performance signal: they are essentially three phrasings of one solution. The convergence and unanimous SEC pass validate the pattern-strategy pair as robust, but the group's identical metrics teach no strategic distinction between implementation variants. No ineffective or equivalence-breaking strategies to record.",
+        "raw_reply": "```json\n{\n  \"skills\": [\n    {\n      \"pattern\": \"Serial/ripple XOR chain, 512-bit parity reduction\",\n      \"strategy\": \"Replace with balanced binary tree reduction\",\n      \"rationale\": \"XOR is associative and commutative. A 512-stage serial chain (depth 512, gate delay ~1.3ns per stage) becomes a balanced binary tree (depth log\u2082512=9 levels, ~0.5\u20130.6ns per stage). Critical path collapses by ~50\u00d7 while computing identical output: XOR of all inputs.\",\n      \"example\": \"// Serial: parity = a[0]; for(i=1;i<512;i++) parity ^= a[i];\\n// Tree: parity = (a[0:255] ^ tree) | (a[256:511] ^ tree);  // balanced recursion\",\n      \"verdict\": \"effective\",\n      \"evidence\": \"All three candidates (t1, t2, t3) identified and applied this transformation. Identical outcomes: WNS=-4.8352ns, TNS=-303.7124ns, area=120706um\u00b2, SEC PASS. A_i=0 (tied); sigma=0 (zero variance).\"\n    }\n  ],\n  \"observations\": \"All three candidates converged on the same transformation with zero differentiation (sigma=0.0000, A_i=0 for all). This group provides no relative-performance signal: they are essentially three phrasings of one solution. The convergence and unanimous SEC pass validate the pattern-strategy pair as robust, but the group's identical metrics teach no strategic distinction between implementation variants. No ineffective or equivalence-breaking strategies to record.\"\n}\n```"
+      }
+    }
+  ],
+  "best": {
+    "id": "t1",
+    "iteration": 1,
+    "score": -0.3615070825499955,
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -4.835153303485357,
+      "tns_ns": -303.71243446492076,
+      "violating_endpoints": 140,
+      "hold_wns_ns": 0.00941800830646686,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk_rx": {
+            "endpoints": 63,
+            "wns_ns": 1.282301,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_parse": {
+            "endpoints": 2,
+            "wns_ns": 2.809476,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look": {
+            "endpoints": 8173,
+            "wns_ns": -4.835153,
+            "tns_ns": -43.117843,
+            "violating_endpoints": 9
+          },
+          "clk_xfrm": {
+            "endpoints": 260,
+            "wns_ns": 1.267041,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_tx": {
+            "endpoints": 4103,
+            "wns_ns": -4.460366,
+            "tns_ns": -258.252771,
+            "violating_endpoints": 118
+          },
+          "clk_rx_div2": {
+            "endpoints": 8,
+            "wns_ns": 1.777987,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_parse_div2": {
+            "endpoints": 1,
+            "wns_ns": 5.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_parse_div4": {
+            "endpoints": 7,
+            "wns_ns": 2.759883,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look_div2": {
+            "endpoints": 1,
+            "wns_ns": 7.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look_div4": {
+            "endpoints": 1,
+            "wns_ns": 15.843857,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_look_div8": {
+            "endpoints": 9,
+            "wns_ns": 3.755155,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_xfrm_div2": {
+            "endpoints": 1,
+            "wns_ns": 4.364375,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_tx_div2": {
+            "endpoints": 260,
+            "wns_ns": -0.345925,
+            "tns_ns": -2.3418330000000003,
+            "violating_endpoints": 13
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -4.835153,
+        "design_wns_ns": -4.835153303485357
+      },
+      "area_um2": 120706.012,
+      "cells": 51525,
+      "runtime_s": 113.14,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/eval",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/eval/02_sta/timing.json",
+      "wns_cycles": -1.20878825,
+      "tns_cycles": -47.839987535714286
+    },
+    "pattern": "Ripple XOR chain in 512-bit parity reduction",
+    "strategy": "Balanced tree reduction instead of serial cascade",
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/rtl/netproc.v"
+    ],
+    "sec": {
+      "engine": "yosys",
+      "stage": "regcorr",
+      "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/iter_01/t1/sec/regcorr",
+      "paired": 13720,
+      "unpaired_gold": 0,
+      "unpaired_gate": 0,
+      "ports_total": 54889,
+      "ports_structural": 54888,
+      "sat_ports": [
+        "xfrm_par[0]@d"
+      ],
+      "equivalent": true,
+      "method": "regcorr",
+      "reason": "54888 of 54889 outputs matched structurally; register correspondence: all 805 matched signals in the differing cones proven (named); unbounded, holds for every clock interleaving",
+      "unproven": 0,
+      "equiv_cells": 805,
+      "attempt": null,
+      "runtime_s": 10.39,
+      "steps": [
+        {
+          "name": "prove",
+          "status": "ok",
+          "error": null
+        }
+      ]
+    }
+  },
+  "convergence_steps": 1,
+  "mode": "portfolio",
+  "budget": {
+    "planned_calls": 6,
+    "actual_calls": 6
+  },
+  "cleanup": {
+    "candidates": [
+      {
+        "id": "clean0",
+        "directive_index": 0,
+        "directive": "",
+        "pattern": "Serial reduction chains in datapath",
+        "strategy": "Replace with balanced binary trees of gates",
+        "rationale": "Reduces critical-path depth from O(n) to O(log n) for parity and accumulate reductions without changing functionality",
+        "target": "par_chain (512\u21929 levels), t_acc (16\u21924 levels)",
+        "expected_slack_recovery_ns": 4.5,
+        "area_cost": "small; XOR and adder trees have identical gate count to serial chains, just rearranged",
+        "equivalence_argument": "Parity: XOR is associative and commutative; tree order doesn't change result. Accumulation: addition is associative (modulo overflow, which occurs identically for same input widths). Both reset to 0 in the same cycle. Intermediate widths unchanged\u2014all intermediate sums at each tree level are DW+4 bits, same as serial chain.",
+        "rtl": [
+          "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/cleanup/clean0/rtl/netproc.v"
+        ],
+        "changed_files": [
+          "netproc.v"
+        ],
+        "protected": {
+          "ok": true,
+          "patterns": [
+            "cdc_*",
+            "clk_*_div*"
+          ],
+          "files": {}
+        },
+        "sec": {
+          "engine": "yosys",
+          "stage": "regcorr",
+          "log": "/home/sreeavyay/astra-vlsi/runs/netproc/pf-20260915-095208/cleanup/clean0/sec/regcorr",
+          "paired": 13720,
+          "unpaired_gold": 0,
+          "unpaired_gate": 0,
+          "ports_total": 54889,
+          "ports_structural": 54628,
+          "sat_ports": [
+            "tx_sum_p[0]@d",
+            "tx_sum_p[1]@d",
+            "tx_sum_p[2]@d",
+            "tx_sum_p[3]@d",
+            "tx_sum_p[4]@d",
+            "tx_sum_p[5]@d",
+            "tx_sum_p[6]@d",
+            "tx_sum_p[7]@d",
+            "tx_sum_p[8]@d",
+            "tx_sum_p[9]@d",
+            "tx_sum_p[10]@d",
+            "tx_sum_p[11]@d",
+            "tx_sum_p[12]@d",
+            "tx_sum_p[13]@d",
+            "tx_sum_p[14]@d",
+            "tx_sum_p[15]@d",
+            "tx_sum_p[16]@d",
+            "tx_sum_p[17]@d",
+            "tx_sum_p[18]@d",
+            "tx_sum_p[19]@d"
+          ],
+          "equivalent": false,
+          "method": "regcorr-unproven",
+          "reason": "regcorr solver timed out after 300s on 261 differing port(s); the bounded fallback is disabled (timeout 0)",
+          "runtime_s": 299.42
+        },
+        "metrics": {
+          "status": "sec_failed",
+          "reason": "regcorr solver timed out after 300s on 261 differing port(s); the bounded fallback is disabled (timeout 0)"
+        },
+        "score": null,
+        "score_detail": null,
+        "advantage": null
+      }
+    ],
+    "adopted": false,
+    "gate": 0.01,
+    "reason": "no candidate passed SEC"
+  },
+  "usage": {
+    "calls": 6,
+    "input_tokens": 70,
+    "output_tokens": 76266,
+    "cache_read_input_tokens": 182597,
+    "cost_usd": 0.7285467,
+    "duration_s": 684.541
+  }
+}

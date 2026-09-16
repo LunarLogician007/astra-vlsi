@@ -2,8 +2,8 @@
   "meta": {
     "version": 1,
     "note": "Pattern-strategy skill library (paper Sec. 4.2). Entries marked source=seed are textbook transformations offered as untested suggestions: they carry zero occurrences and zero confidence and must earn their statistics from real runs, exactly like a learned entry. Entries gain occurrences, SEC-pass counts and a mean relative advantage A_i as the loop runs, and are demoted to status=invalid if they break equivalence more often than not.",
-    "updated_at": "2026-09-15T15:29:32+00:00",
-    "count": 37
+    "updated_at": "2026-09-15T17:21:32+00:00",
+    "count": 38
   },
   "skills": [
     {
@@ -39,6 +39,71 @@
       "updated_at": "2026-09-13T10:40:40+00:00"
     },
     {
+      "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+      "pattern": "Carry propagation in 40-bit final accumulate",
+      "strategy": "No equivalent optimization available",
+      "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-09T02:20:02+00:00",
+      "stats": {
+        "occurrences": 2,
+        "sec_pass": 2,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": -1.4142135623731016,
+        "advantage_n": 2,
+        "score_delta_sum": -1.2014217863983174,
+        "score_delta_n": 2,
+        "designs": [
+          "mac_chain",
+          "vending_machine"
+        ],
+        "iterations": 2
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T17:20:31+00:00"
+      },
+      "confidence": 0.3218,
+      "mean_advantage": -0.7071067811865508,
+      "status": "candidate",
+      "updated_at": "2026-09-15T17:20:31+00:00"
+    },
+    {
+      "id": "output-multiplexer-selecting-wide-arithmetic-res::move-mux-before-computation-into-single-path",
+      "pattern": "Output multiplexer selecting wide arithmetic results",
+      "strategy": "Move mux before computation into single path",
+      "rationale": "Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.",
+      "example": "// Before: two carries + output selection\nwire [N-1:0] sum_a = a + b;\nwire [N-1:0] sum_b = c + d;\nassign result = select ? sum_a : sum_b;\n\n// After: input mux + one carry\nwire [N-1:0] a_sel = select ? a : c;\nwire [N-1:0] b_sel = select ? b : d;\nassign result = a_sel + b_sel;",
+      "source": "learned",
+      "created_at": "2026-09-15T15:29:32+00:00",
+      "stats": {
+        "occurrences": 2,
+        "sec_pass": 2,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": -1.4142135623730951,
+        "advantage_n": 2,
+        "score_delta_sum": -0.7355852237860994,
+        "score_delta_n": 1,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 2
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T17:20:31+00:00"
+      },
+      "confidence": 0.3218,
+      "mean_advantage": -0.7071067811865476,
+      "status": "candidate",
+      "updated_at": "2026-09-15T17:20:31+00:00"
+    },
+    {
       "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
       "pattern": "carry propagation in sequential 40-bit additions",
       "strategy": "unable to reduce depth safely while maintaining equivalence",
@@ -71,106 +136,10 @@
       "updated_at": "2026-09-09T02:13:35+00:00"
     },
     {
-      "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
-      "pattern": "Carry propagation in 40-bit final accumulate",
-      "strategy": "No equivalent optimization available",
-      "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
-      "example": "",
-      "source": "learned",
-      "created_at": "2026-09-09T02:20:02+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": -0.7071067811865541,
-        "advantage_n": 1,
-        "score_delta_sum": -0.46583656261221806,
-        "score_delta_n": 1,
-        "designs": [
-          "mac_chain"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "mac_chain",
-        "iteration": 2,
-        "at": "2026-09-09T02:20:02+00:00"
-      },
-      "confidence": 0.2011,
-      "mean_advantage": -0.7071067811865541,
-      "status": "candidate",
-      "updated_at": "2026-09-09T02:20:02+00:00"
-    },
-    {
       "id": "mux-selecting-output-of-wide-parallel-adders::move-select-to-operands-before-single-addition",
       "pattern": "Mux selecting output of wide parallel adders",
       "strategy": "Move select to operands before single addition",
       "rationale": "Eliminates one full 1024-bit carry chain; input muxes are shallower than two parallel carries plus output selection. Expected saving: ~45% of adder depth.",
-      "example": "",
-      "source": "learned",
-      "created_at": "2026-09-15T15:28:46+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": -0.7071067811865476,
-        "advantage_n": 1,
-        "score_delta_sum": -0.7354007368701057,
-        "score_delta_n": 1,
-        "designs": [
-          "vending_machine"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "vending_machine",
-        "iteration": 1,
-        "at": "2026-09-15T15:28:46+00:00"
-      },
-      "confidence": 0.2011,
-      "mean_advantage": -0.7071067811865476,
-      "status": "candidate",
-      "updated_at": "2026-09-15T15:28:46+00:00"
-    },
-    {
-      "id": "output-multiplexer-selecting-wide-arithmetic-res::move-mux-before-computation-into-single-path",
-      "pattern": "Output multiplexer selecting wide arithmetic results",
-      "strategy": "Move mux before computation into single path",
-      "rationale": "Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.",
-      "example": "// Before: two carries + output selection\nwire [N-1:0] sum_a = a + b;\nwire [N-1:0] sum_b = c + d;\nassign result = select ? sum_a : sum_b;\n\n// After: input mux + one carry\nwire [N-1:0] a_sel = select ? a : c;\nwire [N-1:0] b_sel = select ? b : d;\nassign result = a_sel + b_sel;",
-      "source": "learned",
-      "created_at": "2026-09-15T15:29:32+00:00",
-      "stats": {
-        "occurrences": 1,
-        "sec_pass": 1,
-        "sec_fail": 0,
-        "inconclusive": 0,
-        "advantage_sum": -0.7071067811865476,
-        "advantage_n": 1,
-        "score_delta_sum": 0.0,
-        "score_delta_n": 0,
-        "designs": [
-          "vending_machine"
-        ],
-        "iterations": 1
-      },
-      "last_seen": {
-        "design": "vending_machine",
-        "iteration": 1,
-        "at": "2026-09-15T15:29:32+00:00"
-      },
-      "confidence": 0.2011,
-      "mean_advantage": -0.7071067811865476,
-      "status": "candidate",
-      "updated_at": "2026-09-15T15:29:32+00:00"
-    },
-    {
-      "id": "output-mux-in-series-with-carry-chain::move-mux-to-inputs-merge-dual-additions-into-one",
-      "pattern": "Output mux in series with carry chain",
-      "strategy": "Move mux to inputs; merge dual additions into one",
-      "rationale": "The result mux in the current code forces both carry chains to complete before selection. Muxing inputs first and performing one addition removes the output mux from the critical path and permits the synthesizer to optimize a single wide-adder datapath rather than two parallel adders.",
       "example": "",
       "source": "learned",
       "created_at": "2026-09-15T15:28:46+00:00",
@@ -261,6 +230,38 @@
       "mean_advantage": 0.0,
       "status": "candidate",
       "updated_at": "2026-09-09T16:09:00+00:00"
+    },
+    {
+      "id": "output-mux-in-series-with-carry-chain::move-mux-to-inputs-merge-dual-additions-into-one",
+      "pattern": "Output mux in series with carry chain",
+      "strategy": "Move mux to inputs; merge dual additions into one",
+      "rationale": "The result mux in the current code forces both carry chains to complete before selection. Muxing inputs first and performing one addition removes the output mux from the critical path and permits the synthesizer to optimize a single wide-adder datapath rather than two parallel adders.",
+      "example": "",
+      "source": "learned",
+      "created_at": "2026-09-15T15:28:46+00:00",
+      "stats": {
+        "occurrences": 2,
+        "sec_pass": 2,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.7071067811865476,
+        "advantage_n": 2,
+        "score_delta_sum": -0.5548244326593399,
+        "score_delta_n": 2,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 2
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T17:20:31+00:00"
+      },
+      "confidence": 0.1321,
+      "mean_advantage": 0.3535533905932738,
+      "status": "candidate",
+      "updated_at": "2026-09-15T17:20:31+00:00"
     },
     {
       "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
@@ -389,6 +390,38 @@
       "mean_advantage": 0.0,
       "status": "candidate",
       "updated_at": "2026-09-09T16:09:00+00:00"
+    },
+    {
+      "id": "wide-carry-chain-preceded-by-input-multiplexer::parallelize-computation-move-mux-to-output",
+      "pattern": "Wide carry-chain preceded by input multiplexer",
+      "strategy": "Parallelize computation, move mux to output",
+      "rationale": "Output muxing between two independent carry chains should reduce gate-level concurrency by computing both paths in parallel. However, output mux becomes critical-path suffix atop two full carry-chain delays, degrading slack versus input-mux single-path where mux delay precedes only one carry chain.",
+      "example": "// Attempted: parallel adders + output mux (ineffective)\nassign sum = sel ? (a+b) : (c+d);\n// Better: mux inputs into single adder\nassign op_a = sel ? a : c;\nassign op_b = sel ? b : d;\nassign sum = op_a + op_b;",
+      "source": "learned",
+      "created_at": "2026-09-15T17:21:32+00:00",
+      "stats": {
+        "occurrences": 1,
+        "sec_pass": 1,
+        "sec_fail": 0,
+        "inconclusive": 0,
+        "advantage_sum": 0.0,
+        "advantage_n": 0,
+        "score_delta_sum": 0.0,
+        "score_delta_n": 0,
+        "designs": [
+          "vending_machine"
+        ],
+        "iterations": 1
+      },
+      "last_seen": {
+        "design": "vending_machine",
+        "iteration": 1,
+        "at": "2026-09-15T17:21:32+00:00"
+      },
+      "confidence": 0.125,
+      "mean_advantage": null,
+      "status": "candidate",
+      "updated_at": "2026-09-15T17:21:32+00:00"
     },
     {
       "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",

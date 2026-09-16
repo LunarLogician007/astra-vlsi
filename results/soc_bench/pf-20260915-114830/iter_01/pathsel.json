@@ -1,0 +1,4707 @@
+{
+  "targets": [
+    {
+      "id": "T1",
+      "kind": "segment",
+      "rank": 1,
+      "slack_ns": -2.0384,
+      "value": 0.59667865257752,
+      "value_terms": {
+        "impact": 0.17558219091300728,
+        "severity": 1.0,
+        "tractability": 0.8383333333333334
+      },
+      "p_critical": 0.9999999999999999,
+      "tns_share": 0.11885491122526251,
+      "tns_share_truncated": false,
+      "mass_ns": 7.742208917213602,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "sys_b[3]_DFFR_X1_D",
+        "startpoint_info": null,
+        "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+        "endpoint_info": null,
+        "path_group": "clk_sys",
+        "path_type": "max",
+        "slack_ns": -2.0384,
+        "status": "VIOLATED",
+        "arrival_ns": 3.9467,
+        "required_ns": 1.9083,
+        "logic_depth": 198
+      },
+      "member_count": 33,
+      "members": [
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.9696,
+          "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.8821,
+          "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.8435,
+          "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.7586,
+          "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.7197,
+          "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.6449,
+          "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.606,
+          "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        }
+      ],
+      "stage_span": [
+        0,
+        24
+      ],
+      "delay_ns": 0.6929,
+      "delay_share": 0.1756,
+      "cell_families": {
+        "and_or": 10,
+        "xor": 6,
+        "nand_nor": 4,
+        "flop": 2
+      },
+      "cell_walk": [
+        "DFFR_X1",
+        "DFFR_X1",
+        "AND4_X1",
+        "AND4_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "OR3_X1",
+        "OR3_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND3_X1",
+        "NAND3_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "XOR2_X1",
+        "XOR2_X1"
+      ],
+      "max_fanout": 34,
+      "fanout_pins": [
+        "sys_b[3]_DFFR_X1_D/Q"
+      ],
+      "regions": [
+        {
+          "file": "soc_bench.v",
+          "line": 63,
+          "end_line": 63,
+          "via": "declaration via cone origin",
+          "stages": 20,
+          "delay_ns": 0.4794,
+          "source": [
+            "   63 |     input  wire signed [W-1:0]   sys_a,"
+          ]
+        },
+        {
+          "file": "soc_bench.v",
+          "line": 64,
+          "end_line": 64,
+          "via": "declaration via cone origin",
+          "stages": 2,
+          "delay_ns": 0.2135,
+          "source": [
+            "   64 |     input  wire signed [W-1:0]   sys_b,"
+          ]
+        }
+      ],
+      "signals": [
+        "sys_b",
+        "sys_a"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "20 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 20,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "high fanout on the critical path",
+          "evidence": "fanout 34 at sys_b[3]_DFFR_X1_D/Q (1 stage(s) at or above 8)",
+          "metric": {
+            "max_fanout": 34,
+            "threshold": 8,
+            "pins": [
+              "sys_b[3]_DFFR_X1_D/Q"
+            ]
+          }
+        },
+        {
+          "pattern": "delay concentrated in a few stages",
+          "evidence": "72% of the path delay sits in 5 of 24 stages -- a local fix can recover most of it",
+          "metric": {
+            "top5_fraction": 0.719
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "high-fanout-signal-on-the-critical-path::replicate-the-driver-so-each-load-group-has-its-",
+          "pattern": "high-fanout signal on the critical path",
+          "strategy": "replicate the driver so each load group has its own copy",
+          "rationale": "A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.",
+          "example": "reg sel_a, sel_b;  // two copies of one condition\nalways @(posedge clk) begin sel_a <= cond; sel_b <= cond; end",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.8
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "high-fanout-operand-driving-multiplier-with-38-l::replicate-operand-registers-to-split-fanout",
+          "pattern": "High-fanout operand driving multiplier with 38+ loads",
+          "strategy": "Replicate operand registers to split fanout",
+          "rationale": "A single register driving 38 gates requires large width and exhibits heavy transitional delay. Two identical registers halve the per-register load; synthesis can distribute the multiplier inputs across both copies, reducing driver-to-load capacitance and slew on each path through the Wallace tree.",
+          "example": "// Replicate high-fanout operand\nreg [39:0] operand_a, operand_b;\nalways @(*) {\n  operand_a = source;\n  operand_b = source;\n}\nwire prod1 = multiply(operand_a, factor1);\nwire prod2 = multiply(operand_b, factor2);",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 7,
+            "sec_pass": 7,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -3.4738058526759783,
+            "advantage_n": 6,
+            "score_delta_sum": -1.6661094783845731,
+            "score_delta_n": 4,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 7
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:20:09+00:00"
+          },
+          "confidence": 0.5327,
+          "mean_advantage": -0.578967642112663,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:20:09+00:00",
+          "match_score": 0.25
+        }
+      ],
+      "allowed_lines": {
+        "soc_bench.v": [
+          [
+            60,
+            67
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk_sys",
+      "period_ns": 2.0,
+      "brief": "## Target T1 -- segment, 12% of the design's timing failure\n\nrepresentative  sys_b[3]_DFFR_X1_D -> sys_acc_p[35]_DFFR_X1_Q\nslack           -2.0384 ns (102% short of a 2 ns cycle)\nclock           clk_sys, 2 ns period\nsegment         stages 0-24 of 203 on the worst path\n                0.6929 ns, 18% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.597  (impact 0.18, severity 1.00, tractability 0.84)\n\ncell mix        10x and_or, 6x xor, 4x nand_nor, 2x flop\nfanout peak     34 at sys_b[3]_DFFR_X1_D/Q\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 20 combinational cells between the launch and capture flops\n  - high fanout on the critical path: fanout 34 at sys_b[3]_DFFR_X1_D/Q (1 stage(s) at or above 8)\n  - delay concentrated in a few stages: 72% of the path delay sits in 5 of 24 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  DFFR_X1 -> DFFR_X1 -> AND4_X1 -> AND4_X1 -> NOR2_X1 -> NOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OR3_X1 -> OR3_X1 -> AND2_X1 -> AND2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OR2_X1 -> OR2_X1 -> NAND3_X1 -> NAND3_X1 -> AND2_X1 -> AND2_X1 -> XOR2_X1 -> XOR2_X1\n\nRTL this target resolves to:\n  soc_bench.v:63  20 stage(s), 0.4794 ns via declaration via cone origin\n       63 |     input  wire signed [W-1:0]   sys_a,\n  soc_bench.v:64  2 stage(s), 0.2135 ns via declaration via cone origin\n       64 |     input  wire signed [W-1:0]   sys_b,\n  signals: sys_b, sys_a\n\nskills the library offers for this pattern:\n- [UNTESTED] high-fanout signal on the critical path  ->  replicate the driver so each load group has its own copy\n    why: A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] High-fanout operand driving multiplier with 38+ loads  ->  Replicate operand registers to split fanout\n    why: A single register driving 38 gates requires large width and exhibits heavy transitional delay. Two identical registers halve the per-register load; synthesis can distribute the multiplier inputs across both copies, reducing driver-to-load capacitance and slew on each path through the Wallace tree.\n    record: 7 decided use(s), SEC pass 7/7, confidence 0.53, mean advantage -0.579, seen on mac_chain"
+    },
+    {
+      "id": "T2",
+      "kind": "segment",
+      "rank": 2,
+      "slack_ns": -2.0384,
+      "value": 0.6842500570154323,
+      "value_terms": {
+        "impact": 0.36500012670096066,
+        "severity": 1.0,
+        "tractability": 0.8500000000000001
+      },
+      "p_critical": 0.9999999999999999,
+      "tns_share": 0.24707550025814415,
+      "tns_share_truncated": false,
+      "mass_ns": 16.094498086815513,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "sys_b[3]_DFFR_X1_D",
+        "startpoint_info": null,
+        "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+        "endpoint_info": null,
+        "path_group": "clk_sys",
+        "path_type": "max",
+        "slack_ns": -2.0384,
+        "status": "VIOLATED",
+        "arrival_ns": 3.9467,
+        "required_ns": 1.9083,
+        "logic_depth": 198
+      },
+      "member_count": 33,
+      "members": [
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.9696,
+          "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.8821,
+          "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.8435,
+          "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.7586,
+          "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.7197,
+          "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.6449,
+          "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.606,
+          "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        }
+      ],
+      "stage_span": [
+        24,
+        83
+      ],
+      "delay_ns": 1.4404,
+      "delay_share": 0.365,
+      "cell_families": {
+        "xor": 39,
+        "and_or": 10,
+        "nand_nor": 10
+      },
+      "cell_walk": [
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "AND3_X1",
+        "AND3_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "NOR3_X1",
+        "NOR3_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "OR3_X1",
+        "OR3_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "OR3_X1",
+        "OR3_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1"
+      ],
+      "max_fanout": 3,
+      "fanout_pins": [],
+      "regions": [
+        {
+          "file": "soc_bench.v",
+          "line": 281,
+          "end_line": 281,
+          "via": "driver via cone origin",
+          "stages": 41,
+          "delay_ns": 0.9893,
+          "source": [
+            "  281 |             sys_acc_p <= sys_sat_val;"
+          ]
+        },
+        {
+          "file": "soc_bench.v",
+          "line": 63,
+          "end_line": 63,
+          "via": "declaration via cone origin",
+          "stages": 18,
+          "delay_ns": 0.4511,
+          "source": [
+            "   63 |     input  wire signed [W-1:0]   sys_a,"
+          ]
+        }
+      ],
+      "signals": [
+        "sys_a",
+        "sys_acc_p"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "59 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 59,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 39 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 39,
+            "aoi_oai": 0
+          }
+        },
+        {
+          "pattern": "delay spread evenly along the path",
+          "evidence": "the 5 worst of 59 stages hold only 24% of the delay -- no single hot cell; the depth itself is the problem",
+          "metric": {
+            "top5_fraction": 0.244
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 5,
+            "sec_pass": 5,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 5
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:20:09+00:00"
+          },
+          "confidence": 0.037,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:20:09+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+          "pattern": "40-bit carry propagation in balanced adder tree",
+          "strategy": "Unable to optimize while maintaining fixed latency",
+          "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T16:03:21+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 1,
+            "score_delta_sum": -0.4599339721746848,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:03:21+00:00"
+          },
+          "confidence": 0.125,
+          "mean_advantage": 0.0,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:03:21+00:00",
+          "match_score": 0.25
+        }
+      ],
+      "allowed_lines": {
+        "soc_bench.v": [
+          [
+            60,
+            66
+          ],
+          [
+            278,
+            284
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk_sys",
+      "period_ns": 2.0,
+      "brief": "## Target T2 -- segment, 25% of the design's timing failure\n\nrepresentative  sys_b[3]_DFFR_X1_D -> sys_acc_p[35]_DFFR_X1_Q\nslack           -2.0384 ns (102% short of a 2 ns cycle)\nclock           clk_sys, 2 ns period\nsegment         stages 24-83 of 203 on the worst path\n                1.4404 ns, 36% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.684  (impact 0.37, severity 1.00, tractability 0.85)\n\ncell mix        39x xor, 10x and_or, 10x nand_nor\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 59 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 39 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 59 stages hold only 24% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> AND3_X1 -> AND3_X1 -> NOR2_X1 -> NOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> NOR3_X1 -> NOR3_X1  ... 19 more ...  XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> OR3_X1 -> OR3_X1 -> AND2_X1 -> AND2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1\n\nRTL this target resolves to:\n  soc_bench.v:281  41 stage(s), 0.9893 ns via driver via cone origin\n      281 |             sys_acc_p <= sys_sat_val;\n  soc_bench.v:63  18 stage(s), 0.4511 ns via declaration via cone origin\n       63 |     input  wire signed [W-1:0]   sys_a,\n  signals: sys_a, sys_acc_p\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+    },
+    {
+      "id": "T3",
+      "kind": "segment",
+      "rank": 3,
+      "slack_ns": -2.0384,
+      "value": 0.7267379570737148,
+      "value_terms": {
+        "impact": 0.45941768238603287,
+        "severity": 1.0,
+        "tractability": 0.8500000000000001
+      },
+      "p_critical": 0.9999999999999999,
+      "tns_share": 0.310988532329919,
+      "tns_share_truncated": false,
+      "mass_ns": 20.25779299597093,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "sys_b[3]_DFFR_X1_D",
+        "startpoint_info": null,
+        "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+        "endpoint_info": null,
+        "path_group": "clk_sys",
+        "path_type": "max",
+        "slack_ns": -2.0384,
+        "status": "VIOLATED",
+        "arrival_ns": 3.9467,
+        "required_ns": 1.9083,
+        "logic_depth": 198
+      },
+      "member_count": 33,
+      "members": [
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -2.0384,
+          "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.9696,
+          "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.8821,
+          "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.8435,
+          "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.7586,
+          "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.7197,
+          "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.6449,
+          "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -1.606,
+          "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+          "startpoint": "sys_b[3]_DFFR_X1_D"
+        }
+      ],
+      "stage_span": [
+        83,
+        203
+      ],
+      "delay_ns": 1.813,
+      "delay_share": 0.4594,
+      "cell_families": {
+        "and_or": 52,
+        "nand_nor": 52,
+        "aoi_oai": 10,
+        "xor": 3,
+        "inv_buf": 2,
+        "flop": 1
+      },
+      "cell_walk": [
+        "XOR2_X1",
+        "OR3_X1",
+        "OR3_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "AND3_X1",
+        "AND3_X1",
+        "OR2_X1",
+        "OR2_X1",
+        "AOI22_X1",
+        "AOI22_X1",
+        "INV_X1",
+        "INV_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "DFFR_X1"
+      ],
+      "max_fanout": 5,
+      "fanout_pins": [],
+      "regions": [
+        {
+          "file": "soc_bench.v",
+          "line": 281,
+          "end_line": 281,
+          "via": "driver via cone origin",
+          "stages": 120,
+          "delay_ns": 1.813,
+          "source": [
+            "  281 |             sys_acc_p <= sys_sat_val;"
+          ]
+        }
+      ],
+      "signals": [
+        "sys_acc_p"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "119 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 119,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 3 XOR, 10 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 3,
+            "aoi_oai": 10
+          }
+        },
+        {
+          "pattern": "delay spread evenly along the path",
+          "evidence": "the 5 worst of 120 stages hold only 16% of the delay -- no single hot cell; the depth itself is the problem",
+          "metric": {
+            "top5_fraction": 0.163
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 5,
+            "sec_pass": 5,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 5
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:20:09+00:00"
+          },
+          "confidence": 0.037,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:20:09+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+          "pattern": "40-bit carry propagation in balanced adder tree",
+          "strategy": "Unable to optimize while maintaining fixed latency",
+          "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T16:03:21+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 1,
+            "score_delta_sum": -0.4599339721746848,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:03:21+00:00"
+          },
+          "confidence": 0.125,
+          "mean_advantage": 0.0,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:03:21+00:00",
+          "match_score": 0.25
+        }
+      ],
+      "allowed_lines": {
+        "soc_bench.v": [
+          [
+            278,
+            284
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk_sys",
+      "period_ns": 2.0,
+      "brief": "## Target T3 -- segment, 31% of the design's timing failure\n\nrepresentative  sys_b[3]_DFFR_X1_D -> sys_acc_p[35]_DFFR_X1_Q\nslack           -2.0384 ns (102% short of a 2 ns cycle)\nclock           clk_sys, 2 ns period\nsegment         stages 83-203 of 203 on the worst path\n                1.8130 ns, 46% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.727  (impact 0.46, severity 1.00, tractability 0.85)\n\ncell mix        52x and_or, 52x nand_nor, 10x aoi_oai, 3x xor, 2x inv_buf, 1x flop\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 119 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 3 XOR, 10 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 120 stages hold only 16% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XOR2_X1 -> OR3_X1 -> OR3_X1 -> AND2_X1 -> AND2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OR2_X1 -> OR2_X1 -> NAND2_X1 -> NAND2_X1 -> AND2_X1 -> AND2_X1 -> NOR2_X1 -> NOR2_X1 -> OR2_X1 -> OR2_X1 -> NAND2_X1 -> NAND2_X1 -> AND2_X1  ... 80 more ...  AND2_X1 -> AOI21_X1 -> AOI21_X1 -> OR2_X1 -> OR2_X1 -> OR2_X1 -> OR2_X1 -> AND3_X1 -> AND3_X1 -> OR2_X1 -> OR2_X1 -> AOI22_X1 -> AOI22_X1 -> INV_X1 -> INV_X1 -> NAND2_X1 -> NAND2_X1 -> OAI21_X1 -> OAI21_X1 -> DFFR_X1\n\nRTL this target resolves to:\n  soc_bench.v:281  120 stage(s), 1.8130 ns via driver via cone origin\n      281 |             sys_acc_p <= sys_sat_val;\n  signals: sys_acc_p\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+    }
+  ],
+  "k_requested": 3,
+  "k_effective": 3,
+  "collapsed": true,
+  "clusters": [
+    {
+      "members": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        29,
+        32,
+        34,
+        36,
+        37,
+        40,
+        41,
+        44,
+        45,
+        49
+      ],
+      "value": 0.975,
+      "terms": {
+        "impact": 0.9999999999999999,
+        "severity": 1.0,
+        "tractability": 0.875
+      },
+      "tns_share": 0.6769189438133251,
+      "p_critical": 0.9999999999999999
+    }
+  ],
+  "cluster_count": 45,
+  "distribution": [
+    {
+      "rank": 6,
+      "p_critical": 0.19885,
+      "slack_ns": -2.0384,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 3,
+      "p_critical": 0.19785,
+      "slack_ns": -2.0384,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 4,
+      "p_critical": 0.1963,
+      "slack_ns": -2.0384,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 5,
+      "p_critical": 0.19495,
+      "slack_ns": -2.0384,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 2,
+      "p_critical": 0.1917,
+      "slack_ns": -2.0384,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 7,
+      "p_critical": 0.01995,
+      "slack_ns": -1.9696,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 8,
+      "p_critical": 0.0003,
+      "slack_ns": -1.8821,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 1
+    },
+    {
+      "rank": 9,
+      "p_critical": 0.0001,
+      "slack_ns": -1.8435,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 1,
+      "p_critical": 0.0,
+      "slack_ns": -6.5126,
+      "status": "VIOLATED",
+      "startpoint": "aux_data[1]_DFFR_X1_D",
+      "endpoint": "aux_parity_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 10,
+      "p_critical": 0.0,
+      "slack_ns": -1.7586,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 11,
+      "p_critical": 0.0,
+      "slack_ns": -1.7197,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 12,
+      "p_critical": 0.0,
+      "slack_ns": -1.6449,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 13,
+      "p_critical": 0.0,
+      "slack_ns": -1.606,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 14,
+      "p_critical": 0.0,
+      "slack_ns": -1.5662,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[26]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 1
+    },
+    {
+      "rank": 15,
+      "p_critical": 0.0,
+      "slack_ns": -1.5231,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[26]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 16,
+      "p_critical": 0.0,
+      "slack_ns": -1.4483,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[25]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 17,
+      "p_critical": 0.0,
+      "slack_ns": -1.4094,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[24]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 18,
+      "p_critical": 0.0,
+      "slack_ns": -1.3295,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[23]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 19,
+      "p_critical": 0.0,
+      "slack_ns": -1.2907,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[22]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 20,
+      "p_critical": 0.0,
+      "slack_ns": -1.2604,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[20]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 1
+    },
+    {
+      "rank": 21,
+      "p_critical": 0.0,
+      "slack_ns": -1.2175,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[20]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 22,
+      "p_critical": 0.0,
+      "slack_ns": -1.1426,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[19]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 23,
+      "p_critical": 0.0,
+      "slack_ns": -1.1038,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[18]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 24,
+      "p_critical": 0.0,
+      "slack_ns": -1.0289,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[17]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 25,
+      "p_critical": 0.0,
+      "slack_ns": -1.0248,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[35]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 26,
+      "p_critical": 0.0,
+      "slack_ns": -1.0248,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[36]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 27,
+      "p_critical": 0.0,
+      "slack_ns": -1.0248,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[37]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 28,
+      "p_critical": 0.0,
+      "slack_ns": -1.0248,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[38]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 29,
+      "p_critical": 0.0,
+      "slack_ns": -1.0248,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[39]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 30,
+      "p_critical": 0.0,
+      "slack_ns": -0.99,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[16]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 31,
+      "p_critical": 0.0,
+      "slack_ns": -0.9463,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[34]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 32,
+      "p_critical": 0.0,
+      "slack_ns": -0.9331,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[33]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 33,
+      "p_critical": 0.0,
+      "slack_ns": -0.9152,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[15]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 34,
+      "p_critical": 0.0,
+      "slack_ns": -0.8947,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[32]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 35,
+      "p_critical": 0.0,
+      "slack_ns": -0.8763,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[14]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 36,
+      "p_critical": 0.0,
+      "slack_ns": -0.8101,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[31]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 37,
+      "p_critical": 0.0,
+      "slack_ns": -0.8014,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[13]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 38,
+      "p_critical": 0.0,
+      "slack_ns": -0.7626,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[12]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 39,
+      "p_critical": 0.0,
+      "slack_ns": -0.7275,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[30]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 40,
+      "p_critical": 0.0,
+      "slack_ns": -0.6964,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[29]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 41,
+      "p_critical": 0.0,
+      "slack_ns": -0.6877,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[11]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 42,
+      "p_critical": 0.0,
+      "slack_ns": -0.6488,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[10]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 43,
+      "p_critical": 0.0,
+      "slack_ns": -0.6138,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[28]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 44,
+      "p_critical": 0.0,
+      "slack_ns": -0.5828,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[27]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 45,
+      "p_critical": 0.0,
+      "slack_ns": -0.574,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[9]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 46,
+      "p_critical": 0.0,
+      "slack_ns": -0.5351,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[8]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 47,
+      "p_critical": 0.0,
+      "slack_ns": -0.5001,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[26]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 48,
+      "p_critical": 0.0,
+      "slack_ns": -0.4691,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[25]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 49,
+      "p_critical": 0.0,
+      "slack_ns": -0.3864,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[24]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 50,
+      "p_critical": 0.0,
+      "slack_ns": -0.3666,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[7]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 51,
+      "p_critical": 0.0,
+      "slack_ns": -0.3554,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[23]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 52,
+      "p_critical": 0.0,
+      "slack_ns": -0.2844,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[22]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 53,
+      "p_critical": 0.0,
+      "slack_ns": -0.2713,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[21]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 54,
+      "p_critical": 0.0,
+      "slack_ns": -0.2343,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[6]_DFFR_X1_Q",
+      "cone": 3
+    },
+    {
+      "rank": 55,
+      "p_critical": 0.0,
+      "slack_ns": -0.1901,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[5]_DFFR_X1_Q",
+      "cone": 3
+    },
+    {
+      "rank": 56,
+      "p_critical": 0.0,
+      "slack_ns": -0.1836,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[20]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 57,
+      "p_critical": 0.0,
+      "slack_ns": -0.1525,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[19]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 58,
+      "p_critical": 0.0,
+      "slack_ns": -0.0699,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[18]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 59,
+      "p_critical": 0.0,
+      "slack_ns": -0.0682,
+      "status": "VIOLATED",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[4]_DFFR_X1_Q",
+      "cone": 3
+    },
+    {
+      "rank": 60,
+      "p_critical": 0.0,
+      "slack_ns": -0.0389,
+      "status": "VIOLATED",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[17]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 61,
+      "p_critical": 0.0,
+      "slack_ns": 0.0438,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[16]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 62,
+      "p_critical": 0.0,
+      "slack_ns": 0.0748,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[15]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 63,
+      "p_critical": 0.0,
+      "slack_ns": 0.1129,
+      "status": "MET",
+      "startpoint": "sys_b[3]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[3]_DFFR_X1_Q",
+      "cone": 3
+    },
+    {
+      "rank": 64,
+      "p_critical": 0.0,
+      "slack_ns": 0.1639,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[14]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 65,
+      "p_critical": 0.0,
+      "slack_ns": 0.201,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[13]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 66,
+      "p_critical": 0.0,
+      "slack_ns": 0.2307,
+      "status": "MET",
+      "startpoint": "sys_b_q[0][0]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[2]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 67,
+      "p_critical": 0.0,
+      "slack_ns": 0.289,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[12]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 68,
+      "p_critical": 0.0,
+      "slack_ns": 0.3201,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[11]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 69,
+      "p_critical": 0.0,
+      "slack_ns": 0.3814,
+      "status": "MET",
+      "startpoint": "sys_b_q[0][0]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 70,
+      "p_critical": 0.0,
+      "slack_ns": 0.4923,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[10]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 71,
+      "p_critical": 0.0,
+      "slack_ns": 0.5365,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[9]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 72,
+      "p_critical": 0.0,
+      "slack_ns": 0.6004,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[39]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 73,
+      "p_critical": 0.0,
+      "slack_ns": 0.6133,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[8]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 74,
+      "p_critical": 0.0,
+      "slack_ns": 0.6512,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[38]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 75,
+      "p_critical": 0.0,
+      "slack_ns": 0.6534,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[7]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 76,
+      "p_critical": 0.0,
+      "slack_ns": 0.6636,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[37]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 77,
+      "p_critical": 0.0,
+      "slack_ns": 0.6734,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[36]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 78,
+      "p_critical": 0.0,
+      "slack_ns": 0.733,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[35]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 79,
+      "p_critical": 0.0,
+      "slack_ns": 0.7485,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[34]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 80,
+      "p_critical": 0.0,
+      "slack_ns": 0.7527,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[33]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 81,
+      "p_critical": 0.0,
+      "slack_ns": 0.8166,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[32]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 82,
+      "p_critical": 0.0,
+      "slack_ns": 0.8321,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[31]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 83,
+      "p_critical": 0.0,
+      "slack_ns": 0.8419,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[30]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 84,
+      "p_critical": 0.0,
+      "slack_ns": 0.9014,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[6]_DFFR_X1_Q",
+      "cone": 6
+    },
+    {
+      "rank": 85,
+      "p_critical": 0.0,
+      "slack_ns": 0.9015,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[29]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 86,
+      "p_critical": 0.0,
+      "slack_ns": 0.917,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[28]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 87,
+      "p_critical": 0.0,
+      "slack_ns": 0.9212,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[27]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 88,
+      "p_critical": 0.0,
+      "slack_ns": 0.9729,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[5]_DFFR_X1_Q",
+      "cone": 6
+    },
+    {
+      "rank": 89,
+      "p_critical": 0.0,
+      "slack_ns": 0.9811,
+      "status": "MET",
+      "startpoint": "sys_b_q[0][0]_DFFR_X1_D",
+      "endpoint": "sys_acc_p[1]_DFFR_X1_Q_D_OAI22_X1_ZN_B1_NOR2_X1_ZN_A1_NAND2_X1_A2_ZN_OAI22_X1_B2_ZN_DFFR_X1_D",
+      "cone": 4
+    },
+    {
+      "rank": 90,
+      "p_critical": 0.0,
+      "slack_ns": 0.9851,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[26]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 91,
+      "p_critical": 0.0,
+      "slack_ns": 1.0006,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[25]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 92,
+      "p_critical": 0.0,
+      "slack_ns": 1.0104,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[24]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 93,
+      "p_critical": 0.0,
+      "slack_ns": 1.0341,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[4]_DFFR_X1_Q",
+      "cone": 6
+    },
+    {
+      "rank": 94,
+      "p_critical": 0.0,
+      "slack_ns": 1.07,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[23]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 95,
+      "p_critical": 0.0,
+      "slack_ns": 1.0834,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[3]_DFFR_X1_Q",
+      "cone": 6
+    },
+    {
+      "rank": 96,
+      "p_critical": 0.0,
+      "slack_ns": 1.0855,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[22]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 97,
+      "p_critical": 0.0,
+      "slack_ns": 1.0897,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[21]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 98,
+      "p_critical": 0.0,
+      "slack_ns": 1.123,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[2]_DFFR_X1_Q",
+      "cone": 7
+    },
+    {
+      "rank": 99,
+      "p_critical": 0.0,
+      "slack_ns": 1.1536,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[20]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 100,
+      "p_critical": 0.0,
+      "slack_ns": 1.1691,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[19]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 101,
+      "p_critical": 0.0,
+      "slack_ns": 1.1789,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[18]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 102,
+      "p_critical": 0.0,
+      "slack_ns": 1.2385,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[17]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 103,
+      "p_critical": 0.0,
+      "slack_ns": 1.254,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[16]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 104,
+      "p_critical": 0.0,
+      "slack_ns": 1.2638,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[15]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 105,
+      "p_critical": 0.0,
+      "slack_ns": 1.3234,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[14]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 106,
+      "p_critical": 0.0,
+      "slack_ns": 1.3388,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[13]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 107,
+      "p_critical": 0.0,
+      "slack_ns": 1.3487,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[12]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 108,
+      "p_critical": 0.0,
+      "slack_ns": 1.4025,
+      "status": "MET",
+      "startpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "dsp_corr_p[1]_DFFR_X1_Q",
+      "cone": 7
+    },
+    {
+      "rank": 109,
+      "p_critical": 0.0,
+      "slack_ns": 1.4083,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[11]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 110,
+      "p_critical": 0.0,
+      "slack_ns": 1.4237,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[10]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 111,
+      "p_critical": 0.0,
+      "slack_ns": 1.4336,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[9]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 112,
+      "p_critical": 0.0,
+      "slack_ns": 1.4931,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[8]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 113,
+      "p_critical": 0.0,
+      "slack_ns": 1.5086,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[7]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 114,
+      "p_critical": 0.0,
+      "slack_ns": 1.5184,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[6]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 115,
+      "p_critical": 0.0,
+      "slack_ns": 1.5336,
+      "status": "MET",
+      "startpoint": "sys_valid_DFFR_X1_D",
+      "endpoint": "sys_sat_p_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 116,
+      "p_critical": 0.0,
+      "slack_ns": 1.5385,
+      "status": "MET",
+      "startpoint": "sys_sat_DFFR_X1_Q",
+      "endpoint": "sys_sat",
+      "cone": 10
+    },
+    {
+      "rank": 117,
+      "p_critical": 0.0,
+      "slack_ns": 1.5781,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[5]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 118,
+      "p_critical": 0.0,
+      "slack_ns": 1.5937,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[4]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 119,
+      "p_critical": 0.0,
+      "slack_ns": 1.6038,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[3]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 120,
+      "p_critical": 0.0,
+      "slack_ns": 1.6079,
+      "status": "MET",
+      "startpoint": "sys_valid",
+      "endpoint": "sys_valid_DFFR_X1_D",
+      "cone": 11
+    },
+    {
+      "rank": 121,
+      "p_critical": 0.0,
+      "slack_ns": 1.649,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[2]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 122,
+      "p_critical": 0.0,
+      "slack_ns": 1.684,
+      "status": "MET",
+      "startpoint": "sys_b_q[2][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[3][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 123,
+      "p_critical": 0.0,
+      "slack_ns": 1.684,
+      "status": "MET",
+      "startpoint": "sys_b_q[4][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[5][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 124,
+      "p_critical": 0.0,
+      "slack_ns": 1.684,
+      "status": "MET",
+      "startpoint": "sys_b_q[6][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[7][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 125,
+      "p_critical": 0.0,
+      "slack_ns": 1.684,
+      "status": "MET",
+      "startpoint": "sys_b_q[8][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[9][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 126,
+      "p_critical": 0.0,
+      "slack_ns": 1.6841,
+      "status": "MET",
+      "startpoint": "sys_b_q[0][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[2][0]_DFFR_X1_Q",
+      "cone": 12
+    },
+    {
+      "rank": 127,
+      "p_critical": 0.0,
+      "slack_ns": 1.6858,
+      "status": "MET",
+      "startpoint": "sys_b_q[9][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[11][0]_DFFR_X1_Q",
+      "cone": 12
+    },
+    {
+      "rank": 128,
+      "p_critical": 0.0,
+      "slack_ns": 1.6858,
+      "status": "MET",
+      "startpoint": "sys_b_q[3][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[4][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 129,
+      "p_critical": 0.0,
+      "slack_ns": 1.6858,
+      "status": "MET",
+      "startpoint": "sys_b_q[5][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[6][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 130,
+      "p_critical": 0.0,
+      "slack_ns": 1.6858,
+      "status": "MET",
+      "startpoint": "sys_b_q[7][0]_DFFR_X1_D",
+      "endpoint": "sys_b_q[8][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 131,
+      "p_critical": 0.0,
+      "slack_ns": 1.6881,
+      "status": "MET",
+      "startpoint": "sys_b_q[2][0]_DFFR_X1_Q",
+      "endpoint": "sys_b_q[2][0]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 132,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[9][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[11][3]_DFFR_X1_Q",
+      "cone": 12
+    },
+    {
+      "rank": 133,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[0][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[1][3]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 134,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[1][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[2][3]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 135,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[2][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[3][3]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 136,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[3][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[4][3]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 137,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[4][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[5][3]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 138,
+      "p_critical": 0.0,
+      "slack_ns": 1.6901,
+      "status": "MET",
+      "startpoint": "sys_b_q[5][3]_DFFR_X1_D",
+      "endpoint": "sys_b_q[6][3]_DFFR_X1_D",
+      "cone": 12
+    },
+    {
+      "rank": 139,
+      "p_critical": 0.0,
+      "slack_ns": 1.6972,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q",
+      "endpoint": "sys_acc[1]_DFFR_X1_Q",
+      "cone": 13
+    },
+    {
+      "rank": 140,
+      "p_critical": 0.0,
+      "slack_ns": 1.7464,
+      "status": "MET",
+      "startpoint": "sys_acc_p[1]_DFFR_X1_Q_D_OAI22_X1_ZN_B1_NOR2_X1_ZN_A1_NAND2_X1_A2_ZN_OAI22_X1_B2_ZN_DFFR_X1_D",
+      "endpoint": "sys_acc[0]_DFFR_X1_Q",
+      "cone": 13
+    },
+    {
+      "rank": 141,
+      "p_critical": 0.0,
+      "slack_ns": 1.8042,
+      "status": "MET",
+      "startpoint": "sys_sat_p_DFFR_X1_Q",
+      "endpoint": "sys_sat_DFFR_X1_Q",
+      "cone": 14
+    },
+    {
+      "rank": 142,
+      "p_critical": 0.0,
+      "slack_ns": 1.9849,
+      "status": "MET",
+      "startpoint": "mem_tags[0][2]_DFFR_X1_D",
+      "endpoint": "mem_idx_p[2]_DFFR_X1_Q",
+      "cone": 15
+    },
+    {
+      "rank": 143,
+      "p_critical": 0.0,
+      "slack_ns": 1.9849,
+      "status": "MET",
+      "startpoint": "mem_tags[0][2]_DFFR_X1_D",
+      "endpoint": "mem_idx_p[3]_DFFR_X1_Q",
+      "cone": 15
+    },
+    {
+      "rank": 144,
+      "p_critical": 0.0,
+      "slack_ns": 1.9849,
+      "status": "MET",
+      "startpoint": "mem_tags[0][2]_DFFR_X1_D",
+      "endpoint": "mem_idx_p[5]_DFFR_X1_Q",
+      "cone": 15
+    },
+    {
+      "rank": 145,
+      "p_critical": 0.0,
+      "slack_ns": 1.9997,
+      "status": "MET",
+      "startpoint": "dsp_coef_q[1][0]_DFFR_X1_Q",
+      "endpoint": "dsp_corr_p[0]_DFFR_X1_Q",
+      "cone": 16
+    },
+    {
+      "rank": 146,
+      "p_critical": 0.0,
+      "slack_ns": 2.0215,
+      "status": "MET",
+      "startpoint": "mem_tags[0][2]_DFFR_X1_D",
+      "endpoint": "mem_idx_p[1]_DFFR_X1_Q",
+      "cone": 15
+    },
+    {
+      "rank": 147,
+      "p_critical": 0.0,
+      "slack_ns": 2.0443,
+      "status": "MET",
+      "startpoint": "mem_tags[0][2]_DFFR_X1_D",
+      "endpoint": "mem_idx_p[0]_DFFR_X1_Q",
+      "cone": 15
+    },
+    {
+      "rank": 148,
+      "p_critical": 0.0,
+      "slack_ns": 2.0548,
+      "status": "MET",
+      "startpoint": "mem_tags[0][2]_DFFR_X1_D",
+      "endpoint": "mem_hit_p_DFFR_X1_Q",
+      "cone": 15
+    },
+    {
+      "rank": 149,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_in[0]_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 17
+    },
+    {
+      "rank": 150,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[10][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 151,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[1][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 152,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[2][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 153,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[3][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 154,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[4][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 155,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[5][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 156,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[6][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 157,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[7][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 158,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[8][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 159,
+      "p_critical": 0.0,
+      "slack_ns": 2.4066,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[9][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 160,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[11][0]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 161,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_in[12]_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 17
+    },
+    {
+      "rank": 162,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_in[3]_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 17
+    },
+    {
+      "rank": 163,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_in[9]_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 17
+    },
+    {
+      "rank": 164,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[10][12]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 165,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[10][3]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 166,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[10][9]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 167,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[11][12]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 168,
+      "p_critical": 0.0,
+      "slack_ns": 2.4067,
+      "status": "MET",
+      "startpoint": "dsp_coef_we",
+      "endpoint": "dsp_coef_q[11][3]_DFFR_X1_Q",
+      "cone": 18
+    },
+    {
+      "rank": 169,
+      "p_critical": 0.0,
+      "slack_ns": 2.4515,
+      "status": "MET",
+      "startpoint": "mem_tags[1][30]_DFFR_X1_Q",
+      "endpoint": "mem_idx_p[4]_DFFR_X1_Q",
+      "cone": 19
+    },
+    {
+      "rank": 170,
+      "p_critical": 0.0,
+      "slack_ns": 2.7552,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[0]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[0]_DFFR_X1_Q",
+      "cone": 20
+    },
+    {
+      "rank": 171,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[11]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[11]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 172,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[13]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[13]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 173,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[15]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[15]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 174,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[17]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[17]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 175,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[19]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[19]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 176,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[23]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[23]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 177,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[25]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[25]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 178,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[27]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[27]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 179,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[29]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[29]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 180,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[31]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[31]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 181,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[32]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[32]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 182,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[34]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[34]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 183,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[35]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[35]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 184,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[36]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[36]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 185,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[37]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[37]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 186,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[38]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[38]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 187,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[39]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[39]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 188,
+      "p_critical": 0.0,
+      "slack_ns": 2.8042,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[9]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[9]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 189,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[10]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[10]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 190,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[12]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[12]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 191,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[14]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[14]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 192,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[16]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[16]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 193,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[18]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[18]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 194,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[1]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[1]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 195,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[20]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[20]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 196,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[22]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[22]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 197,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[24]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[24]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 198,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[26]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[26]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 199,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[28]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[28]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 200,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[2]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[2]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 201,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[30]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[30]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 202,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[3]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[3]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 203,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[4]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[4]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 204,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[5]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[5]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 205,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[6]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[6]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 206,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[7]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[7]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 207,
+      "p_critical": 0.0,
+      "slack_ns": 2.8043,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[8]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[8]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 208,
+      "p_critical": 0.0,
+      "slack_ns": 2.8063,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[21]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[21]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 209,
+      "p_critical": 0.0,
+      "slack_ns": 2.8063,
+      "status": "MET",
+      "startpoint": "dsp_corr_p[33]_DFFR_X1_Q",
+      "endpoint": "dsp_corr[33]_DFFR_X1_Q",
+      "cone": 21
+    },
+    {
+      "rank": 210,
+      "p_critical": 0.0,
+      "slack_ns": 3.2354,
+      "status": "MET",
+      "startpoint": "mem_hit_DFFR_X1_Q",
+      "endpoint": "mem_hit",
+      "cone": 22
+    },
+    {
+      "rank": 211,
+      "p_critical": 0.0,
+      "slack_ns": 3.3079,
+      "status": "MET",
+      "startpoint": "mem_search",
+      "endpoint": "mem_search_DFFR_X1_D",
+      "cone": 23
+    },
+    {
+      "rank": 212,
+      "p_critical": 0.0,
+      "slack_ns": 3.6397,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[10]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 213,
+      "p_critical": 0.0,
+      "slack_ns": 3.6397,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[4]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 214,
+      "p_critical": 0.0,
+      "slack_ns": 3.6397,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[7]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 215,
+      "p_critical": 0.0,
+      "slack_ns": 3.6466,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[13]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 216,
+      "p_critical": 0.0,
+      "slack_ns": 3.6624,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[12]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 217,
+      "p_critical": 0.0,
+      "slack_ns": 3.6784,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[6]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 218,
+      "p_critical": 0.0,
+      "slack_ns": 3.6811,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[16]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 219,
+      "p_critical": 0.0,
+      "slack_ns": 3.6852,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[25]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 220,
+      "p_critical": 0.0,
+      "slack_ns": 3.6858,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[8]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 221,
+      "p_critical": 0.0,
+      "slack_ns": 3.6932,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[9]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 222,
+      "p_critical": 0.0,
+      "slack_ns": 3.6968,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[3]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 223,
+      "p_critical": 0.0,
+      "slack_ns": 3.7007,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[2]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 224,
+      "p_critical": 0.0,
+      "slack_ns": 3.7018,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[14]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 225,
+      "p_critical": 0.0,
+      "slack_ns": 3.7134,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[11]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 226,
+      "p_critical": 0.0,
+      "slack_ns": 3.726,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[23]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 227,
+      "p_critical": 0.0,
+      "slack_ns": 3.726,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[5]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 228,
+      "p_critical": 0.0,
+      "slack_ns": 3.7321,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[17]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 229,
+      "p_critical": 0.0,
+      "slack_ns": 3.7334,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[18]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 230,
+      "p_critical": 0.0,
+      "slack_ns": 3.7463,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[27]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 231,
+      "p_critical": 0.0,
+      "slack_ns": 3.7477,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[15]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 232,
+      "p_critical": 0.0,
+      "slack_ns": 3.7571,
+      "status": "MET",
+      "startpoint": "mem_idx_p[0]_DFFR_X1_Q",
+      "endpoint": "mem_hit_idx[0]_DFFR_X1_Q",
+      "cone": 26
+    },
+    {
+      "rank": 233,
+      "p_critical": 0.0,
+      "slack_ns": 3.7607,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[24]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 234,
+      "p_critical": 0.0,
+      "slack_ns": 3.7659,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[26]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 235,
+      "p_critical": 0.0,
+      "slack_ns": 3.778,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[1]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 236,
+      "p_critical": 0.0,
+      "slack_ns": 3.7974,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[29]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 237,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[9][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[11][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 238,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[9][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[11][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 239,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[9][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[11][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 240,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[11][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[13][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 241,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[11][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[13][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 242,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[11][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[13][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 243,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[16][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[17][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 244,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[16][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[17][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 245,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[16][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[17][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 246,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[17][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[18][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 247,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[17][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[18][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 248,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[17][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[18][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 249,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[18][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[20][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 250,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[18][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[20][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 251,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[18][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[20][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 252,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[22][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[24][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 253,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[22][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[24][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 254,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[22][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[24][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 255,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[24][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[25][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 256,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[24][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[25][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 257,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[24][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[25][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 258,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[25][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[27][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 259,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[25][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[27][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 260,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[25][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[27][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 261,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[29][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[30][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 262,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[29][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[30][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 263,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[29][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[30][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 264,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[30][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[32][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 265,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[30][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[32][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 266,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[30][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[32][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 267,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[33][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[34][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 268,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[33][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[34][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 269,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[33][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[34][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 270,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[34][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[36][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 271,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[34][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[36][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 272,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[34][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[36][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 273,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[36][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[38][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 274,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[36][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[38][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 275,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[36][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[38][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 276,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[40][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[41][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 277,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[40][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[41][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 278,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[40][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[41][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 279,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[41][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[43][12]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 280,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[41][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[43][20]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 281,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[41][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[43][30]_DFFR_X1_Q",
+      "cone": 27
+    },
+    {
+      "rank": 282,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[43][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[44][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 283,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[43][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[44][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 284,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[43][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[44][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 285,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[44][12]_DFFR_X1_D",
+      "endpoint": "mem_tags[45][12]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 286,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[44][20]_DFFR_X1_D",
+      "endpoint": "mem_tags[45][20]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 287,
+      "p_critical": 0.0,
+      "slack_ns": 3.7996,
+      "status": "MET",
+      "startpoint": "mem_tags[44][30]_DFFR_X1_D",
+      "endpoint": "mem_tags[45][30]_DFFR_X1_D",
+      "cone": 27
+    },
+    {
+      "rank": 288,
+      "p_critical": 0.0,
+      "slack_ns": 3.8002,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[22]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 289,
+      "p_critical": 0.0,
+      "slack_ns": 3.8042,
+      "status": "MET",
+      "startpoint": "mem_idx_p[1]_DFFR_X1_Q",
+      "endpoint": "mem_hit_idx[1]_DFFR_X1_Q",
+      "cone": 28
+    },
+    {
+      "rank": 290,
+      "p_critical": 0.0,
+      "slack_ns": 3.8063,
+      "status": "MET",
+      "startpoint": "mem_hit_p_DFFR_X1_Q",
+      "endpoint": "mem_hit_DFFR_X1_Q",
+      "cone": 29
+    },
+    {
+      "rank": 291,
+      "p_critical": 0.0,
+      "slack_ns": 3.8063,
+      "status": "MET",
+      "startpoint": "mem_idx_p[2]_DFFR_X1_Q",
+      "endpoint": "mem_hit_idx[2]_DFFR_X1_Q",
+      "cone": 28
+    },
+    {
+      "rank": 292,
+      "p_critical": 0.0,
+      "slack_ns": 3.8063,
+      "status": "MET",
+      "startpoint": "mem_idx_p[3]_DFFR_X1_Q",
+      "endpoint": "mem_hit_idx[3]_DFFR_X1_Q",
+      "cone": 28
+    },
+    {
+      "rank": 293,
+      "p_critical": 0.0,
+      "slack_ns": 3.8063,
+      "status": "MET",
+      "startpoint": "mem_idx_p[4]_DFFR_X1_Q",
+      "endpoint": "mem_hit_idx[4]_DFFR_X1_Q",
+      "cone": 28
+    },
+    {
+      "rank": 294,
+      "p_critical": 0.0,
+      "slack_ns": 3.8063,
+      "status": "MET",
+      "startpoint": "mem_idx_p[5]_DFFR_X1_Q",
+      "endpoint": "mem_hit_idx[5]_DFFR_X1_Q",
+      "cone": 28
+    },
+    {
+      "rank": 295,
+      "p_critical": 0.0,
+      "slack_ns": 3.8064,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[28]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 296,
+      "p_critical": 0.0,
+      "slack_ns": 3.8117,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[19]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 297,
+      "p_critical": 0.0,
+      "slack_ns": 3.8392,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[0]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 298,
+      "p_critical": 0.0,
+      "slack_ns": 3.8836,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[21]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 299,
+      "p_critical": 0.0,
+      "slack_ns": 3.8939,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[20]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 300,
+      "p_critical": 0.0,
+      "slack_ns": 3.8939,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[30]_DFFS_X1_Q",
+      "cone": 25
+    },
+    {
+      "rank": 301,
+      "p_critical": 0.0,
+      "slack_ns": 3.9458,
+      "status": "MET",
+      "startpoint": "aux_data[0]_DFFR_X1_D",
+      "endpoint": "aux_crc[31]_DFFS_X1_Q",
+      "cone": 24
+    },
+    {
+      "rank": 302,
+      "p_critical": 0.0,
+      "slack_ns": 4.0885,
+      "status": "MET",
+      "startpoint": "aux_parity_DFFR_X1_Q",
+      "endpoint": "aux_parity",
+      "cone": 30
+    },
+    {
+      "rank": 303,
+      "p_critical": 0.0,
+      "slack_ns": 4.1579,
+      "status": "MET",
+      "startpoint": "aux_valid",
+      "endpoint": "aux_valid_DFFR_X1_D",
+      "cone": 31
+    },
+    {
+      "rank": 304,
+      "p_critical": 0.0,
+      "slack_ns": 4.8095,
+      "status": "MET",
+      "startpoint": "dsp_corr[0]_DFFR_X1_D",
+      "endpoint": "cdc_aux_from_dsp[0]_DFFR_X1_D",
+      "cone": 32
+    },
+    {
+      "rank": 305,
+      "p_critical": 0.0,
+      "slack_ns": 4.8439,
+      "status": "MET",
+      "startpoint": "clk_aux_div2_r_DFFR_X1_Q",
+      "endpoint": "clk_aux_div2_r_DFFR_X1_Q",
+      "cone": 33
+    },
+    {
+      "rank": 306,
+      "p_critical": 0.0,
+      "slack_ns": 5.8439,
+      "status": "MET",
+      "startpoint": "clk_dsp_div2_r_DFFR_X1_CK",
+      "endpoint": "clk_dsp_div2_r_DFFR_X1_CK",
+      "cone": 34
+    },
+    {
+      "rank": 307,
+      "p_critical": 0.0,
+      "slack_ns": 6.4467,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[7]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 308,
+      "p_critical": 0.0,
+      "slack_ns": 6.4787,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[6]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 309,
+      "p_critical": 0.0,
+      "slack_ns": 6.4806,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[5]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 310,
+      "p_critical": 0.0,
+      "slack_ns": 6.5112,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[5]_AND4_X1_A2_A4_AOI211_X1_C1_ZN_DFFR_X1_D",
+      "cone": 35
+    },
+    {
+      "rank": 311,
+      "p_critical": 0.0,
+      "slack_ns": 6.5199,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[5]_NOR2_X1_A1_A2_NOR3_X1_A2_ZN_DFFR_X1_D",
+      "cone": 35
+    },
+    {
+      "rank": 312,
+      "p_critical": 0.0,
+      "slack_ns": 6.5289,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_frame_ok_DFFR_X1_Q_D_NOR3_X1_ZN_A2_DFFR_X1_QN",
+      "cone": 36
+    },
+    {
+      "rank": 313,
+      "p_critical": 0.0,
+      "slack_ns": 6.5289,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_rx_byte[4]_NAND4_X1_A1_ZN_NOR2_X1_A1_ZN_AOI221_X1_C2_ZN_NAND2_X1_A2_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+      "cone": 36
+    },
+    {
+      "rank": 314,
+      "p_critical": 0.0,
+      "slack_ns": 6.5316,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_frame_ok_DFFR_X1_Q_D_NOR3_X1_ZN_A2_NOR3_X1_A2_A3_DFFR_X1_QN",
+      "cone": 36
+    },
+    {
+      "rank": 315,
+      "p_critical": 0.0,
+      "slack_ns": 6.555,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[1]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 316,
+      "p_critical": 0.0,
+      "slack_ns": 6.5732,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[1]_DFFR_X1_Q_D_NOR3_X1_ZN_A2_NOR2_X1_A2_ZN_NOR3_X1_A3_ZN_DFFR_X1_D",
+      "cone": 35
+    },
+    {
+      "rank": 317,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[0]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 318,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[1]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 319,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[2]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 320,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[3]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 321,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[4]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 322,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[5]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 323,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[6]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 324,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_check[7]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 325,
+      "p_critical": 0.0,
+      "slack_ns": 6.592,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_count[0]_DFFR_X1_Q",
+      "cone": 35
+    },
+    {
+      "rank": 326,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[0]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 327,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[1]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 328,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[2]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 329,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[3]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 330,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[4]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 331,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[5]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 332,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[6]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 333,
+      "p_critical": 0.0,
+      "slack_ns": 6.5941,
+      "status": "MET",
+      "startpoint": "io_rx_valid",
+      "endpoint": "io_len[7]_DFFR_X1_Q",
+      "cone": 37
+    },
+    {
+      "rank": 334,
+      "p_critical": 0.0,
+      "slack_ns": 6.6385,
+      "status": "MET",
+      "startpoint": "io_frame_ok_DFFR_X1_Q",
+      "endpoint": "io_frame_ok",
+      "cone": 38
+    },
+    {
+      "rank": 335,
+      "p_critical": 0.0,
+      "slack_ns": 7.776,
+      "status": "MET",
+      "startpoint": "io_frame_ok_DFFR_X1_Q_D_NOR3_X1_ZN_A2_NOR3_X1_A2_A3_DFFR_X1_QN",
+      "endpoint": "io_frame_ok_DFFR_X1_Q",
+      "cone": 38
+    },
+    {
+      "rank": 336,
+      "p_critical": 0.0,
+      "slack_ns": 7.7806,
+      "status": "MET",
+      "startpoint": "io_frame_ok_DFFR_X1_Q_D_NOR3_X1_ZN_A2_NOR3_X1_A2_A3_DFFR_X1_QN",
+      "endpoint": "io_status[6]_DFFR_X1_Q",
+      "cone": 38
+    },
+    {
+      "rank": 337,
+      "p_critical": 0.0,
+      "slack_ns": 7.7833,
+      "status": "MET",
+      "startpoint": "io_frame_ok_DFFR_X1_Q_D_NOR3_X1_ZN_A2_DFFR_X1_QN",
+      "endpoint": "io_status[7]_DFFR_X1_Q",
+      "cone": 38
+    },
+    {
+      "rank": 338,
+      "p_critical": 0.0,
+      "slack_ns": 7.787,
+      "status": "MET",
+      "startpoint": "io_rx_byte[4]_NAND4_X1_A1_ZN_NOR2_X1_A1_ZN_AOI221_X1_C2_ZN_NAND2_X1_A2_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+      "endpoint": "io_status[5]_DFFR_X1_Q",
+      "cone": 39
+    },
+    {
+      "rank": 339,
+      "p_critical": 0.0,
+      "slack_ns": 7.7977,
+      "status": "MET",
+      "startpoint": "io_check[0]_DFFR_X1_Q",
+      "endpoint": "io_status[0]_DFFR_X1_Q",
+      "cone": 40
+    },
+    {
+      "rank": 340,
+      "p_critical": 0.0,
+      "slack_ns": 7.7977,
+      "status": "MET",
+      "startpoint": "io_check[1]_DFFR_X1_Q",
+      "endpoint": "io_status[1]_DFFR_X1_Q",
+      "cone": 40
+    },
+    {
+      "rank": 341,
+      "p_critical": 0.0,
+      "slack_ns": 7.7977,
+      "status": "MET",
+      "startpoint": "io_check[2]_DFFR_X1_Q",
+      "endpoint": "io_status[2]_DFFR_X1_Q",
+      "cone": 40
+    },
+    {
+      "rank": 342,
+      "p_critical": 0.0,
+      "slack_ns": 7.7977,
+      "status": "MET",
+      "startpoint": "io_check[3]_DFFR_X1_Q",
+      "endpoint": "io_status[3]_DFFR_X1_Q",
+      "cone": 40
+    },
+    {
+      "rank": 343,
+      "p_critical": 0.0,
+      "slack_ns": 7.8095,
+      "status": "MET",
+      "startpoint": "cdc_io_from_mem[0]_DFFR_X1_Q",
+      "endpoint": "cdc_io_from_mem[0]_DFFR_X1_D",
+      "cone": 41
+    },
+    {
+      "rank": 344,
+      "p_critical": 0.0,
+      "slack_ns": 7.8095,
+      "status": "MET",
+      "startpoint": "cdc_io_from_mem[0]_DFFR_X1_D",
+      "endpoint": "io_status[4]_DFFR_X1_Q",
+      "cone": 41
+    },
+    {
+      "rank": 345,
+      "p_critical": 0.0,
+      "slack_ns": 7.8439,
+      "status": "MET",
+      "startpoint": "clk_io_div2_r_DFFR_X1_Q",
+      "endpoint": "clk_io_div2_r_DFFR_X1_Q",
+      "cone": 42
+    },
+    {
+      "rank": 346,
+      "p_critical": 0.0,
+      "slack_ns": 7.8439,
+      "status": "MET",
+      "startpoint": "clk_mem_div4_r_DFFR_X1_Q",
+      "endpoint": "clk_mem_div4_r_DFFR_X1_Q",
+      "cone": 43
+    },
+    {
+      "rank": 347,
+      "p_critical": 0.0,
+      "slack_ns": 15.8439,
+      "status": "MET",
+      "startpoint": "clk_mem_div4_r_DFFR_X1_CK",
+      "endpoint": "clk_mem_div4_r_DFFR_X1_CK",
+      "cone": 44
+    }
+  ],
+  "cone_distribution": [
+    {
+      "cone": 0,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": -6.5126
+    },
+    {
+      "cone": 1,
+      "p_critical": 0.9999999999999999,
+      "paths": 33,
+      "worst_slack_ns": -2.0384
+    },
+    {
+      "cone": 2,
+      "p_critical": 0.0,
+      "paths": 33,
+      "worst_slack_ns": -1.0248
+    },
+    {
+      "cone": 3,
+      "p_critical": 0.0,
+      "paths": 4,
+      "worst_slack_ns": -0.2343
+    },
+    {
+      "cone": 4,
+      "p_critical": 0.0,
+      "paths": 3,
+      "worst_slack_ns": 0.2307
+    },
+    {
+      "cone": 5,
+      "p_critical": 0.0,
+      "paths": 28,
+      "worst_slack_ns": 0.6004
+    },
+    {
+      "cone": 6,
+      "p_critical": 0.0,
+      "paths": 4,
+      "worst_slack_ns": 0.9014
+    },
+    {
+      "cone": 7,
+      "p_critical": 0.0,
+      "paths": 2,
+      "worst_slack_ns": 1.123
+    },
+    {
+      "cone": 8,
+      "p_critical": 0.0,
+      "paths": 10,
+      "worst_slack_ns": 1.4083
+    },
+    {
+      "cone": 9,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.5336
+    },
+    {
+      "cone": 10,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.5385
+    },
+    {
+      "cone": 11,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.6079
+    },
+    {
+      "cone": 12,
+      "p_critical": 0.0,
+      "paths": 17,
+      "worst_slack_ns": 1.684
+    },
+    {
+      "cone": 13,
+      "p_critical": 0.0,
+      "paths": 2,
+      "worst_slack_ns": 1.6972
+    },
+    {
+      "cone": 14,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.8042
+    },
+    {
+      "cone": 15,
+      "p_critical": 0.0,
+      "paths": 6,
+      "worst_slack_ns": 1.9849
+    },
+    {
+      "cone": 16,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.9997
+    },
+    {
+      "cone": 17,
+      "p_critical": 0.0,
+      "paths": 4,
+      "worst_slack_ns": 2.4066
+    },
+    {
+      "cone": 18,
+      "p_critical": 0.0,
+      "paths": 16,
+      "worst_slack_ns": 2.4066
+    },
+    {
+      "cone": 19,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 2.4515
+    },
+    {
+      "cone": 20,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 2.7552
+    },
+    {
+      "cone": 21,
+      "p_critical": 0.0,
+      "paths": 39,
+      "worst_slack_ns": 2.8042
+    },
+    {
+      "cone": 22,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 3.2354
+    },
+    {
+      "cone": 23,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 3.3079
+    },
+    {
+      "cone": 24,
+      "p_critical": 0.0,
+      "paths": 25,
+      "worst_slack_ns": 3.6397
+    },
+    {
+      "cone": 25,
+      "p_critical": 0.0,
+      "paths": 7,
+      "worst_slack_ns": 3.6784
+    },
+    {
+      "cone": 26,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 3.7571
+    },
+    {
+      "cone": 27,
+      "p_critical": 0.0,
+      "paths": 51,
+      "worst_slack_ns": 3.7996
+    },
+    {
+      "cone": 28,
+      "p_critical": 0.0,
+      "paths": 5,
+      "worst_slack_ns": 3.8042
+    },
+    {
+      "cone": 29,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 3.8063
+    },
+    {
+      "cone": 30,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 4.0885
+    },
+    {
+      "cone": 31,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 4.1579
+    },
+    {
+      "cone": 32,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 4.8095
+    },
+    {
+      "cone": 33,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 4.8439
+    },
+    {
+      "cone": 34,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 5.8439
+    },
+    {
+      "cone": 35,
+      "p_critical": 0.0,
+      "paths": 16,
+      "worst_slack_ns": 6.4467
+    },
+    {
+      "cone": 36,
+      "p_critical": 0.0,
+      "paths": 3,
+      "worst_slack_ns": 6.5289
+    },
+    {
+      "cone": 37,
+      "p_critical": 0.0,
+      "paths": 8,
+      "worst_slack_ns": 6.5941
+    },
+    {
+      "cone": 38,
+      "p_critical": 0.0,
+      "paths": 4,
+      "worst_slack_ns": 6.6385
+    },
+    {
+      "cone": 39,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 7.787
+    },
+    {
+      "cone": 40,
+      "p_critical": 0.0,
+      "paths": 4,
+      "worst_slack_ns": 7.7977
+    },
+    {
+      "cone": 41,
+      "p_critical": 0.0,
+      "paths": 2,
+      "worst_slack_ns": 7.8095
+    },
+    {
+      "cone": 42,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 7.8439
+    },
+    {
+      "cone": 43,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 7.8439
+    },
+    {
+      "cone": 44,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 15.8439
+    }
+  ],
+  "sigma": 0.05,
+  "rho": 0.7,
+  "clocks": {
+    "groups": {
+      "clk_aux_div2": {
+        "paths": 1,
+        "period_ns": 10.0,
+        "resolved": true
+      },
+      "clk_sys": {
+        "paths": 60,
+        "period_ns": 2.0,
+        "resolved": true
+      },
+      "clk_dsp": {
+        "paths": 60,
+        "period_ns": 3.0,
+        "resolved": true
+      },
+      "clk_sys_div2": {
+        "paths": 41,
+        "period_ns": 4.0,
+        "resolved": true
+      },
+      "clk_mem": {
+        "paths": 60,
+        "period_ns": 4.0,
+        "resolved": true
+      },
+      "clk_dsp_div4": {
+        "paths": 40,
+        "period_ns": 12.0,
+        "resolved": true
+      },
+      "clk_aux": {
+        "paths": 36,
+        "period_ns": 5.0,
+        "resolved": true
+      },
+      "clk_mem_div8": {
+        "paths": 7,
+        "period_ns": 32.0,
+        "resolved": true
+      },
+      "clk_dsp_div2": {
+        "paths": 1,
+        "period_ns": 6.0,
+        "resolved": true
+      },
+      "clk_io": {
+        "paths": 31,
+        "period_ns": 8.0,
+        "resolved": true
+      },
+      "clk_io_div2": {
+        "paths": 8,
+        "period_ns": 16.0,
+        "resolved": true
+      },
+      "clk_mem_div2": {
+        "paths": 1,
+        "period_ns": 8.0,
+        "resolved": true
+      },
+      "clk_mem_div4": {
+        "paths": 1,
+        "period_ns": 16.0,
+        "resolved": true
+      }
+    },
+    "unresolved": [],
+    "all_resolved": true
+  },
+  "pool": {
+    "paths": 347,
+    "violating": 60,
+    "tns_ns": -65.14013690604592,
+    "truncated": false
+  }
+}

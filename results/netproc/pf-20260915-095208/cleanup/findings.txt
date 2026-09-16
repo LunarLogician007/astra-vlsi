@@ -1,0 +1,65 @@
+pre-synthesis scan of netproc.v
+118 assignment(s), 83 declaration(s)
+
+findings, worst first (each is a hypothesis with its evidence, not a measurement):
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:183-185
+    `crc_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:205-206
+    `rx_count` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:226-229
+    `p_any` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:229-231
+    `p_sel` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:259-260
+    `tags` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:275-278
+    `l_any` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:278-280
+    `l_idx` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:320-323
+    `par_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:353-354
+    `tx_line` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at netproc.v:362-363
+    `t_acc` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [medium] deep single-cycle expression
+    at netproc.v:138
+    `cdc_gray_nxt` estimates 12 levels in one assignment (operators: + >> ^)
+
+  [medium] one register broadcast to every stage of a chain
+    at netproc.v:320
+    `xd_q` (512 bits) is read inside the loop that builds `par_chain`, so every elaborated stage loads it at once
+
+  [medium] one register broadcast to every stage of a chain
+    at netproc.v:362
+    `tx_line` (256 bits) is read inside the loop that builds `t_acc`, so every elaborated stage loads it at once
+
+  [medium] wide arithmetic in one expression
+    at netproc.v:362
+    1 add/subtract at 260 bits on `t_acc` -- 10 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at netproc.v:373
+    1 add/subtract at 260 bits on `tx_sum` -- 10 levels of carry each
+

@@ -163,7 +163,7 @@ class PathFeatures:
     depth: int
     # The period of the clock that captured THIS path, not the design's. On a
     # multi-clock design these differ, and normalising every path against one
-    # of them is the silent mis-ranking HANDOFF.md section 6.1 describes.
+    # of them is the silent mis-ranking docs/HANDOFF.md section 6.1 describes.
     path_group: str | None = None
     period_ns: float | None = None
     period_exact: bool = True
@@ -993,7 +993,7 @@ def _clock_coverage(feats: list[PathFeatures]) -> dict[str, Any]:
 
     A fallback on a multi-clock design means some path was ranked against a
     period that is not its own -- the exact failure mode section 6.1 of
-    HANDOFF.md calls the highest-risk item in the change. It is reported rather
+    docs/HANDOFF.md calls the highest-risk item in the change. It is reported rather
     than swallowed, so a wrong ranking is visible in the artifact instead of
     only in the conclusion drawn from it.
     """

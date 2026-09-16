@@ -1,5 +1,7 @@
-# Flow outputs — regenerate with `astra run <design>`, never commit.
+# Flow outputs -- regenerate with `astra run <design>`, never commit.
+# Runs worth keeping are copied, trimmed, into results/ (see results/README.md).
 runs/
+runs.zip
 astra-image.tar.gz
 
 *.log
@@ -7,18 +9,6 @@ __pycache__/
 *.pyc
 .DS_Store
 
-# graphify code knowledge graph. The report, the graph JSON and the interactive
-# HTML are tracked so the graph is browsable from the repo without a local
-# install. Everything else under graphify-out/ is not: the rebuild cache and
-# the dated backup directories are several MB, churn on every rebuild, and
-# regenerate from source in seconds.
-#
-# Note the tracked three are DERIVED. They go stale the moment code changes --
-# GRAPH_REPORT.md records the commit it was built from, so check that before
-# trusting it, and run `graphify update .` to refresh.
-graphify-out/*
-!graphify-out/GRAPH_REPORT.md
-!graphify-out/graph.json
-!graphify-out/graph.html
-
-runs.zip
+# graphify code knowledge graph -- derived from the source, rebuild locally
+# with `graphify update .`
+graphify-out/

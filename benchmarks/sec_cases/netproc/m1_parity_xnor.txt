@@ -1,0 +1,1 @@
+netproc parity: one XOR of a correct tree candidate flipped to XNOR

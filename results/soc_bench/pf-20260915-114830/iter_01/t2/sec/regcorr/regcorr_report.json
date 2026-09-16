@@ -1,0 +1,19 @@
+{
+  "top": "soc_bench",
+  "flop_bits": {
+    "gold": 2836,
+    "gate": 2836
+  },
+  "paired": 2836,
+  "unpaired_gold": 0,
+  "unpaired_gate": 0,
+  "unpaired_examples": {
+    "gold": [],
+    "gate": []
+  },
+  "ports_total": 11354,
+  "ports_structural": 11354,
+  "sat_ports": [],
+  "status": "proven",
+  "reason": "all 11354 outputs of 2836 paired register bits and the module match structurally"
+}

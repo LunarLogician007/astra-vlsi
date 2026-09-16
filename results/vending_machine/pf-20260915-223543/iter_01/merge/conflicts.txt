@@ -1,0 +1,4 @@
+Contested regions -- more than one candidate edited these, so no mechanical union can include them:
+  vending_machine.v:50-50  claimed by t1, t3
+
+1 uncontested edit region(s) across all candidates.

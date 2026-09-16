@@ -15,7 +15,7 @@
 #   make score DESIGN=x BASELINE=<run>   Eq. 3 score of a run
 #   make opt DESIGN=x          the closed loop: analyse -> rewrite -> evaluate
 #
-# Path-portfolio addon (see README "Path-portfolio mode"):
+# Path-portfolio addon (see docs/guide.md "Path-portfolio mode"):
 #   make scan DESIGN=x         structural smells in the RTL, before any tool
 #   make paths DESIGN=x        the distinct critical-path targets worth an agent
 #   make skilldoc              build the RTL timing-optimisation skill document

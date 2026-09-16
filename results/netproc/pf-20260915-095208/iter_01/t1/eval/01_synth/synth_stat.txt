@@ -1,0 +1,44 @@
+
+22. Printing statistics.
+
+=== netproc ===
+
+   Number of wires:              67412
+   Number of wire bits:          67412
+   Number of public wires:       67412
+   Number of public wire bits:   67412
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:              51525
+     AND2_X1                       861
+     AND3_X1                       276
+     AND4_X1                        48
+     AOI211_X1                     142
+     AOI21_X1                     2016
+     AOI221_X1                      97
+     AOI222_X1                      13
+     AOI22_X1                       17
+     DFFR_X1                     13672
+     DFFS_X1                        32
+     INV_X1                       3062
+     MUX2_X1                      1401
+     NAND2_X1                     3085
+     NAND3_X1                      375
+     NAND4_X1                     1394
+     NOR2_X1                      3416
+     NOR3_X1                       234
+     NOR4_X1                      1371
+     OAI211_X1                     169
+     OAI21_X1                     2623
+     OAI221_X1                      49
+     OAI222_X1                       7
+     OAI22_X1                      416
+     OR2_X1                        349
+     OR3_X1                        213
+     OR4_X1                         26
+     XNOR2_X1                     9685
+     XOR2_X1                      6476
+
+   Chip area for module '\netproc': 120706.012000
+

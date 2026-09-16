@@ -1,0 +1,34 @@
+--- dual_clock.v (parent)
++++ dual_clock.v (t2)
+@@ -100,18 +100,23 @@
+         end
+     endgenerate
+ 
+-    wire signed [2*W+3:0] acc [0:TAPS-1];
+-    generate
+-        for (g = 0; g < TAPS; g = g + 1) begin : g_add
+-            if (g == 0) assign acc[0] = term[0];
+-            else        assign acc[g] = acc[g-1] + term[g];
+-        end
+-    endgenerate
++    wire signed [2*W+3:0] acc01, acc23, acc45, acc67;
++    assign acc01 = term[0] + term[1];
++    assign acc23 = term[2] + term[3];
++    assign acc45 = term[4] + term[5];
++    assign acc67 = term[6] + term[7];
++
++    wire signed [2*W+3:0] acc0123, acc4567;
++    assign acc0123 = acc01 + acc23;
++    assign acc4567 = acc45 + acc67;
++
++    wire signed [2*W+3:0] acc_final;
++    assign acc_final = acc0123 + acc4567;
+ 
+     reg signed [2*W+3:0] f_acc_p;
+     always @(posedge clk_fast or negedge rst_n)
+         if (!rst_n) f_acc_p <= {(2*W+4){1'b0}};
+-        else if (f_valid_q) f_acc_p <= acc[TAPS-1];
++        else if (f_valid_q) f_acc_p <= acc_final;
+ 
+     // Output stage on the generated clock: half the frequency budget of
+     // everything above it, which is why each path is ranked against its own.

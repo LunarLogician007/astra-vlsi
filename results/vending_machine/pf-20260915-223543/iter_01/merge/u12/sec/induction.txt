@@ -1,0 +1,221 @@
+
+10. Executing SAT pass (solving SAT problems in the circuit).
+
+Setting up time step 1:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+** Trying induction with length 1 **
+
+Setting up time step 1:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Final init constraint equation: { $flatten\gold.$auto$async2sync.cc:171:execute$49 $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0] } = 7'0000000
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 1] Solving problem with 38300 variables and 96393 clauses..
+Base case for induction length 1 proven.
+
+Setting up time step 2:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 1] Solving problem with 76605 variables and 192799 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                7         7           111
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                      7         7          0111
+
+** Trying induction with length 2 **
+
+Setting up time step 2:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 2] Solving problem with 76641 variables and 192920 clauses..
+Base case for induction length 2 proven.
+
+Setting up time step 3:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 2] Solving problem with 114968 variables and 289398 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                5         5           101
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                      7         7          0111
+
+** Trying induction with length 3 **
+
+Setting up time step 3:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 3] Solving problem with 115004 variables and 289519 clauses..
+Base case for induction length 3 proven.
+
+Setting up time step 4:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 3] Solving problem with 153353 variables and 386069 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                3         3           011
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                     10         a          1010
+
+** Trying induction with length 4 **
+
+Setting up time step 4:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 4] Solving problem with 153389 variables and 386190 clauses..
+Base case for induction length 4 proven.
+
+Setting up time step 5:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 4] Solving problem with 191760 variables and 482812 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                1         1           001
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                      0         0          0000
+
+** Trying induction with length 5 **
+
+Setting up time step 5:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 5] Solving problem with 191796 variables and 482933 clauses..
+Base case for induction length 5 proven.
+
+Setting up time step 6:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 5] Solving problem with 230189 variables and 579627 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                1         1           001
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                      8         8          1000
+
+** Trying induction with length 6 **
+
+Setting up time step 6:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 6] Solving problem with 230225 variables and 579748 clauses..
+Base case for induction length 6 proven.
+
+Setting up time step 7:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 6] Solving problem with 268640 variables and 676514 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                0         0           000
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                      1         1          0001
+
+** Trying induction with length 7 **
+
+Setting up time step 7:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 7] Solving problem with 268676 variables and 676635 clauses..
+Base case for induction length 7 proven.
+
+Setting up time step 8:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 7] Solving problem with 307113 variables and 773473 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                0         0           000
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                     10         a          1010
+
+** Trying induction with length 8 **
+
+Setting up time step 8:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 8] Solving problem with 307149 variables and 773594 clauses..
+Base case for induction length 8 proven.
+
+Setting up time step 9:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 8] Solving problem with 345608 variables and 870504 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                                                         Dec       Hex           Bin
+  ---- ----------------------------------------------------------- ----------- --------- -------------
+  init $flatten\gate.$auto$async2sync.cc:171:execute$90 [2:0]                1         1           001
+  init $flatten\gold.$auto$async2sync.cc:171:execute$49                      8         8          1000
+
+** Trying induction with length 9 **
+
+Setting up time step 9:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[base case 9] Solving problem with 345644 variables and 870625 clauses..
+Base case for induction length 9 proven.
+
+Setting up time step 10:
+Final constraint equation: { } = { }
+Imported 35 cells to SAT database.
+Import proof for assert: $auto$miter.cc:242:create_miter_equiv$93 when 1'1.
+
+[induction step 9] Solving problem with 384125 variables and 967607 clauses..
+Induction step proven: SUCCESS!
+
+                  /$$$$$$      /$$$$$$$$     /$$$$$$$    
+                 /$$__  $$    | $$_____/    | $$__  $$   
+                | $$  \ $$    | $$          | $$  \ $$   
+                | $$  | $$    | $$$$$       | $$  | $$   
+                | $$  | $$    | $$__/       | $$  | $$   
+                | $$/$$ $$    | $$          | $$  | $$   
+                |  $$$$$$/ /$$| $$$$$$$$ /$$| $$$$$$$//$$
+                 \____ $$$|__/|________/|__/|_______/|__/
+                       \__/                              
+

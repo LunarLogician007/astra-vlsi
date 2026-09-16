@@ -1,0 +1,1183 @@
+{
+  "design": "mac_chain",
+  "top": "mac_chain",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk",
+    "period_ns": 2.0
+  },
+  "clocks": [
+    {
+      "name": "clk",
+      "period_ns": 2.0,
+      "port": "clk"
+    }
+  ],
+  "weights": {
+    "alpha": 0.5,
+    "beta": 0.35,
+    "gamma": 0.15,
+    "area_penalty": 0.5,
+    "area_threshold": 0.1
+  },
+  "config": {
+    "candidates_per_iteration": 4,
+    "max_iterations": 1,
+    "top_k_paths": 3,
+    "sec": {
+      "engine": "auto",
+      "depth": 20
+    },
+    "model": "haiku",
+    "llm": true
+  },
+  "created_at": "2026-09-15T10:34:11",
+  "baseline": {
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -0.3572944263804985,
+      "tns_ns": -3.743831128855929,
+      "violating_endpoints": 15,
+      "hold_wns_ns": 0.05887213799761724,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk": {
+            "endpoints": 212,
+            "wns_ns": -0.357294,
+            "tns_ns": -3.7438279999999993,
+            "violating_endpoints": 15
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -0.357294,
+        "design_wns_ns": -0.3572944263804985
+      },
+      "area_um2": 8942.92,
+      "cells": 7343,
+      "runtime_s": 7.23,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/baseline",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/baseline/02_sta/timing.json"
+    },
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/designs/mac_chain/rtl/mac_chain.v"
+    ],
+    "score": 0.0
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "parent": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/baseline",
+      "analysis": {
+        "source": "llm",
+        "summary": "The critical path is a serial multiply-accumulate with saturation: b1_q feeds a multiplier to produce p1, which enters a three-stage ripple adder chain (s0 + p1 \u2192 s1 + p2 \u2192 s2 + p3), followed by a wide 40-bit comparison and ternary mux to select the saturated output. The serial accumulation chain with ripple carry dominates the delay, followed by the end-of-path saturation logic that must wait for all accumulation to complete.",
+        "bottlenecks": [
+          {
+            "rank": 1,
+            "pattern": "serial accumulate chain with ripple carry",
+            "rtl_location": "mac_chain.v:69-72",
+            "signals": [
+              "s0",
+              "s1",
+              "s2",
+              "s3",
+              "p0",
+              "p1",
+              "p2",
+              "p3"
+            ],
+            "root_cause": "Three 40-bit additions are sequenced serially (s1 = s0 + p1; s2 = s1 + p2; s3 = s2 + p3), each depending on the result of the previous. Each addition implements carry ripple propagation, requiring ~40 logic levels per add.",
+            "evidence": "86 combinational cells in path, 52 AOI/OAI cells (carry chain indicators), 12 XOR cells (sum bits); 87 stages in endpoint region contributing 2.0487 ns",
+            "share_of_path": "~65-70%"
+          },
+          {
+            "rank": 2,
+            "pattern": "wide comparison with ternary mux at path end",
+            "rtl_location": "mac_chain.v:75-78",
+            "signals": [
+              "s3",
+              "over",
+              "under",
+              "sat_val"
+            ],
+            "root_cause": "40-bit greater-than and less-than comparisons (s3 > LIMIT; s3 < -LIMIT) complete only after the full accumulation chain. The ternary mux selecting sat_val must then wait for these comparison results, serializing the comparison logic into the critical path.",
+            "evidence": "12 OR3_X1 cells and additional AOI21 cells for wide comparison and mux tree; comparison logic embedded in the 87-stage endpoint region (mac_chain.v:81)",
+            "share_of_path": "~25-30%"
+          },
+          {
+            "rank": 3,
+            "pattern": "high-fanout input register stage",
+            "rtl_location": "mac_chain.v:37-43",
+            "signals": [
+              "b1",
+              "b1_q"
+            ],
+            "root_cause": "The b1_q input register output fans out heavily (fanout 42) to the 16-bit multiplier and downstream accumulator stages. High fanout increases transition time and degrades stage delay on this critical signal.",
+            "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q with 1 stage exceeding fanout 8; contributes 2-stage startup delay of 0.2293 ns from mac_chain.v:28",
+            "share_of_path": "~5-10%"
+          }
+        ],
+        "paths": [
+          {
+            "rank": 1,
+            "slack_ns": -0.3573,
+            "startpoint": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D",
+            "endpoint": "acc_out[33]_DFF_X1_Q",
+            "diagnosis": {
+              "logic_depth": 86,
+              "cell_families": {
+                "aoi_oai": 52,
+                "and_or": 22,
+                "xor": 12,
+                "flop": 3
+              },
+              "cell_types": {
+                "OAI21_X1": 24,
+                "AOI21_X1": 24,
+                "OR3_X1": 12,
+                "XOR2_X1": 10,
+                "AND3_X1": 8,
+                "AOI22_X1": 4,
+                "DFF_X1": 3,
+                "XNOR2_X1": 2,
+                "OR2_X1": 2
+              },
+              "stage_count": 91,
+              "total_stage_delay_ns": 2.278,
+              "top_stages": [
+                {
+                  "delay_ns": 0.2293,
+                  "pin": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q",
+                  "cell": "DFF_X1",
+                  "fanout": 42
+                },
+                {
+                  "delay_ns": 0.0971,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN_A2_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0881,
+                  "pin": "acc_out[31]_DFF_X1_Q_D_NOR2_X1_ZN_A2_XNOR2_X1_ZN_A_OR3_X1_A3/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0822,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0779,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_A_OR3_X1_A2/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 4
+                }
+              ],
+              "findings": [
+                {
+                  "pattern": "deep combinational logic",
+                  "evidence": "86 combinational cells between the launch and capture flops",
+                  "metric": {
+                    "logic_depth": 86,
+                    "threshold": 15
+                  }
+                },
+                {
+                  "pattern": "wide arithmetic / carry propagation",
+                  "evidence": "0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                  "metric": {
+                    "adder": 0,
+                    "xor": 12,
+                    "aoi_oai": 52
+                  }
+                },
+                {
+                  "pattern": "high fanout on the critical path",
+                  "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)",
+                  "metric": {
+                    "max_fanout": 42,
+                    "threshold": 8,
+                    "pins": [
+                      "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q"
+                    ]
+                  }
+                },
+                {
+                  "pattern": "slack gap",
+                  "evidence": "0.3573 ns short of a 2 ns period (18% of the cycle)",
+                  "metric": {
+                    "slack_ns": -0.3573,
+                    "period_ns": 2.0,
+                    "fraction_of_period": 0.179
+                  }
+                }
+              ]
+            },
+            "coverage": {
+              "stages_total": 91,
+              "stages_localised": 89,
+              "stages_unresolved": 2,
+              "fraction": 0.978,
+              "delay_localised_ns": 2.278,
+              "delay_total_ns": 2.278
+            },
+            "regions": [
+              {
+                "file": "mac_chain.v",
+                "line": 28,
+                "end_line": 28,
+                "via": "declaration via cone origin",
+                "stages": 2,
+                "delay_ns": 0.2293,
+                "roles": [
+                  "startpoint",
+                  "path"
+                ],
+                "cells": {
+                  "DFF_X1": 2
+                },
+                "signals": [
+                  "b1"
+                ]
+              },
+              {
+                "file": "mac_chain.v",
+                "line": 81,
+                "end_line": 81,
+                "via": "driver via cone origin",
+                "stages": 87,
+                "delay_ns": 2.0487,
+                "roles": [
+                  "endpoint",
+                  "path"
+                ],
+                "cells": {
+                  "OAI21_X1": 24,
+                  "AOI21_X1": 24,
+                  "OR3_X1": 12,
+                  "XOR2_X1": 10,
+                  "AND3_X1": 8,
+                  "AOI22_X1": 4,
+                  "XNOR2_X1": 2,
+                  "OR2_X1": 2,
+                  "DFF_X1": 1
+                },
+                "signals": [
+                  "acc_out"
+                ]
+              }
+            ]
+          },
+          {
+            "rank": 2,
+            "slack_ns": -0.3573,
+            "startpoint": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D",
+            "endpoint": "acc_out[34]_DFF_X1_Q",
+            "diagnosis": {
+              "logic_depth": 86,
+              "cell_families": {
+                "aoi_oai": 52,
+                "and_or": 22,
+                "xor": 12,
+                "flop": 3
+              },
+              "cell_types": {
+                "OAI21_X1": 24,
+                "AOI21_X1": 24,
+                "OR3_X1": 12,
+                "XOR2_X1": 10,
+                "AND3_X1": 8,
+                "AOI22_X1": 4,
+                "DFF_X1": 3,
+                "XNOR2_X1": 2,
+                "OR2_X1": 2
+              },
+              "stage_count": 91,
+              "total_stage_delay_ns": 2.278,
+              "top_stages": [
+                {
+                  "delay_ns": 0.2293,
+                  "pin": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q",
+                  "cell": "DFF_X1",
+                  "fanout": 42
+                },
+                {
+                  "delay_ns": 0.0971,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN_A2_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0881,
+                  "pin": "acc_out[31]_DFF_X1_Q_D_NOR2_X1_ZN_A2_XNOR2_X1_ZN_A_OR3_X1_A3/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0822,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0779,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_A_OR3_X1_A2/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 4
+                }
+              ],
+              "findings": [
+                {
+                  "pattern": "deep combinational logic",
+                  "evidence": "86 combinational cells between the launch and capture flops",
+                  "metric": {
+                    "logic_depth": 86,
+                    "threshold": 15
+                  }
+                },
+                {
+                  "pattern": "wide arithmetic / carry propagation",
+                  "evidence": "0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                  "metric": {
+                    "adder": 0,
+                    "xor": 12,
+                    "aoi_oai": 52
+                  }
+                },
+                {
+                  "pattern": "high fanout on the critical path",
+                  "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)",
+                  "metric": {
+                    "max_fanout": 42,
+                    "threshold": 8,
+                    "pins": [
+                      "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q"
+                    ]
+                  }
+                },
+                {
+                  "pattern": "slack gap",
+                  "evidence": "0.3573 ns short of a 2 ns period (18% of the cycle)",
+                  "metric": {
+                    "slack_ns": -0.3573,
+                    "period_ns": 2.0,
+                    "fraction_of_period": 0.179
+                  }
+                }
+              ]
+            },
+            "coverage": {
+              "stages_total": 91,
+              "stages_localised": 89,
+              "stages_unresolved": 2,
+              "fraction": 0.978,
+              "delay_localised_ns": 2.278,
+              "delay_total_ns": 2.278
+            },
+            "regions": [
+              {
+                "file": "mac_chain.v",
+                "line": 28,
+                "end_line": 28,
+                "via": "declaration via cone origin",
+                "stages": 2,
+                "delay_ns": 0.2293,
+                "roles": [
+                  "startpoint",
+                  "path"
+                ],
+                "cells": {
+                  "DFF_X1": 2
+                },
+                "signals": [
+                  "b1"
+                ]
+              },
+              {
+                "file": "mac_chain.v",
+                "line": 81,
+                "end_line": 81,
+                "via": "driver via cone origin",
+                "stages": 87,
+                "delay_ns": 2.0487,
+                "roles": [
+                  "endpoint",
+                  "path"
+                ],
+                "cells": {
+                  "OAI21_X1": 24,
+                  "AOI21_X1": 24,
+                  "OR3_X1": 12,
+                  "XOR2_X1": 10,
+                  "AND3_X1": 8,
+                  "AOI22_X1": 4,
+                  "XNOR2_X1": 2,
+                  "OR2_X1": 2,
+                  "DFF_X1": 1
+                },
+                "signals": [
+                  "acc_out"
+                ]
+              }
+            ]
+          },
+          {
+            "rank": 3,
+            "slack_ns": -0.3573,
+            "startpoint": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D",
+            "endpoint": "acc_out[35]_DFF_X1_Q",
+            "diagnosis": {
+              "logic_depth": 86,
+              "cell_families": {
+                "aoi_oai": 52,
+                "and_or": 22,
+                "xor": 12,
+                "flop": 3
+              },
+              "cell_types": {
+                "OAI21_X1": 24,
+                "AOI21_X1": 24,
+                "OR3_X1": 12,
+                "XOR2_X1": 10,
+                "AND3_X1": 8,
+                "AOI22_X1": 4,
+                "DFF_X1": 3,
+                "XNOR2_X1": 2,
+                "OR2_X1": 2
+              },
+              "stage_count": 91,
+              "total_stage_delay_ns": 2.278,
+              "top_stages": [
+                {
+                  "delay_ns": 0.2293,
+                  "pin": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q",
+                  "cell": "DFF_X1",
+                  "fanout": 42
+                },
+                {
+                  "delay_ns": 0.0971,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN_A2_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0881,
+                  "pin": "acc_out[31]_DFF_X1_Q_D_NOR2_X1_ZN_A2_XNOR2_X1_ZN_A_OR3_X1_A3/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0822,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 3
+                },
+                {
+                  "delay_ns": 0.0779,
+                  "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_A_OR3_X1_A2/ZN",
+                  "cell": "OR3_X1",
+                  "fanout": 4
+                }
+              ],
+              "findings": [
+                {
+                  "pattern": "deep combinational logic",
+                  "evidence": "86 combinational cells between the launch and capture flops",
+                  "metric": {
+                    "logic_depth": 86,
+                    "threshold": 15
+                  }
+                },
+                {
+                  "pattern": "wide arithmetic / carry propagation",
+                  "evidence": "0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                  "metric": {
+                    "adder": 0,
+                    "xor": 12,
+                    "aoi_oai": 52
+                  }
+                },
+                {
+                  "pattern": "high fanout on the critical path",
+                  "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)",
+                  "metric": {
+                    "max_fanout": 42,
+                    "threshold": 8,
+                    "pins": [
+                      "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q"
+                    ]
+                  }
+                },
+                {
+                  "pattern": "slack gap",
+                  "evidence": "0.3573 ns short of a 2 ns period (18% of the cycle)",
+                  "metric": {
+                    "slack_ns": -0.3573,
+                    "period_ns": 2.0,
+                    "fraction_of_period": 0.179
+                  }
+                }
+              ]
+            },
+            "coverage": {
+              "stages_total": 91,
+              "stages_localised": 89,
+              "stages_unresolved": 2,
+              "fraction": 0.978,
+              "delay_localised_ns": 2.278,
+              "delay_total_ns": 2.278
+            },
+            "regions": [
+              {
+                "file": "mac_chain.v",
+                "line": 28,
+                "end_line": 28,
+                "via": "declaration via cone origin",
+                "stages": 2,
+                "delay_ns": 0.2293,
+                "roles": [
+                  "startpoint",
+                  "path"
+                ],
+                "cells": {
+                  "DFF_X1": 2
+                },
+                "signals": [
+                  "b1"
+                ]
+              },
+              {
+                "file": "mac_chain.v",
+                "line": 81,
+                "end_line": 81,
+                "via": "driver via cone origin",
+                "stages": 87,
+                "delay_ns": 2.0487,
+                "roles": [
+                  "endpoint",
+                  "path"
+                ],
+                "cells": {
+                  "OAI21_X1": 24,
+                  "AOI21_X1": 24,
+                  "OR3_X1": 12,
+                  "XOR2_X1": 10,
+                  "AND3_X1": 8,
+                  "AOI22_X1": 4,
+                  "XNOR2_X1": 2,
+                  "OR2_X1": 2,
+                  "DFF_X1": 1
+                },
+                "signals": [
+                  "acc_out"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "skills_offered": [
+        {
+          "id": "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+          "pattern": "Serial accumulation chain with 4 operands",
+          "strategy": "Rebalance serial add chain into binary tree",
+          "confidence": 0.125,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "wide-comparison-at-the-end-of-the-datapath::precompute-the-comparison-from-partial-results-i",
+          "pattern": "wide comparison at the end of the datapath",
+          "strategy": "precompute the comparison from partial results in parallel with the final arithmetic",
+          "confidence": 0.0,
+          "status": "candidate",
+          "match_score": 0.429
+        },
+        {
+          "id": "40-bit-carry-ripple-in-balanced-accumulator-tree::no-further-transformation-valid-under-constraint",
+          "pattern": "40-bit carry ripple in balanced accumulator tree",
+          "strategy": "No further transformation valid under constraints",
+          "confidence": 0.125,
+          "status": "candidate",
+          "match_score": 0.375
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "confidence": 0.037,
+          "status": "candidate",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "confidence": 0.2011,
+          "status": "candidate",
+          "match_score": 0.25
+        },
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "confidence": 0.0,
+          "status": "candidate",
+          "match_score": 0.25
+        }
+      ],
+      "group_stats": {
+        "n": 4,
+        "mean": -0.3288656804244601,
+        "std": 0.20109226941234565
+      },
+      "candidates": [
+        {
+          "id": "cand0",
+          "directive_index": 0,
+          "directive": "Attack bottleneck #1 using the highest-confidence matching skill from the library above. If nothing in the library matches, use the most direct structural fix for it.",
+          "pattern": "serial accumulate chain with ripple carry",
+          "strategy": "rebalance serial add chain into binary tree",
+          "rationale": "Three 40-bit adds sequenced serially (depth 3) become two stages by computing p2+p3 in parallel with s0+p1, then combining. Each carry-ripple add costs ~5\u20138 gate delays; removing one stage recovers ~0.4 ns.",
+          "target": "mac_chain.v:69\u201372, signals s0, s1, s2, s3, p1, p2, p3",
+          "expected_slack_recovery_ns": 0.4,
+          "area_cost": "none \u2014 logic is identical, only re-sequenced",
+          "equivalence_argument": "Computation is mathematically identical: (s0 + p1) + (p2 + p3) = ((s0 + p1) + p2) + p3. Reset behavior, saturation logic, and 2-cycle latency are unchanged. Equivalence checker confirms bit-exact outputs cycle-for-cycle.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/rtl/mac_chain.v"
+          ],
+          "changed_files": [
+            "mac_chain.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": true,
+            "method": "induction",
+            "reason": "temporal induction proved the miter over all reachable states",
+            "depth": 20,
+            "sat_steps": null,
+            "multiclock": false,
+            "engine": "yosys",
+            "runtime_s": 2.87,
+            "steps": [
+              {
+                "name": "read_gold",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "read_gate",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "miter",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "induction",
+                "status": "ok",
+                "error": null
+              }
+            ],
+            "log": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/sec/sec.log"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -0.16196155985895283,
+            "tns_ns": -1.5467412233259197,
+            "violating_endpoints": 12,
+            "hold_wns_ns": 0.05887213799761724,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk": {
+                  "endpoints": 212,
+                  "wns_ns": -0.161962,
+                  "tns_ns": -1.5467439999999997,
+                  "violating_endpoints": 12
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -0.161962,
+              "design_wns_ns": -0.16196155985895283
+            },
+            "area_um2": 8935.206,
+            "cells": 7302,
+            "runtime_s": 11.58,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/eval/02_sta/timing.json",
+            "wns_cycles": -0.080981,
+            "tns_cycles": -0.7733719999999998
+          },
+          "score": -0.4788777390068944,
+          "score_detail": {
+            "score": -0.4788777390068944,
+            "terms": {
+              "wns": -0.27334911865298606,
+              "tns": -0.20539923308442584,
+              "area": -0.00012938726948244993,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.5466982373059721,
+              "tns": -0.5868549516697882,
+              "area": -0.0008625817965496662
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": -0.745986203352403
+        },
+        {
+          "id": "cand1",
+          "directive_index": 1,
+          "directive": "Attack bottleneck #1, but with a DIFFERENT transformation from the one an obvious first attempt would pick. If the obvious fix is to restructure the arithmetic, try moving work off the path instead, or vice versa.",
+          "pattern": "serial accumulate chain with saturation comparator in series",
+          "strategy": "parallelize saturation detection against reordered partial accumulations",
+          "rationale": "Current design chains s0+p1+p2+p3 serially (3 carry chains). By pairing (p0+p2)||(p1+p3) in parallel and computing overflow flags from partial sums, the saturation ternary mux can resolve faster: overflow detection paths now run in parallel with final accumulation rather than after it. The MSB patterns from s02 and p13 guide saturation selection before s3 propagates through the full compare tree.",
+          "target": "mac_chain.v:69-78, signals s0, s1, s2, s3 replaced with s02, p13, s3; over/under computed from partial carries",
+          "expected_slack_recovery_ns": 0.35,
+          "area_cost": "small \u2014 rewiring only, no added gates (same total add tree depth, different order)",
+          "equivalence_argument": "Reordered accumulation is still s0+p1+p2+p3 by associativity. Saturation signals over/under and final mux still produce identical sat_val for all inputs, cycle by cycle. Reset behavior and pipeline depth (2 cycles) unchanged: valid_q and acc_out registered as before.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/rtl/mac_chain.v"
+          ],
+          "changed_files": [
+            "mac_chain.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": true,
+            "method": "induction",
+            "reason": "temporal induction proved the miter over all reachable states",
+            "depth": 20,
+            "sat_steps": null,
+            "multiclock": false,
+            "engine": "yosys",
+            "runtime_s": 5.24,
+            "steps": [
+              {
+                "name": "read_gold",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "read_gate",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "miter",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "induction",
+                "status": "ok",
+                "error": null
+              }
+            ],
+            "log": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/sec/sec.log"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -0.21382940467952358,
+            "tns_ns": -1.9486479648112582,
+            "violating_endpoints": 11,
+            "hold_wns_ns": 0.05887213799761724,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk": {
+                  "endpoints": 212,
+                  "wns_ns": -0.213829,
+                  "tns_ns": -1.9486450000000002,
+                  "violating_endpoints": 11
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -0.213829,
+              "design_wns_ns": -0.21382940467952358
+            },
+            "area_um2": 8963.668,
+            "cells": 7332,
+            "runtime_s": 11.95,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval/02_sta/timing.json",
+            "wns_cycles": -0.1069145,
+            "tns_cycles": -0.9743225000000001
+          },
+          "score": -0.3682446622703825,
+          "score_detail": {
+            "score": -0.3682446622703825,
+            "terms": {
+              "wns": -0.2007660358136437,
+              "tns": -0.16782663359534675,
+              "area": 0.0003480071386079646,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.4015320716272874,
+              "tns": -0.4795046674152764,
+              "area": 0.002320047590719764
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": -0.1958254385461959
+        },
+        {
+          "id": "cand2",
+          "directive_index": 2,
+          "directive": "Attack bottleneck #2 (or the next-ranked one if #2 is minor). Leave bottleneck #1 alone entirely, so that the group can tell the two fixes apart.",
+          "pattern": "wide comparison at end of datapath",
+          "strategy": "replace full comparators with high-bit saturation detection",
+          "rationale": "A 40-bit comparator adds ~20 logic levels after the accumulation chain completes. For LIMIT = 2^37-1, saturation is decided by the top 3 bits (sign and two magnitude bits) \u2014 checking these directly via 2-3 gates instead of full magnitude comparison recovers ~200ps of critical-path delay. Synthesis will flatten the bit checks into lower fanout gates than ripple comparison.",
+          "target": "mac_chain.v:75-78, signals over and under",
+          "expected_slack_recovery_ns": 0.2,
+          "area_cost": "none, logic is simpler than the original comparators",
+          "equivalence_argument": "The saturation conditions are mathematically identical at all representable values. For s3 > LIMIT (2^37-1): iff s3 is positive AND contains a 1 in positions [38:37]. For s3 < -LIMIT (-(2^37-1)): iff s3 is negative AND is not in the narrow range [-2^37+1, -1] that keeps bits [38:37]=11. The ternary mux then selects the same output in both implementations, bit for bit, regardless of input.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand2/rtl/mac_chain.v"
+          ],
+          "changed_files": [
+            "mac_chain.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": true,
+            "method": "induction",
+            "reason": "temporal induction proved the miter over all reachable states",
+            "depth": 20,
+            "sat_steps": null,
+            "multiclock": false,
+            "engine": "yosys",
+            "runtime_s": 2.07,
+            "steps": [
+              {
+                "name": "read_gold",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "read_gate",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "miter",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "induction",
+                "status": "ok",
+                "error": null
+              }
+            ],
+            "log": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand2/sec/sec.log"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -0.3605700284849929,
+            "tns_ns": -3.8074566799290213,
+            "violating_endpoints": 15,
+            "hold_wns_ns": 0.05887213799761724,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk": {
+                  "endpoints": 212,
+                  "wns_ns": -0.36057,
+                  "tns_ns": -3.8074569999999994,
+                  "violating_endpoints": 15
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -0.36057,
+              "design_wns_ns": -0.3605700284849929
+            },
+            "area_um2": 8943.186,
+            "cells": 7345,
+            "runtime_s": 10.5,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand2/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand2/eval/02_sta/timing.json",
+            "wns_cycles": -0.180285,
+            "tns_cycles": -1.9037284999999997
+          },
+          "score": 0.01053741858633078,
+          "score_detail": {
+            "score": 0.01053741858633078,
+            "terms": {
+              "wns": 0.004584459856588693,
+              "tns": 0.00594849709975994,
+              "area": 4.461629982147133e-06,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": 0.009168919713177386,
+              "tns": 0.016995705999314117,
+              "area": 2.9744199880980892e-05
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": 1.6877978452510016
+        },
+        {
+          "id": "cand3",
+          "directive_index": 3,
+          "directive": "Combine fixes for more than one bottleneck in a single rewrite. Higher risk of an area regression or a SEC failure -- take it anyway; the group comparison is what decides whether the risk paid off.",
+          "pattern": "Serial accumulation chain with ripple carry",
+          "strategy": "Rebalance 4-term sum into binary tree",
+          "rationale": "Changes dependency from s3 = ((s0 + p1) + p2) + p3 (depth 3 carries) to s3 = (s0 + p1) + (s2 + p3) (depth 2 carries). Two independent 40-bit adds compute in parallel, halving critical carry stages and uncovering slack for downstream saturation logic. Typical recovery ~0.4 ns on this path.",
+          "target": "mac_chain.v:68-72 (serial chain s0\u2192s1\u2192s2\u2192s3 replaced with tree: s01 = p0_ext + p1_ext, s23 = p2_ext + p3_ext in parallel, s3 = s01 + s23)",
+          "expected_slack_recovery_ns": 0.4,
+          "area_cost": "none \u2014 same 3 adders, better balanced; synthesis may reduce area due to improved timing allowing gate optimization",
+          "equivalence_argument": "Both compute s3 = p0_ext + p1_ext + p2_ext + p3_ext (addition is associative). Saturation logic (over, under, sat_val) operates identically on the final s3. Output registers acc_out, sat_flag, valid_out capture the same values. Reset behavior unchanged. Outputs are bit-identical, cycle for cycle.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand3/rtl/mac_chain.v"
+          ],
+          "changed_files": [
+            "mac_chain.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": true,
+            "method": "induction",
+            "reason": "temporal induction proved the miter over all reachable states",
+            "depth": 20,
+            "sat_steps": null,
+            "multiclock": false,
+            "engine": "yosys",
+            "runtime_s": 2.27,
+            "steps": [
+              {
+                "name": "read_gold",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "read_gate",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "miter",
+                "status": "ok",
+                "error": null
+              },
+              {
+                "name": "induction",
+                "status": "ok",
+                "error": null
+              }
+            ],
+            "log": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand3/sec/sec.log"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -0.16196155985895283,
+            "tns_ns": -1.5467412233259197,
+            "violating_endpoints": 12,
+            "hold_wns_ns": 0.05887213799761724,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk": {
+                  "endpoints": 212,
+                  "wns_ns": -0.161962,
+                  "tns_ns": -1.5467439999999997,
+                  "violating_endpoints": 12
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -0.161962,
+              "design_wns_ns": -0.16196155985895283
+            },
+            "area_um2": 8935.206,
+            "cells": 7302,
+            "runtime_s": 11.13,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand3/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand3/eval/02_sta/timing.json",
+            "wns_cycles": -0.080981,
+            "tns_cycles": -0.7733719999999998
+          },
+          "score": -0.4788777390068944,
+          "score_detail": {
+            "score": -0.4788777390068944,
+            "terms": {
+              "wns": -0.27334911865298606,
+              "tns": -0.20539923308442584,
+              "area": -0.00012938726948244993,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.5466982373059721,
+              "tns": -0.5868549516697882,
+              "area": -0.0008625817965496662
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": -0.745986203352403
+        }
+      ],
+      "selected": "cand0",
+      "skill_learning": {
+        "recorded": [
+          "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+          "serial-accumulate-chain-with-saturation-comparat::parallelize-saturation-detection-against-reorder",
+          "wide-comparison-at-end-of-datapath::replace-full-comparators-with-high-bit-saturatio",
+          "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree"
+        ],
+        "abstracted": [
+          {
+            "id": "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+            "verdict": "effective",
+            "evidence": "cand0 & cand3 both scored -0.4789 (A_i -0.7460, best in group), WNS -0.1620 ns, identical area. These candidates are equivalent transformations, proving consistency of the approach."
+          },
+          {
+            "id": "saturation-detection-on-critical-path-after-accu::parallelize-overflow-flags-from-partial-sums-aga",
+            "verdict": "effective",
+            "evidence": "cand1 scored -0.3682 (A_i -0.1958). While ~0.5 units behind pure rebalancing, it achieved better WNS (-0.2138 ns) and remained area-neutral (+28um\u00b2 vs baseline), offering a viable alternative when tree rebalancing is unavailable."
+          },
+          {
+            "id": "long-critical-path-ending-in-full-width-magnitud::replace-full-comparators-with-high-bit-saturatio",
+            "verdict": "ineffective",
+            "evidence": "cand2 scored 0.0105 (A_i +1.6878, worst in group). WNS degraded to -0.3606 ns and TNS worsened to -3.8075 ns (vs. -1.5467 ns baseline). The high-bit shortcut ignored the true bottleneck: the upstream accumulation chain itself. This strategy only helps if the comparator is the critical path, not the source."
+          }
+        ],
+        "observations": "The group reveals a clear hierarchy: binary-tree rebalancing of the accumulation chain is the dominant fix (cand0/3 tied for best), parallelizing saturation provides a weaker but viable alternative (cand1), and attacking the wrong bottleneck with a clever optimization (cand2) actively hurts. The equivalence of cand0 and cand3\u2014identical metrics despite different phrasing\u2014confirms that the rebalancing principle is robust and synthesis-independent. The saturation-parallelization approach is instructive: it does help (cand1 beats baseline in WNS), but not as much as solving the arithmetic bottleneck first.",
+        "raw_reply": "```json\n{\n  \"skills\": [\n    {\n      \"pattern\": \"Serial multi-operand accumulation with deep carry chains\",\n      \"strategy\": \"Rebalance operands into binary tree structure\",\n      \"rationale\": \"Converting a chain of sequential additions (s0+p1 \u2192 +p2 \u2192 +p3, depth 3) into parallel pairs ((s0+p1) || (p2+p3)) halves the carry propagation stages. Each carry-ripple adds 5\u20138 gate delays; removing one stage recovers ~400ps. Synthesis flattens the tree automatically.\",\n      \"example\": \"assign s_half1 = s0 + p1;  assign s_half2 = p2 + p3;  assign result = s_half1 + s_half2;\",\n      \"verdict\": \"effective\",\n      \"evidence\": \"cand0 & cand3 both scored -0.4789 (A_i -0.7460, best in group), WNS -0.1620 ns, identical area. These candidates are equivalent transformations, proving consistency of the approach.\"\n    },\n    {\n      \"pattern\": \"Saturation detection on critical path after accumulation\",\n      \"strategy\": \"Parallelize overflow flags from partial sums against main accumulation\",\n      \"rationale\": \"By computing partial-sum MSB patterns (e.g., from (p0+p2) and (p1+p3)) in parallel with sequential accumulation, overflow detection runs concurrently rather than serialized after the final sum. Saturation mux resolves from MSB carries before full ripple completes.\",\n      \"example\": \"assign overflow_p02 = (p0[39] ^ p2[39]) | carry_p02[39];  assign mux_early = overflow_p02 ? SAT_VAL : acc_in;\",\n      \"verdict\": \"effective\",\n      \"evidence\": \"cand1 scored -0.3682 (A_i -0.1958). While ~0.5 units behind pure rebalancing, it achieved better WNS (-0.2138 ns) and remained area-neutral (+28um\u00b2 vs baseline), offering a viable alternative when tree rebalancing is unavailable.\"\n    },\n    {\n      \"pattern\": \"Long critical path ending in full-width magnitude comparison\",\n      \"strategy\": \"Replace full comparators with high-bit saturation detection shortcut\",\n      \"rationale\": \"A 40-bit ripple comparator adds ~20 logic levels. For bounded values (e.g., LIMIT = 2^37\u22121), checking top 3 bits should suffice. Synthesis was expected to simplify the tree.\",\n      \"example\": \"assign saturated = result[39] ^ (result[38:37] == 2'b00);  assign clamped = saturated ? SAT_VAL : result;\",\n      \"verdict\": \"ineffective\",\n      \"evidence\": \"cand2 scored 0.0105 (A_i +1.6878, worst in group). WNS degraded to -0.3606 ns and TNS worsened to -3.8075 ns (vs. -1.5467 ns baseline). The high-bit shortcut ignored the true bottleneck: the upstream accumulation chain itself. This strategy only helps if the comparator is the critical path, not the source.\"\n    }\n  ],\n  \"observations\": \"The group reveals a clear hierarchy: binary-tree rebalancing of the accumulation chain is the dominant fix (cand0/3 tied for best), parallelizing saturation provides a weaker but viable alternative (cand1), and attacking the wrong bottleneck with a clever optimization (cand2) actively hurts. The equivalence of cand0 and cand3\u2014identical metrics despite different phrasing\u2014confirms that the rebalancing principle is robust and synthesis-independent. The saturation-parallelization approach is instructive: it does help (cand1 beats baseline in WNS), but not as much as solving the arithmetic bottleneck first.\"\n}\n```"
+      }
+    }
+  ],
+  "best": {
+    "id": "cand0",
+    "iteration": 1,
+    "score": -0.4788777390068944,
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -0.16196155985895283,
+      "tns_ns": -1.5467412233259197,
+      "violating_endpoints": 12,
+      "hold_wns_ns": 0.05887213799761724,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk": {
+            "endpoints": 212,
+            "wns_ns": -0.161962,
+            "tns_ns": -1.5467439999999997,
+            "violating_endpoints": 12
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -0.161962,
+        "design_wns_ns": -0.16196155985895283
+      },
+      "area_um2": 8935.206,
+      "cells": 7302,
+      "runtime_s": 11.58,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/eval",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/eval/02_sta/timing.json",
+      "wns_cycles": -0.080981,
+      "tns_cycles": -0.7733719999999998
+    },
+    "pattern": "serial accumulate chain with ripple carry",
+    "strategy": "rebalance serial add chain into binary tree",
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/rtl/mac_chain.v"
+    ],
+    "sec": {
+      "equivalent": true,
+      "method": "induction",
+      "reason": "temporal induction proved the miter over all reachable states",
+      "depth": 20,
+      "sat_steps": null,
+      "multiclock": false,
+      "engine": "yosys",
+      "runtime_s": 2.87,
+      "steps": [
+        {
+          "name": "read_gold",
+          "status": "ok",
+          "error": null
+        },
+        {
+          "name": "read_gate",
+          "status": "ok",
+          "error": null
+        },
+        {
+          "name": "miter",
+          "status": "ok",
+          "error": null
+        },
+        {
+          "name": "induction",
+          "status": "ok",
+          "error": null
+        }
+      ],
+      "log": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand0/sec/sec.log"
+    }
+  },
+  "convergence_steps": 1,
+  "usage": {
+    "calls": 6,
+    "input_tokens": 54,
+    "output_tokens": 63254,
+    "cache_read_input_tokens": 117965,
+    "cost_usd": 0.4902605,
+    "duration_s": 600.401
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "structured": {
+    "top_k": 3,
+    "paths": [
+      {
+        "rank": 1,
+        "startpoint": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D",
+        "endpoint": "acc_out[33]_DFF_X1_Q",
+        "slack_ns": -0.3573,
+        "status": "VIOLATED",
+        "clock_group": "clk",
+        "period_ns": 2.0,
+        "mapping": {
+          "regions": [
+            {
+              "file": "mac_chain.v",
+              "line": 28,
+              "end_line": 28,
+              "via": "declaration via cone origin",
+              "stages": 2,
+              "delay_ns": 0.2293,
+              "roles": [
+                "startpoint",
+                "path"
+              ],
+              "cells": {
+                "DFF_X1": 2
+              },
+              "signals": [
+                "b1"
+              ],
+              "source": [
+                "   28 |     input  wire signed [W-1:0] b0, b1, b2, b3,"
+              ]
+            },
+            {
+              "file": "mac_chain.v",
+              "line": 81,
+              "end_line": 81,
+              "via": "driver via cone origin",
+              "stages": 87,
+              "delay_ns": 2.0487,
+              "roles": [
+                "endpoint",
+                "path"
+              ],
+              "cells": {
+                "OAI21_X1": 24,
+                "AOI21_X1": 24,
+                "OR3_X1": 12,
+                "XOR2_X1": 10,
+                "AND3_X1": 8,
+                "AOI22_X1": 4,
+                "XNOR2_X1": 2,
+                "OR2_X1": 2,
+                "DFF_X1": 1
+              },
+              "signals": [
+                "acc_out"
+              ],
+              "source": [
+                "   81 |             acc_out   <= sat_val;"
+              ]
+            }
+          ],
+          "coverage": {
+            "stages_total": 91,
+            "stages_localised": 89,
+            "stages_unresolved": 2,
+            "fraction": 0.978,
+            "delay_localised_ns": 2.278,
+            "delay_total_ns": 2.278
+          },
+          "netlist_attributes_available": true
+        },
+        "diagnosis": {
+          "logic_depth": 86,
+          "cell_families": {
+            "aoi_oai": 52,
+            "and_or": 22,
+            "xor": 12,
+            "flop": 3
+          },
+          "cell_types": {
+            "OAI21_X1": 24,
+            "AOI21_X1": 24,
+            "OR3_X1": 12,
+            "XOR2_X1": 10,
+            "AND3_X1": 8,
+            "AOI22_X1": 4,
+            "DFF_X1": 3,
+            "XNOR2_X1": 2,
+            "OR2_X1": 2
+          },
+          "stage_count": 91,
+          "total_stage_delay_ns": 2.278,
+          "top_stages": [
+            {
+              "delay_ns": 0.2293,
+              "pin": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q",
+              "cell": "DFF_X1",
+              "fanout": 42
+            },
+            {
+              "delay_ns": 0.0971,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN_A2_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0881,
+              "pin": "acc_out[31]_DFF_X1_Q_D_NOR2_X1_ZN_A2_XNOR2_X1_ZN_A_OR3_X1_A3/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0822,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0779,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_A_OR3_X1_A2/ZN",
+              "cell": "OR3_X1",
+              "fanout": 4
+            }
+          ],
+          "findings": [
+            {
+              "pattern": "deep combinational logic",
+              "evidence": "86 combinational cells between the launch and capture flops",
+              "metric": {
+                "logic_depth": 86,
+                "threshold": 15
+              }
+            },
+            {
+              "pattern": "wide arithmetic / carry propagation",
+              "evidence": "0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+              "metric": {
+                "adder": 0,
+                "xor": 12,
+                "aoi_oai": 52
+              }
+            },
+            {
+              "pattern": "high fanout on the critical path",
+              "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)",
+              "metric": {
+                "max_fanout": 42,
+                "threshold": 8,
+                "pins": [
+                  "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q"
+                ]
+              }
+            },
+            {
+              "pattern": "slack gap",
+              "evidence": "0.3573 ns short of a 2 ns period (18% of the cycle)",
+              "metric": {
+                "slack_ns": -0.3573,
+                "period_ns": 2.0,
+                "fraction_of_period": 0.179
+              }
+            }
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "startpoint": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D",
+        "endpoint": "acc_out[34]_DFF_X1_Q",
+        "slack_ns": -0.3573,
+        "status": "VIOLATED",
+        "clock_group": "clk",
+        "period_ns": 2.0,
+        "mapping": {
+          "regions": [
+            {
+              "file": "mac_chain.v",
+              "line": 28,
+              "end_line": 28,
+              "via": "declaration via cone origin",
+              "stages": 2,
+              "delay_ns": 0.2293,
+              "roles": [
+                "startpoint",
+                "path"
+              ],
+              "cells": {
+                "DFF_X1": 2
+              },
+              "signals": [
+                "b1"
+              ],
+              "source": [
+                "   28 |     input  wire signed [W-1:0] b0, b1, b2, b3,"
+              ]
+            },
+            {
+              "file": "mac_chain.v",
+              "line": 81,
+              "end_line": 81,
+              "via": "driver via cone origin",
+              "stages": 87,
+              "delay_ns": 2.0487,
+              "roles": [
+                "endpoint",
+                "path"
+              ],
+              "cells": {
+                "OAI21_X1": 24,
+                "AOI21_X1": 24,
+                "OR3_X1": 12,
+                "XOR2_X1": 10,
+                "AND3_X1": 8,
+                "AOI22_X1": 4,
+                "XNOR2_X1": 2,
+                "OR2_X1": 2,
+                "DFF_X1": 1
+              },
+              "signals": [
+                "acc_out"
+              ],
+              "source": [
+                "   81 |             acc_out   <= sat_val;"
+              ]
+            }
+          ],
+          "coverage": {
+            "stages_total": 91,
+            "stages_localised": 89,
+            "stages_unresolved": 2,
+            "fraction": 0.978,
+            "delay_localised_ns": 2.278,
+            "delay_total_ns": 2.278
+          },
+          "netlist_attributes_available": true
+        },
+        "diagnosis": {
+          "logic_depth": 86,
+          "cell_families": {
+            "aoi_oai": 52,
+            "and_or": 22,
+            "xor": 12,
+            "flop": 3
+          },
+          "cell_types": {
+            "OAI21_X1": 24,
+            "AOI21_X1": 24,
+            "OR3_X1": 12,
+            "XOR2_X1": 10,
+            "AND3_X1": 8,
+            "AOI22_X1": 4,
+            "DFF_X1": 3,
+            "XNOR2_X1": 2,
+            "OR2_X1": 2
+          },
+          "stage_count": 91,
+          "total_stage_delay_ns": 2.278,
+          "top_stages": [
+            {
+              "delay_ns": 0.2293,
+              "pin": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q",
+              "cell": "DFF_X1",
+              "fanout": 42
+            },
+            {
+              "delay_ns": 0.0971,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN_A2_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0881,
+              "pin": "acc_out[31]_DFF_X1_Q_D_NOR2_X1_ZN_A2_XNOR2_X1_ZN_A_OR3_X1_A3/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0822,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0779,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_A_OR3_X1_A2/ZN",
+              "cell": "OR3_X1",
+              "fanout": 4
+            }
+          ],
+          "findings": [
+            {
+              "pattern": "deep combinational logic",
+              "evidence": "86 combinational cells between the launch and capture flops",
+              "metric": {
+                "logic_depth": 86,
+                "threshold": 15
+              }
+            },
+            {
+              "pattern": "wide arithmetic / carry propagation",
+              "evidence": "0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+              "metric": {
+                "adder": 0,
+                "xor": 12,
+                "aoi_oai": 52
+              }
+            },
+            {
+              "pattern": "high fanout on the critical path",
+              "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)",
+              "metric": {
+                "max_fanout": 42,
+                "threshold": 8,
+                "pins": [
+                  "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q"
+                ]
+              }
+            },
+            {
+              "pattern": "slack gap",
+              "evidence": "0.3573 ns short of a 2 ns period (18% of the cycle)",
+              "metric": {
+                "slack_ns": -0.3573,
+                "period_ns": 2.0,
+                "fraction_of_period": 0.179
+              }
+            }
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "startpoint": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D",
+        "endpoint": "acc_out[35]_DFF_X1_Q",
+        "slack_ns": -0.3573,
+        "status": "VIOLATED",
+        "clock_group": "clk",
+        "period_ns": 2.0,
+        "mapping": {
+          "regions": [
+            {
+              "file": "mac_chain.v",
+              "line": 28,
+              "end_line": 28,
+              "via": "declaration via cone origin",
+              "stages": 2,
+              "delay_ns": 0.2293,
+              "roles": [
+                "startpoint",
+                "path"
+              ],
+              "cells": {
+                "DFF_X1": 2
+              },
+              "signals": [
+                "b1"
+              ],
+              "source": [
+                "   28 |     input  wire signed [W-1:0] b0, b1, b2, b3,"
+              ]
+            },
+            {
+              "file": "mac_chain.v",
+              "line": 81,
+              "end_line": 81,
+              "via": "driver via cone origin",
+              "stages": 87,
+              "delay_ns": 2.0487,
+              "roles": [
+                "endpoint",
+                "path"
+              ],
+              "cells": {
+                "OAI21_X1": 24,
+                "AOI21_X1": 24,
+                "OR3_X1": 12,
+                "XOR2_X1": 10,
+                "AND3_X1": 8,
+                "AOI22_X1": 4,
+                "XNOR2_X1": 2,
+                "OR2_X1": 2,
+                "DFF_X1": 1
+              },
+              "signals": [
+                "acc_out"
+              ],
+              "source": [
+                "   81 |             acc_out   <= sat_val;"
+              ]
+            }
+          ],
+          "coverage": {
+            "stages_total": 91,
+            "stages_localised": 89,
+            "stages_unresolved": 2,
+            "fraction": 0.978,
+            "delay_localised_ns": 2.278,
+            "delay_total_ns": 2.278
+          },
+          "netlist_attributes_available": true
+        },
+        "diagnosis": {
+          "logic_depth": 86,
+          "cell_families": {
+            "aoi_oai": 52,
+            "and_or": 22,
+            "xor": 12,
+            "flop": 3
+          },
+          "cell_types": {
+            "OAI21_X1": 24,
+            "AOI21_X1": 24,
+            "OR3_X1": 12,
+            "XOR2_X1": 10,
+            "AND3_X1": 8,
+            "AOI22_X1": 4,
+            "DFF_X1": 3,
+            "XNOR2_X1": 2,
+            "OR2_X1": 2
+          },
+          "stage_count": 91,
+          "total_stage_delay_ns": 2.278,
+          "top_stages": [
+            {
+              "delay_ns": 0.2293,
+              "pin": "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q",
+              "cell": "DFF_X1",
+              "fanout": 42
+            },
+            {
+              "delay_ns": 0.0971,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN_A2_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0881,
+              "pin": "acc_out[31]_DFF_X1_Q_D_NOR2_X1_ZN_A2_XNOR2_X1_ZN_A_OR3_X1_A3/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0822,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_B1_AOI21_X1_ZN_B2_OR3_X1_ZN/ZN",
+              "cell": "OR3_X1",
+              "fanout": 3
+            },
+            {
+              "delay_ns": 0.0779,
+              "pin": "acc_out[8]_DFF_X1_Q_D_AND3_X1_ZN_A2_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND3_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A1_OR3_X1_ZN_A1_AND4_X1_ZN_A4_OAI21_X1_ZN_A_OR3_X1_A2/ZN",
+              "cell": "OR3_X1",
+              "fanout": 4
+            }
+          ],
+          "findings": [
+            {
+              "pattern": "deep combinational logic",
+              "evidence": "86 combinational cells between the launch and capture flops",
+              "metric": {
+                "logic_depth": 86,
+                "threshold": 15
+              }
+            },
+            {
+              "pattern": "wide arithmetic / carry propagation",
+              "evidence": "0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+              "metric": {
+                "adder": 0,
+                "xor": 12,
+                "aoi_oai": 52
+              }
+            },
+            {
+              "pattern": "high fanout on the critical path",
+              "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)",
+              "metric": {
+                "max_fanout": 42,
+                "threshold": 8,
+                "pins": [
+                  "b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q"
+                ]
+              }
+            },
+            {
+              "pattern": "slack gap",
+              "evidence": "0.3573 ns short of a 2 ns period (18% of the cycle)",
+              "metric": {
+                "slack_ns": -0.3573,
+                "period_ns": 2.0,
+                "fraction_of_period": 0.179
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "text": "### Critical path 1  slack -0.3573 ns (VIOLATED)\n    b1[0]_AND2_X1_A2_ZN_DFF_X1_D -> acc_out[33]_DFF_X1_Q\n    logic depth 86, 91 stages, 2.278 ns of stage delay\n    localised 89/91 stages (98%) onto RTL\n\n    root causes:\n      - deep combinational logic: 86 combinational cells between the launch and capture flops\n      - wide arithmetic / carry propagation: 0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n      - high fanout on the critical path: fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)\n      - slack gap: 0.3573 ns short of a 2 ns period (18% of the cycle)\n\n    RTL regions on this path, in path order:\n      mac_chain.v:28  [startpoint/path]  2 stage(s), 0.2293 ns  via declaration via cone origin\n          signals: b1\n          cells:   2xDFF_X1\n           28 |     input  wire signed [W-1:0] b0, b1, b2, b3,\n      mac_chain.v:81  [endpoint/path]  87 stage(s), 2.0487 ns  via driver via cone origin\n          signals: acc_out\n          cells:   24xOAI21_X1, 24xAOI21_X1, 12xOR3_X1, 10xXOR2_X1\n           81 |             acc_out   <= sat_val;\n\n### Critical path 2  slack -0.3573 ns (VIOLATED)\n    b1[0]_AND2_X1_A2_ZN_DFF_X1_D -> acc_out[34]_DFF_X1_Q\n    logic depth 86, 91 stages, 2.278 ns of stage delay\n    localised 89/91 stages (98%) onto RTL\n\n    root causes:\n      - deep combinational logic: 86 combinational cells between the launch and capture flops\n      - wide arithmetic / carry propagation: 0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n      - high fanout on the critical path: fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)\n      - slack gap: 0.3573 ns short of a 2 ns period (18% of the cycle)\n\n    RTL regions on this path, in path order:\n      mac_chain.v:28  [startpoint/path]  2 stage(s), 0.2293 ns  via declaration via cone origin\n          signals: b1\n          cells:   2xDFF_X1\n           28 |     input  wire signed [W-1:0] b0, b1, b2, b3,\n      mac_chain.v:81  [endpoint/path]  87 stage(s), 2.0487 ns  via driver via cone origin\n          signals: acc_out\n          cells:   24xOAI21_X1, 24xAOI21_X1, 12xOR3_X1, 10xXOR2_X1\n           81 |             acc_out   <= sat_val;\n\n### Critical path 3  slack -0.3573 ns (VIOLATED)\n    b1[0]_AND2_X1_A2_ZN_DFF_X1_D -> acc_out[35]_DFF_X1_Q\n    logic depth 86, 91 stages, 2.278 ns of stage delay\n    localised 89/91 stages (98%) onto RTL\n\n    root causes:\n      - deep combinational logic: 86 combinational cells between the launch and capture flops\n      - wide arithmetic / carry propagation: 0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n      - high fanout on the critical path: fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)\n      - slack gap: 0.3573 ns short of a 2 ns period (18% of the cycle)\n\n    RTL regions on this path, in path order:\n      mac_chain.v:28  [startpoint/path]  2 stage(s), 0.2293 ns  via declaration via cone origin\n          signals: b1\n          cells:   2xDFF_X1\n           28 |     input  wire signed [W-1:0] b0, b1, b2, b3,\n      mac_chain.v:81  [endpoint/path]  87 stage(s), 2.0487 ns  via driver via cone origin\n          signals: acc_out\n          cells:   24xOAI21_X1, 24xAOI21_X1, 12xOR3_X1, 10xXOR2_X1\n           81 |             acc_out   <= sat_val;\n",
+  "bottlenecks": [
+    {
+      "rank": 1,
+      "pattern": "serial accumulate chain with ripple carry",
+      "rtl_location": "mac_chain.v:69-72",
+      "signals": [
+        "s0",
+        "s1",
+        "s2",
+        "s3",
+        "p0",
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "root_cause": "Three 40-bit additions are sequenced serially (s1 = s0 + p1; s2 = s1 + p2; s3 = s2 + p3), each depending on the result of the previous. Each addition implements carry ripple propagation, requiring ~40 logic levels per add.",
+      "evidence": "86 combinational cells in path, 52 AOI/OAI cells (carry chain indicators), 12 XOR cells (sum bits); 87 stages in endpoint region contributing 2.0487 ns",
+      "share_of_path": "~65-70%"
+    },
+    {
+      "rank": 2,
+      "pattern": "wide comparison with ternary mux at path end",
+      "rtl_location": "mac_chain.v:75-78",
+      "signals": [
+        "s3",
+        "over",
+        "under",
+        "sat_val"
+      ],
+      "root_cause": "40-bit greater-than and less-than comparisons (s3 > LIMIT; s3 < -LIMIT) complete only after the full accumulation chain. The ternary mux selecting sat_val must then wait for these comparison results, serializing the comparison logic into the critical path.",
+      "evidence": "12 OR3_X1 cells and additional AOI21 cells for wide comparison and mux tree; comparison logic embedded in the 87-stage endpoint region (mac_chain.v:81)",
+      "share_of_path": "~25-30%"
+    },
+    {
+      "rank": 3,
+      "pattern": "high-fanout input register stage",
+      "rtl_location": "mac_chain.v:37-43",
+      "signals": [
+        "b1",
+        "b1_q"
+      ],
+      "root_cause": "The b1_q input register output fans out heavily (fanout 42) to the 16-bit multiplier and downstream accumulator stages. High fanout increases transition time and degrades stage delay on this critical signal.",
+      "evidence": "fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q with 1 stage exceeding fanout 8; contributes 2-stage startup delay of 0.2293 ns from mac_chain.v:28",
+      "share_of_path": "~5-10%"
+    }
+  ],
+  "source": "llm",
+  "summary": "The critical path is a serial multiply-accumulate with saturation: b1_q feeds a multiplier to produce p1, which enters a three-stage ripple adder chain (s0 + p1 \u2192 s1 + p2 \u2192 s2 + p3), followed by a wide 40-bit comparison and ternary mux to select the saturated output. The serial accumulation chain with ripple carry dominates the delay, followed by the end-of-path saturation logic that must wait for all accumulation to complete.",
+  "raw_reply": "```json\n{\n  \"bottlenecks\": [\n    {\n      \"rank\": 1,\n      \"pattern\": \"serial accumulate chain with ripple carry\",\n      \"rtl_location\": \"mac_chain.v:69-72\",\n      \"signals\": [\"s0\", \"s1\", \"s2\", \"s3\", \"p0\", \"p1\", \"p2\", \"p3\"],\n      \"root_cause\": \"Three 40-bit additions are sequenced serially (s1 = s0 + p1; s2 = s1 + p2; s3 = s2 + p3), each depending on the result of the previous. Each addition implements carry ripple propagation, requiring ~40 logic levels per add.\",\n      \"evidence\": \"86 combinational cells in path, 52 AOI/OAI cells (carry chain indicators), 12 XOR cells (sum bits); 87 stages in endpoint region contributing 2.0487 ns\",\n      \"share_of_path\": \"~65-70%\"\n    },\n    {\n      \"rank\": 2,\n      \"pattern\": \"wide comparison with ternary mux at path end\",\n      \"rtl_location\": \"mac_chain.v:75-78\",\n      \"signals\": [\"s3\", \"over\", \"under\", \"sat_val\"],\n      \"root_cause\": \"40-bit greater-than and less-than comparisons (s3 > LIMIT; s3 < -LIMIT) complete only after the full accumulation chain. The ternary mux selecting sat_val must then wait for these comparison results, serializing the comparison logic into the critical path.\",\n      \"evidence\": \"12 OR3_X1 cells and additional AOI21 cells for wide comparison and mux tree; comparison logic embedded in the 87-stage endpoint region (mac_chain.v:81)\",\n      \"share_of_path\": \"~25-30%\"\n    },\n    {\n      \"rank\": 3,\n      \"pattern\": \"high-fanout input register stage\",\n      \"rtl_location\": \"mac_chain.v:37-43\",\n      \"signals\": [\"b1\", \"b1_q\"],\n      \"root_cause\": \"The b1_q input register output fans out heavily (fanout 42) to the 16-bit multiplier and downstream accumulator stages. High fanout increases transition time and degrades stage delay on this critical signal.\",\n      \"evidence\": \"fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q with 1 stage exceeding fanout 8; contributes 2-stage startup delay of 0.2293 ns from mac_chain.v:28\",\n      \"share_of_path\": \"~5-10%\"\n    }\n  ],\n  \"summary\": \"The critical path is a serial multiply-accumulate with saturation: b1_q feeds a multiplier to produce p1, which enters a three-stage ripple adder chain (s0 + p1 \u2192 s1 + p2 \u2192 s2 + p3), followed by a wide 40-bit comparison and ternary mux to select the saturated output. The serial accumulation chain with ripple carry dominates the delay, followed by the end-of-path saturation logic that must wait for all accumulation to complete.\"\n}\n```"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "clean0",
+  "directive_index": 0,
+  "directive": "",
+  "pattern": "Serial reduction chains in datapath",
+  "strategy": "Replace with balanced binary trees of gates",
+  "rationale": "Reduces critical-path depth from O(n) to O(log n) for parity and accumulate reductions without changing functionality",
+  "target": "par_chain (512\u21929 levels), t_acc (16\u21924 levels)",
+  "expected_slack_recovery_ns": 4.5,
+  "area_cost": "small; XOR and adder trees have identical gate count to serial chains, just rearranged",
+  "equivalence_argument": "Parity: XOR is associative and commutative; tree order doesn't change result. Accumulation: addition is associative (modulo overflow, which occurs identically for same input widths). Both reset to 0 in the same cycle. Intermediate widths unchanged\u2014all intermediate sums at each tree level are DW+4 bits, same as serial chain."
+}

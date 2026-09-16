@@ -1,0 +1,58 @@
+{
+  "design": "mac_chain",
+  "run_id": "eval",
+  "label": "cand1",
+  "pdk": "nangate45",
+  "top": "mac_chain",
+  "clock": {
+    "name": "clk",
+    "period_ns": 2.0
+  },
+  "clocks": [
+    {
+      "name": "clk",
+      "period_ns": 2.0,
+      "port": "clk"
+    }
+  ],
+  "created_at": "2026-09-15T10:39:22",
+  "inputs": {
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval/00_inputs/mac_chain.v"
+    ],
+    "sdc": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval/00_inputs/mac_chain.sdc"
+  },
+  "synth": {
+    "status": "ok",
+    "runtime_s": 9.97,
+    "netlist": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval/01_synth/netlist.v",
+    "wires": 7677,
+    "cells": 7332,
+    "area_um2": 8963.668
+  },
+  "sta": {
+    "status": "ok",
+    "runtime_s": 1.98,
+    "wns_ns": -0.21382940467952358,
+    "tns_ns": -1.9486479648112582,
+    "violating_endpoints": 11,
+    "hold_wns_ns": 0.05887213799761724,
+    "clock_groups": {
+      "source": "sta",
+      "complete": true,
+      "groups": {
+        "clk": {
+          "endpoints": 212,
+          "wns_ns": -0.213829,
+          "tns_ns": -1.9486450000000002,
+          "violating_endpoints": 11
+        }
+      },
+      "agrees_with_design_wns": true,
+      "group_wns_ns": -0.213829,
+      "design_wns_ns": -0.21382940467952358
+    },
+    "report": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval/02_sta/timing.rpt",
+    "timing_json": "/home/sreeavyay/astra-vlsi/runs/mac_chain/opt-20260915-103411/iter_01/cand1/eval/02_sta/timing.json"
+  }
+}

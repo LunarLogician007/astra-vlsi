@@ -1,0 +1,14 @@
+{
+  "id": "t1",
+  "target_id": "T1",
+  "target_kind": "segment",
+  "target_value": 0.3697459113804783,
+  "pattern": "Serial accumulation chain in datapath summation",
+  "strategy": "Restructure serial add chain into balanced binary tree",
+  "rationale": "Replaces 8 sequential adder stages (ripple depth) with 3-level tree (log\u2082 depth), cutting carry propagation stages from critical path by ~60%",
+  "target": "acc[] array generation (stages 0-10 segment), specifically the serial accumulation loop into term[0..7]",
+  "expected_slack_recovery_ns": 0.12,
+  "area_cost": "none \u2014 same total adder count, same register count, just rearranged combinational topology",
+  "equivalence_argument": "Tree sum equals acc[7] by associativity of addition (term[0]+term[1]+...+term[7] computed as (term[0]+term[1]+term[2]+term[3])+(term[4]+term[5]+term[6]+term[7])). Latency unchanged (all additions remain combinational within one cycle). Reset: all term[] reset identically, tree sum resets to same value. Bit-width exact match: intermediate 2W+4 width preserved through all levels.",
+  "declared_changed": true
+}

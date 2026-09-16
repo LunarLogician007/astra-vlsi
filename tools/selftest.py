@@ -1208,7 +1208,8 @@ class TestPathSelOnRealRun(unittest.TestCase):
     targets on a design that genuinely has one bottleneck, this fails.
     """
 
-    RUN = ROOT / "runs" / "mac_chain" / "opt-20260901-025558-run1" / "baseline"
+    RUN = (ROOT / "results" / "mac_chain" / "opt-20260915-103411"
+           / "baseline")
 
     def setUp(self):
         if not (self.RUN / "02_sta" / "timing.json").is_file():

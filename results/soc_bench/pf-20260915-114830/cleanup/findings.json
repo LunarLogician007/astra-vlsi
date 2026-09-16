@@ -1,0 +1,375 @@
+{
+  "files": [
+    "soc_bench.v"
+  ],
+  "findings": [
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`sys_a_q` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "sys_a_q",
+        "width": 16
+      },
+      "file": "soc_bench.v",
+      "line": 240,
+      "end_line": 242,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`sys_b_q` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "sys_b_q",
+        "width": 16
+      },
+      "file": "soc_bench.v",
+      "line": 242,
+      "end_line": 243,
+      "severity": "high"
+    },
+    {
+      "pattern": "unpipelined multiply in one cycle",
+      "evidence": "1 multiply(s) at 16 bits on `sys_p` -- a 16x16 array is roughly 8 levels before anything downstream starts",
+      "metric": {
+        "multiplies": 1,
+        "operand_width": 16
+      },
+      "file": "soc_bench.v",
+      "line": 250,
+      "end_line": 250,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`sys_s` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "sys_s",
+        "width": 40
+      },
+      "file": "soc_bench.v",
+      "line": 262,
+      "end_line": 265,
+      "severity": "high"
+    },
+    {
+      "pattern": "comparison against an unreachable bound",
+      "evidence": "`sys_s > SYS_LIMIT` compares a value whose magnitude cannot exceed 2^31 against 137438953471 -- 64x of headroom, so the comparison's result is fixed",
+      "metric": {
+        "signal": "sys_s",
+        "op": ">",
+        "bound": 137438953471,
+        "reachable_magnitude": 2147483648.0
+      },
+      "file": "soc_bench.v",
+      "line": 269,
+      "end_line": 269,
+      "severity": "high"
+    },
+    {
+      "pattern": "comparison against an unreachable bound",
+      "evidence": "`sys_s < -SYS_LIMIT` compares a value whose magnitude cannot exceed 2^31 against -137438953471 -- 64x of headroom, so the comparison's result is fixed",
+      "metric": {
+        "signal": "sys_s",
+        "op": "<",
+        "bound": -137438953471,
+        "reachable_magnitude": 2147483648.0
+      },
+      "file": "soc_bench.v",
+      "line": 270,
+      "end_line": 270,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`dsp_line` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "dsp_line",
+        "width": 16
+      },
+      "file": "soc_bench.v",
+      "line": 310,
+      "end_line": 312,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`dsp_coef_q` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "dsp_coef_q",
+        "width": 16
+      },
+      "file": "soc_bench.v",
+      "line": 327,
+      "end_line": 329,
+      "severity": "high"
+    },
+    {
+      "pattern": "unpipelined multiply in one cycle",
+      "evidence": "1 multiply(s) at 16 bits on `dsp_p` -- a 16x16 array is roughly 8 levels before anything downstream starts",
+      "metric": {
+        "multiplies": 1,
+        "operand_width": 16
+      },
+      "file": "soc_bench.v",
+      "line": 334,
+      "end_line": 334,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`dsp_s` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "dsp_s",
+        "width": 40
+      },
+      "file": "soc_bench.v",
+      "line": 345,
+      "end_line": 348,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`io_count` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "io_count",
+        "width": 8
+      },
+      "file": "soc_bench.v",
+      "line": 404,
+      "end_line": 407,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`io_check` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "io_check",
+        "width": 8
+      },
+      "file": "soc_bench.v",
+      "line": 407,
+      "end_line": 408,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`io_any_chain` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "io_any_chain",
+        "width": 1
+      },
+      "file": "soc_bench.v",
+      "line": 422,
+      "end_line": 425,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`io_sel_chain` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "io_sel_chain",
+        "width": 7
+      },
+      "file": "soc_bench.v",
+      "line": 425,
+      "end_line": 427,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`mem_tags` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "mem_tags",
+        "width": 32
+      },
+      "file": "soc_bench.v",
+      "line": 454,
+      "end_line": 456,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`mem_any_chain` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "mem_any_chain",
+        "width": 1
+      },
+      "file": "soc_bench.v",
+      "line": 472,
+      "end_line": 475,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`mem_idx_chain` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "mem_idx_chain",
+        "width": 6
+      },
+      "file": "soc_bench.v",
+      "line": 475,
+      "end_line": 478,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`aux_par_chain` is defined in terms of itself across 12 loop iterations -- 12 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 12",
+      "metric": {
+        "trips": 12,
+        "tree_depth": 4,
+        "signal": "aux_par_chain",
+        "width": 1
+      },
+      "file": "soc_bench.v",
+      "line": 512,
+      "end_line": 515,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`aux_crc_chain` is defined in terms of itself across 11 loop iterations -- 11 levels in series, where a balanced tree over the same terms is 4. The lexical source shows one assignment; synthesis produces 11",
+      "metric": {
+        "trips": 11,
+        "tree_depth": 4,
+        "signal": "aux_crc_chain",
+        "width": 32
+      },
+      "file": "soc_bench.v",
+      "line": 526,
+      "end_line": 528,
+      "severity": "high"
+    },
+    {
+      "pattern": "deep single-cycle expression",
+      "evidence": "`cdc_gray_next` estimates 12 levels in one assignment (operators: + >> ^)",
+      "metric": {
+        "depth": 12,
+        "width": 8,
+        "ops": [
+          "+",
+          ">>",
+          "^"
+        ]
+      },
+      "file": "soc_bench.v",
+      "line": 204,
+      "end_line": 204,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 40 bits on `sys_s` -- 7 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 40,
+        "levels_each": 7
+      },
+      "file": "soc_bench.v",
+      "line": 262,
+      "end_line": 262,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 40 bits on `sys_sat_val` -- 7 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 40,
+        "levels_each": 7
+      },
+      "file": "soc_bench.v",
+      "line": 271,
+      "end_line": 271,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 40 bits on `sys_acc` -- 7 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 40,
+        "levels_each": 7
+      },
+      "file": "soc_bench.v",
+      "line": 289,
+      "end_line": 289,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 40 bits on `dsp_s` -- 7 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 40,
+        "levels_each": 7
+      },
+      "file": "soc_bench.v",
+      "line": 345,
+      "end_line": 345,
+      "severity": "medium"
+    },
+    {
+      "pattern": "one register broadcast to every stage of a chain",
+      "evidence": "`aux_data_q` (256 bits) is read inside the loop that builds `aux_par_chain`, so every elaborated stage loads it at once",
+      "metric": {
+        "signal": "aux_data_q",
+        "width": 256,
+        "chain": "aux_par_chain"
+      },
+      "file": "soc_bench.v",
+      "line": 512,
+      "end_line": 512,
+      "severity": "medium"
+    },
+    {
+      "pattern": "hand-written sign extension repeated across the datapath",
+      "evidence": "6 replicated-bit extensions (sys_s, sys_s, sys_acc, dsp_s, dsp_s, dsp_corr) -- widening by hand before each operation, rather than once at the boundary",
+      "metric": {
+        "count": 6,
+        "signals": [
+          "sys_s",
+          "sys_s",
+          "sys_acc",
+          "dsp_s",
+          "dsp_s",
+          "dsp_corr"
+        ]
+      },
+      "file": "soc_bench.v",
+      "line": 258,
+      "end_line": 358,
+      "severity": "low"
+    }
+  ],
+  "counts": {
+    "declarations": 101,
+    "assignments": 140,
+    "parameters": 9
+  }
+}

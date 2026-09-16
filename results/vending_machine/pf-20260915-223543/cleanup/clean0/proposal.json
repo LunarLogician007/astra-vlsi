@@ -1,0 +1,12 @@
+{
+  "id": "clean0",
+  "directive_index": 0,
+  "directive": "",
+  "pattern": "Output mux in series with carry chain",
+  "strategy": "Move mux to operand inputs; compute single sum",
+  "rationale": "Replaces dual parallel adders feeding an output mux with operand muxing followed by a single adder. Single adder path is cleaner to synthesize; reduces fanout complexity and routing congestion.",
+  "target": "total_discount computation (lines 45-50); unreachable case branches for states S7-S10 (lines 76-99)",
+  "expected_slack_recovery_ns": null,
+  "area_cost": "small \u2013 removes one 1024-bit adder; operand muxes are cheaper than full adders",
+  "equivalence_argument": "Transforming `sel ? (A+B) : (C+D)` to `(sel?A:C) + (sel?B:D)` is algebraically identical. When sel=1: (1?A:C)+(1?B:D)=A+B. When sel=0: (0?A:C)+(0?B:D)=C+D. No register state affected; combinational path only. Intermediate and output widths unchanged (1024-bit throughout)."
+}

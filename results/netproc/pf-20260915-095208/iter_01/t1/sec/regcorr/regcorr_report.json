@@ -1,0 +1,25 @@
+{
+  "top": "netproc",
+  "flop_bits": {
+    "gold": 13720,
+    "gate": 13720
+  },
+  "paired": 13720,
+  "unpaired_gold": 0,
+  "unpaired_gate": 0,
+  "unpaired_examples": {
+    "gold": [],
+    "gate": []
+  },
+  "ports_total": 54889,
+  "ports_structural": 54888,
+  "sat_ports": [
+    "xfrm_par[0]@d"
+  ],
+  "status": "needs_sat",
+  "sat_cells": {
+    "gold": 1026,
+    "gate": 1026
+  },
+  "reason": "1 of 54889 outputs differ structurally and go to the solver"
+}

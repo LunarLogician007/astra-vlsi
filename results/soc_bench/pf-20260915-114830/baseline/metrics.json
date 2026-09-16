@@ -1,0 +1,206 @@
+{
+  "design": "soc_bench",
+  "run_id": "baseline",
+  "label": "D_0",
+  "pdk": "nangate45",
+  "top": "soc_bench",
+  "clock": {
+    "name": "clk_sys",
+    "period_ns": 2.0
+  },
+  "clocks": [
+    {
+      "name": "clk_sys",
+      "period_ns": 2.0,
+      "port": "clk_sys"
+    },
+    {
+      "name": "clk_dsp",
+      "period_ns": 3.0,
+      "port": "clk_dsp"
+    },
+    {
+      "name": "clk_mem",
+      "period_ns": 4.0,
+      "port": "clk_mem"
+    },
+    {
+      "name": "clk_aux",
+      "period_ns": 5.0,
+      "port": "clk_aux"
+    },
+    {
+      "name": "clk_io",
+      "period_ns": 8.0,
+      "port": "clk_io"
+    },
+    {
+      "name": "clk_sys_div2",
+      "period_ns": 4.0,
+      "port": "clk_sys_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_sys",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_dsp_div2",
+      "period_ns": 6.0,
+      "port": "clk_dsp_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_dsp",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_dsp_div4",
+      "period_ns": 12.0,
+      "port": "clk_dsp_div2_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_dsp_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_mem_div2",
+      "period_ns": 8.0,
+      "port": "clk_mem_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_mem",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_mem_div4",
+      "period_ns": 16.0,
+      "port": "clk_mem_div4_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_mem_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_mem_div8",
+      "period_ns": 32.0,
+      "port": "clk_mem_div4_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_mem_div4",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_aux_div2",
+      "period_ns": 10.0,
+      "port": "clk_aux_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_aux",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_io_div2",
+      "period_ns": 16.0,
+      "port": "clk_io_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_io",
+      "divide_by": 2
+    }
+  ],
+  "created_at": "2026-09-15T11:48:30",
+  "inputs": {
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline/00_inputs/soc_bench.v"
+    ],
+    "sdc": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline/00_inputs/soc_bench.sdc"
+  },
+  "synth": {
+    "status": "ok",
+    "runtime_s": 136.99,
+    "netlist": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline/01_synth/netlist.v",
+    "wires": 54157,
+    "cells": 49935,
+    "area_um2": 68665.24
+  },
+  "sta": {
+    "status": "ok",
+    "runtime_s": 5.17,
+    "wns_ns": -6.512576440245186,
+    "tns_ns": -65.14013690604592,
+    "violating_endpoints": 60,
+    "hold_wns_ns": 0.00941800830646686,
+    "clock_groups": {
+      "source": "sta",
+      "complete": true,
+      "groups": {
+        "clk_sys": {
+          "endpoints": 398,
+          "wns_ns": -2.038377,
+          "tns_ns": -44.58724000000001,
+          "violating_endpoints": 36
+        },
+        "clk_dsp": {
+          "endpoints": 411,
+          "wns_ns": -1.024823,
+          "tns_ns": -14.040318999999998,
+          "violating_endpoints": 23
+        },
+        "clk_mem": {
+          "endpoints": 1515,
+          "wns_ns": 1.98495,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_aux": {
+          "endpoints": 36,
+          "wns_ns": 3.639663,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_io": {
+          "endpoints": 31,
+          "wns_ns": 6.446653,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_sys_div2": {
+          "endpoints": 41,
+          "wns_ns": 0.600356,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_dsp_div2": {
+          "endpoints": 1,
+          "wns_ns": 5.843854,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_dsp_div4": {
+          "endpoints": 40,
+          "wns_ns": 2.755156,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_mem_div2": {
+          "endpoints": 1,
+          "wns_ns": 7.843854,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_mem_div4": {
+          "endpoints": 1,
+          "wns_ns": 15.843857,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_mem_div8": {
+          "endpoints": 7,
+          "wns_ns": 3.757081,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        },
+        "clk_aux_div2": {
+          "endpoints": 1,
+          "wns_ns": -6.512577,
+          "tns_ns": -6.512577,
+          "violating_endpoints": 1
+        },
+        "clk_io_div2": {
+          "endpoints": 8,
+          "wns_ns": 7.780566,
+          "tns_ns": 0.0,
+          "violating_endpoints": 0
+        }
+      },
+      "agrees_with_design_wns": true,
+      "group_wns_ns": -6.512577,
+      "design_wns_ns": -6.512576440245186
+    },
+    "report": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline/02_sta/timing.rpt",
+    "timing_json": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline/02_sta/timing.json"
+  }
+}

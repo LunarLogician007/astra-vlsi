@@ -6,7 +6,7 @@ and every consumer divided by it. That is correct for a single-clock design and
 silently wrong for anything else: a path captured by a 5 ns clock, normalised
 against a 2 ns period, reports as far more critical than it is. Nothing raises,
 nothing looks odd, and the portfolio spends its agent calls on the wrong cone
-while reporting confident numbers. See HANDOFF.md section 6.1.
+while reporting confident numbers. See docs/HANDOFF.md section 6.1.
 
 So a period is never a free-floating float here. It belongs to a named clock,
 and a path's period is looked up through the clock group that captured it.
@@ -334,7 +334,7 @@ def render_clock_groups(cs: ClockSet) -> str:
     enormous violation. Those violations are not real, but they dominate TNS
     and would swamp the criticality distribution the portfolio ranks on --
     the selector would spend every agent call on a crossing that cannot be
-    fixed in RTL. See HANDOFF.md section 6.3.
+    fixed in RTL. See docs/HANDOFF.md section 6.3.
     """
     groups = cs.async_groups()
     if len(groups) < 2:

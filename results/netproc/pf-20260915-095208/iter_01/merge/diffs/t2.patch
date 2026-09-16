@@ -1,0 +1,99 @@
+--- netproc.v (parent)
++++ netproc.v (t2)
+@@ -298,7 +298,7 @@
+         end
+ 
+     // =======================================================================
+-    // XFRM DOMAIN — a barrel rotate (mux network) feeding a serial XOR parity.
++    // XFRM DOMAIN — a barrel rotate (mux network) feeding a parallel XOR tree.
+     // Bottleneck: the parity chain is XW deep instead of log2(XW).
+     // =======================================================================
+     reg [XW-1:0] xd_q;
+@@ -316,19 +316,79 @@
+     wire [DW-1:0] rot_s4 = rot_q[4] ? {rot_s3[DW-17:0], rot_s3[DW-1:DW-16]} : rot_s3;
+     wire [DW-1:0] rot_s5 = rot_q[5] ? {rot_s4[DW-33:0], rot_s4[DW-1:DW-32]} : rot_s4;
+ 
+-    wire par_chain [0:XW];
+-    assign par_chain[0] = 1'b0;
+-    generate
+-        for (i = 0; i < XW; i = i + 1) begin : g_par
+-            assign par_chain[i+1] = par_chain[i] ^ xd_q[i];
+-        end
+-    endgenerate
++    // Balanced binary tree for 512-bit parity reduction
++    // Level 1: 256 XORs (512 -> 256)
++    wire [255:0] par_l1;
++    generate
++        for (i = 0; i < 256; i = i + 1) begin : g_par_l1
++            assign par_l1[i] = xd_q[2*i] ^ xd_q[2*i+1];
++        end
++    endgenerate
++
++    // Level 2: 128 XORs (256 -> 128)
++    wire [127:0] par_l2;
++    generate
++        for (i = 0; i < 128; i = i + 1) begin : g_par_l2
++            assign par_l2[i] = par_l1[2*i] ^ par_l1[2*i+1];
++        end
++    endgenerate
++
++    // Level 3: 64 XORs (128 -> 64)
++    wire [63:0] par_l3;
++    generate
++        for (i = 0; i < 64; i = i + 1) begin : g_par_l3
++            assign par_l3[i] = par_l2[2*i] ^ par_l2[2*i+1];
++        end
++    endgenerate
++
++    // Level 4: 32 XORs (64 -> 32)
++    wire [31:0] par_l4;
++    generate
++        for (i = 0; i < 32; i = i + 1) begin : g_par_l4
++            assign par_l4[i] = par_l3[2*i] ^ par_l3[2*i+1];
++        end
++    endgenerate
++
++    // Level 5: 16 XORs (32 -> 16)
++    wire [15:0] par_l5;
++    generate
++        for (i = 0; i < 16; i = i + 1) begin : g_par_l5
++            assign par_l5[i] = par_l4[2*i] ^ par_l4[2*i+1];
++        end
++    endgenerate
++
++    // Level 6: 8 XORs (16 -> 8)
++    wire [7:0] par_l6;
++    generate
++        for (i = 0; i < 8; i = i + 1) begin : g_par_l6
++            assign par_l6[i] = par_l5[2*i] ^ par_l5[2*i+1];
++        end
++    endgenerate
++
++    // Level 7: 4 XORs (8 -> 4)
++    wire [3:0] par_l7;
++    generate
++        for (i = 0; i < 4; i = i + 1) begin : g_par_l7
++            assign par_l7[i] = par_l6[2*i] ^ par_l6[2*i+1];
++        end
++    endgenerate
++
++    // Level 8: 2 XORs (4 -> 2)
++    wire [1:0] par_l8;
++    generate
++        for (i = 0; i < 2; i = i + 1) begin : g_par_l8
++            assign par_l8[i] = par_l7[2*i] ^ par_l7[2*i+1];
++        end
++    endgenerate
++
++    // Level 9: Final XOR (2 -> 1)
++    wire par_chain_out;
++    assign par_chain_out = par_l8[0] ^ par_l8[1];
+ 
+     // Same reason as crc_next above: the xfrm_par line mentions
+     // cdc_xfrm_from_look and so may not be edited, which would have frozen
+     // the 512-deep reduction feeding it. Rewrite par_chain into a tree and
+     // drive par_chain_out; the protected line never has to move.
+-    wire par_chain_out = par_chain[XW];
+ 
+     always @(posedge clk_xfrm or negedge rst_n)
+         if (!rst_n) xfrm_out <= {DW{1'b0}};

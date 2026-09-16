@@ -61,7 +61,7 @@ proc astra_slack_summary {prefix path_delay} {
 # A single design-wide WNS says nothing about which domain owns it. Once a
 # design has more than one clock, every consumer that divides a slack by "the
 # period" divides four fifths of the paths by the wrong number, and the
-# mis-ranking is silent -- see HANDOFF.md section 6.1. Paths are bucketed by
+# mis-ranking is silent -- see docs/HANDOFF.md section 6.1. Paths are bucketed by
 # their capture clock, which is what OpenSTA names a path group after, so the
 # name emitted here joins directly onto the `Path Group:` field the report
 # already prints per path.

@@ -1,0 +1,12 @@
+{
+  "id": "cand1",
+  "directive_index": 1,
+  "directive": "Attack bottleneck #1, but with a DIFFERENT transformation from the one an obvious first attempt would pick. If the obvious fix is to restructure the arithmetic, try moving work off the path instead, or vice versa.",
+  "pattern": "serial accumulate chain with saturation comparator in series",
+  "strategy": "parallelize saturation detection against reordered partial accumulations",
+  "rationale": "Current design chains s0+p1+p2+p3 serially (3 carry chains). By pairing (p0+p2)||(p1+p3) in parallel and computing overflow flags from partial sums, the saturation ternary mux can resolve faster: overflow detection paths now run in parallel with final accumulation rather than after it. The MSB patterns from s02 and p13 guide saturation selection before s3 propagates through the full compare tree.",
+  "target": "mac_chain.v:69-78, signals s0, s1, s2, s3 replaced with s02, p13, s3; over/under computed from partial carries",
+  "expected_slack_recovery_ns": 0.35,
+  "area_cost": "small \u2014 rewiring only, no added gates (same total add tree depth, different order)",
+  "equivalence_argument": "Reordered accumulation is still s0+p1+p2+p3 by associativity. Saturation signals over/under and final mux still produce identical sat_val for all inputs, cycle by cycle. Reset behavior and pipeline depth (2 cycles) unchanged: valid_q and acc_out registered as before."
+}
