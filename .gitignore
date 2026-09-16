@@ -12,3 +12,5 @@ __pycache__/
 # graphify code knowledge graph -- derived from the source, rebuild locally
 # with `graphify update .`
 graphify-out/
+
+backup/
