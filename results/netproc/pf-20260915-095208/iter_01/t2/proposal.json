@@ -1,0 +1,14 @@
+{
+  "id": "t2",
+  "target_id": "T2",
+  "target_kind": "segment",
+  "target_value": 0.7028078876325928,
+  "pattern": "512-bit serial XOR chain",
+  "strategy": "Replace ripple chain with balanced binary tree",
+  "rationale": "512 dependent XOR stages collapse to 9 when rebalanced as a binary tree. XOR associativity guarantees identical results. Depth from 512 \u2192 9 saves ~58 gate delays.",
+  "target": "par_chain combinational logic (lines 393-404), produces par_chain_out",
+  "expected_slack_recovery_ns": 8.5,
+  "area_cost": "none \u2014 same gate count, only topology changes",
+  "equivalence_argument": "XOR is associative. The serial chain computes parity left-to-right; the balanced tree computes the same parity with intermediate groups XORed in parallel, then combined. All 512 input bits, same single-bit output, no truncation. Reset: par_chain had no register, only driven by xd_q and constants, so reset unchanged.",
+  "declared_changed": true
+}

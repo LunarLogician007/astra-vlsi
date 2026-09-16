@@ -1,0 +1,51 @@
+{
+  "top": "soc_bench",
+  "description": "The objective-6 benchmark: five independent asynchronous master clocks, one generated (divided) clock per master at four distinct ratios, clock-domain crossings between all five, an FSM, and ~50K standard cells on nangate45. Each of the five domains carries one deliberate structural bottleneck that RTL can fix without changing latency.",
+  "rtl": ["rtl/soc_bench.v"],
+  "sdc": "constraints/soc_bench.sdc",
+  "pdk": "nangate45",
+  "clocks": [
+    { "name": "clk_sys", "port": "clk_sys", "period_ns": 2.0 },
+    { "name": "clk_dsp", "port": "clk_dsp", "period_ns": 3.0 },
+    { "name": "clk_mem", "port": "clk_mem", "period_ns": 4.0 },
+    { "name": "clk_aux", "port": "clk_aux", "period_ns": 5.0 },
+    { "name": "clk_io",  "port": "clk_io",  "period_ns": 8.0 },
+
+    { "name": "clk_sys_div2", "generated_from": "clk_sys", "divide_by": 2,
+      "port": "clk_sys_div2_r_DFFR_X1_Q/Q" },
+
+    { "name": "clk_dsp_div2", "generated_from": "clk_dsp", "divide_by": 2,
+      "port": "clk_dsp_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_dsp_div4", "generated_from": "clk_dsp_div2", "divide_by": 2,
+      "port": "clk_dsp_div2_r_DFFR_X1_CK/Q" },
+
+    { "name": "clk_mem_div2", "generated_from": "clk_mem", "divide_by": 2,
+      "port": "clk_mem_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_mem_div4", "generated_from": "clk_mem_div2", "divide_by": 2,
+      "port": "clk_mem_div4_r_DFFR_X1_Q/Q" },
+    { "name": "clk_mem_div8", "generated_from": "clk_mem_div4", "divide_by": 2,
+      "port": "clk_mem_div4_r_DFFR_X1_CK/Q" },
+
+    { "name": "clk_aux_div2", "generated_from": "clk_aux", "divide_by": 2,
+      "port": "clk_aux_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_io_div2",  "generated_from": "clk_io",  "divide_by": 2,
+      "port": "clk_io_div2_r_DFFR_X1_Q/Q" }
+  ],
+  "protected": ["cdc_*", "clk_*_div*", "*_div_cnt", "dsp_div_cnt", "mem_div_cnt"],
+  "notes": {
+    "latency_cycles": {
+      "sys": 3, "dsp": 3, "io": 2, "mem": 3, "aux": 2
+    },
+    "known_bottlenecks": [
+      "sys: serial accumulate chain over 12 unpipelined 16x16 multipliers, with the 40-bit saturation compare at the end of the chain rather than beside it",
+      "dsp: 12-tap correlator whose products are summed serially instead of in a tree",
+      "io: 64-way priority select written as a serial mux cascade, so bit 63 waits on all 63 below it",
+      "mem: 32-entry CAM where the hit index is resolved by a serial priority cascade over the match vector",
+      "aux: 256-bit parity written as a serial XOR chain (depth 256 instead of 8), and a bit-serial CRC32 update"
+    ],
+    "invariants": "rewrites must preserve each domain's latency exactly and be bit-exact. The five datapaths share no signal and may be rewritten independently.",
+    "cdc_off_limits": "every identifier prefixed cdc_, plus the clock dividers (clk_*_div*_r). The per-domain equivalence proof cuts these boundaries, so a change here is invisible to SEC — see docs/equivalence-contract.md. None of it is on a critical path.",
+    "generated_clock_pins": "The 'port' field of each generated clock is the post-synthesis instance pin of its divider flop, which yosys `autoname` names <net>_<CELL>_<PIN>. That name is stable only while the divider RTL is unchanged — which it is, because the dividers are in the do-not-edit region above. If synthesis ever renames them the SDC fails loudly (OpenSTA 'pin not found', not a silent mis-analysis); recover with: astra syn soc_bench && grep -oE 'DFFR_X1 [a-z_]*div[0-9]_r[A-Za-z0-9_]*' runs/soc_bench/<run>/01_synth/netlist.v",
+    "purpose": "objective 6. Also the first design in this repo with more than one clock, so it is what exercises the multi-clock data model end to end, and the first with a state machine, which objective 3's FSM half had no testbed for."
+  }
+}

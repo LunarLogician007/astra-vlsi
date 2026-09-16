@@ -1,0 +1,14 @@
+{
+  "id": "t2",
+  "target_id": "T2",
+  "target_kind": "segment",
+  "target_value": 0.4539275162402201,
+  "pattern": "Serial adder chain in 8-term accumulate",
+  "strategy": "Rebalance into a binary tree to reduce depth",
+  "rationale": "8 terms summed serially creates 7 adders cascaded, each with ripple carry delay. A binary tree (acc01+acc23+acc45+acc67 level 0 \u2192 acc0123+acc4567 level 1 \u2192 final level 2) achieves the same sum in 3 levels instead of 7, cutting combinational path depth by 4+ adder stages.",
+  "target": "Lines 113\u2013122: replaced serial `acc[g] = acc[g-1] + term[g]` loop with parallel tree using intermediate wires acc01, acc23, acc45, acc67, acc0123, acc4567, acc_final",
+  "expected_slack_recovery_ns": 0.12,
+  "area_cost": "none \u2014 same 7 adders, restructured for better synthesis and lower depth",
+  "equivalence_argument": "Addition is associative: (a+b)+(c+d)+(e+f)+(g+h) = a+b+c+d+e+f+g+h = serial sum. Fixed 28-bit width at every intermediate avoids overflow issues (8\u00d74K max is well within 28 bits). Reset: all wires reset to 0 naturally. Latency: 3-cycle pipeline depth preserved; tree computation is still combinational in cycle 2.",
+  "declared_changed": true
+}

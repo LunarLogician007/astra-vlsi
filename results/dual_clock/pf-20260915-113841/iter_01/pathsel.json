@@ -1,0 +1,1882 @@
+{
+  "targets": [
+    {
+      "id": "T1",
+      "kind": "segment",
+      "rank": 1,
+      "slack_ns": -0.0523,
+      "value": 0.3697459113804783,
+      "value_terms": {
+        "impact": 0.17561244195661851,
+        "severity": 0.51634375,
+        "tractability": 0.55
+      },
+      "p_critical": 0.9973999999999998,
+      "tns_share": 0.17607022454042365,
+      "tns_share_truncated": false,
+      "mass_ns": 0.11971014566503405,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "f_b[1]_DFFR_X1_D",
+        "startpoint_info": null,
+        "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+        "endpoint_info": null,
+        "path_group": "clk_fast",
+        "path_type": "max",
+        "slack_ns": -0.0523,
+        "status": "VIOLATED",
+        "arrival_ns": 1.572,
+        "required_ns": 1.5197,
+        "logic_depth": 62
+      },
+      "member_count": 17,
+      "members": [
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        }
+      ],
+      "stage_span": [
+        0,
+        10
+      ],
+      "delay_ns": 0.2768,
+      "delay_share": 0.1761,
+      "cell_families": {
+        "xor": 6,
+        "flop": 2
+      },
+      "cell_walk": [
+        "DFFR_X1",
+        "DFFR_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1"
+      ],
+      "max_fanout": 4,
+      "fanout_pins": [],
+      "regions": [
+        {
+          "file": "dual_clock.v",
+          "line": 82,
+          "end_line": 82,
+          "via": "driver via cone origin",
+          "stages": 6,
+          "delay_ns": 0.1522,
+          "source": [
+            "   82 |             fb_q[0] <= f_b;"
+          ]
+        },
+        {
+          "file": "dual_clock.v",
+          "line": 40,
+          "end_line": 40,
+          "via": "declaration via cone origin",
+          "stages": 2,
+          "delay_ns": 0.1246,
+          "source": [
+            "   40 |     input  wire signed [W-1:0]    f_b,"
+          ]
+        }
+      ],
+      "signals": [
+        "f_b",
+        "fb_q"
+      ],
+      "findings": [
+        {
+          "pattern": "delay concentrated in a few stages",
+          "evidence": "100% of the path delay sits in 5 of 10 stages -- a local fix can recover most of it",
+          "metric": {
+            "top5_fraction": 1.0
+          }
+        }
+      ],
+      "skills": [],
+      "allowed_lines": {
+        "dual_clock.v": [
+          [
+            37,
+            43
+          ],
+          [
+            79,
+            85
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk_fast",
+      "period_ns": 1.6,
+      "brief": "## Target T1 -- segment, 18% of the design's timing failure\n\nrepresentative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q\nslack           -0.0523 ns (3% short of a 1.6 ns cycle)\nclock           clk_fast, 1.6 ns period\nsegment         stages 0-10 of 67 on the worst path\n                0.2768 ns, 18% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.370  (impact 0.18, severity 0.52, tractability 0.55)\n\ncell mix        6x xor, 2x flop\n\nroot causes (mechanical, from the STA report):\n  - delay concentrated in a few stages: 100% of the path delay sits in 5 of 10 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  DFFR_X1 -> DFFR_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1\n\nRTL this target resolves to:\n  dual_clock.v:82  6 stage(s), 0.1522 ns via driver via cone origin\n       82 |             fb_q[0] <= f_b;\n  dual_clock.v:40  2 stage(s), 0.1246 ns via declaration via cone origin\n       40 |     input  wire signed [W-1:0]    f_b,\n  signals: f_b, fb_q\n"
+    },
+    {
+      "id": "T2",
+      "kind": "segment",
+      "rank": 2,
+      "slack_ns": -0.0523,
+      "value": 0.4539275162402201,
+      "value_terms": {
+        "impact": 0.22934934164493356,
+        "severity": 0.51634375,
+        "tractability": 0.8500000000000001
+      },
+      "p_critical": 0.9973999999999998,
+      "tns_share": 0.229947204376312,
+      "tns_share_truncated": false,
+      "mass_ns": 0.15634110425545453,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "f_b[1]_DFFR_X1_D",
+        "startpoint_info": null,
+        "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+        "endpoint_info": null,
+        "path_group": "clk_fast",
+        "path_type": "max",
+        "slack_ns": -0.0523,
+        "status": "VIOLATED",
+        "arrival_ns": 1.572,
+        "required_ns": 1.5197,
+        "logic_depth": 62
+      },
+      "member_count": 17,
+      "members": [
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        }
+      ],
+      "stage_span": [
+        10,
+        30
+      ],
+      "delay_ns": 0.3615,
+      "delay_share": 0.2299,
+      "cell_families": {
+        "aoi_oai": 20
+      },
+      "cell_walk": [
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1"
+      ],
+      "max_fanout": 3,
+      "fanout_pins": [],
+      "regions": [
+        {
+          "file": "dual_clock.v",
+          "line": 82,
+          "end_line": 82,
+          "via": "driver via cone origin",
+          "stages": 20,
+          "delay_ns": 0.3615,
+          "source": [
+            "   82 |             fb_q[0] <= f_b;"
+          ]
+        }
+      ],
+      "signals": [
+        "fb_q"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "20 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 20,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 0 XOR, 20 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 0,
+            "aoi_oai": 20
+          }
+        },
+        {
+          "pattern": "delay concentrated in a few stages",
+          "evidence": "63% of the path delay sits in 5 of 20 stages -- a local fix can recover most of it",
+          "metric": {
+            "top5_fraction": 0.634
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 5,
+            "sec_pass": 5,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 5
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:20:09+00:00"
+          },
+          "confidence": 0.037,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:20:09+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+          "pattern": "40-bit carry propagation in balanced adder tree",
+          "strategy": "Unable to optimize while maintaining fixed latency",
+          "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T16:03:21+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 1,
+            "score_delta_sum": -0.4599339721746848,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:03:21+00:00"
+          },
+          "confidence": 0.125,
+          "mean_advantage": 0.0,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:03:21+00:00",
+          "match_score": 0.25
+        }
+      ],
+      "allowed_lines": {
+        "dual_clock.v": [
+          [
+            79,
+            85
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk_fast",
+      "period_ns": 1.6,
+      "brief": "## Target T2 -- segment, 23% of the design's timing failure\n\nrepresentative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q\nslack           -0.0523 ns (3% short of a 1.6 ns cycle)\nclock           clk_fast, 1.6 ns period\nsegment         stages 10-30 of 67 on the worst path\n                0.3615 ns, 23% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.454  (impact 0.23, severity 0.52, tractability 0.85)\n\ncell mix        20x aoi_oai\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 20 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 0 XOR, 20 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay concentrated in a few stages: 63% of the path delay sits in 5 of 20 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1\n\nRTL this target resolves to:\n  dual_clock.v:82  20 stage(s), 0.3615 ns via driver via cone origin\n       82 |             fb_q[0] <= f_b;\n  signals: fb_q\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+    },
+    {
+      "id": "T3",
+      "kind": "segment",
+      "rank": 3,
+      "slack_ns": -0.0523,
+      "value": 0.6233175098793016,
+      "value_terms": {
+        "impact": 0.5924382163984478,
+        "severity": 0.51634375,
+        "tractability": 0.8800000000000001
+      },
+      "p_critical": 0.9973999999999998,
+      "tns_share": 0.5939825710832645,
+      "tns_share_truncated": false,
+      "mass_ns": 0.40384875007951154,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "f_b[1]_DFFR_X1_D",
+        "startpoint_info": null,
+        "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+        "endpoint_info": null,
+        "path_group": "clk_fast",
+        "path_type": "max",
+        "slack_ns": -0.0523,
+        "status": "VIOLATED",
+        "arrival_ns": 1.572,
+        "required_ns": 1.5197,
+        "logic_depth": 62
+      },
+      "member_count": 17,
+      "members": [
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        },
+        {
+          "slack_ns": -0.0523,
+          "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+          "startpoint": "f_b[1]_DFFR_X1_D"
+        }
+      ],
+      "stage_span": [
+        30,
+        67
+      ],
+      "delay_ns": 0.9338,
+      "delay_share": 0.594,
+      "cell_families": {
+        "xor": 26,
+        "aoi_oai": 8,
+        "mux": 2,
+        "flop": 1
+      },
+      "cell_walk": [
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "XNOR2_X1",
+        "XNOR2_X1",
+        "MUX2_X1",
+        "MUX2_X1",
+        "DFFR_X1"
+      ],
+      "max_fanout": 13,
+      "fanout_pins": [
+        "f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN"
+      ],
+      "regions": [
+        {
+          "file": "dual_clock.v",
+          "line": 82,
+          "end_line": 82,
+          "via": "driver via cone origin",
+          "stages": 24,
+          "delay_ns": 0.6809,
+          "source": [
+            "   82 |             fb_q[0] <= f_b;"
+          ]
+        },
+        {
+          "file": "dual_clock.v",
+          "line": 114,
+          "end_line": 114,
+          "via": "driver via cone origin",
+          "stages": 13,
+          "delay_ns": 0.2529,
+          "source": [
+            "  114 |         else if (f_valid_q) f_acc_p <= acc[TAPS-1];"
+          ]
+        }
+      ],
+      "signals": [
+        "fb_q",
+        "f_acc_p"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "36 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 36,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 26 XOR, 8 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 26,
+            "aoi_oai": 8
+          }
+        },
+        {
+          "pattern": "high fanout on the critical path",
+          "evidence": "fanout 13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN (1 stage(s) at or above 8)",
+          "metric": {
+            "max_fanout": 13,
+            "threshold": 8,
+            "pins": [
+              "f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN"
+            ]
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "high-fanout-signal-on-the-critical-path::replicate-the-driver-so-each-load-group-has-its-",
+          "pattern": "high-fanout signal on the critical path",
+          "strategy": "replicate the driver so each load group has its own copy",
+          "rationale": "A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.",
+          "example": "reg sel_a, sel_b;  // two copies of one condition\nalways @(posedge clk) begin sel_a <= cond; sel_b <= cond; end",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.8
+        },
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 5,
+            "sec_pass": 5,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 5
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T16:20:09+00:00"
+          },
+          "confidence": 0.037,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-09T16:20:09+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        }
+      ],
+      "allowed_lines": {
+        "dual_clock.v": [
+          [
+            79,
+            85
+          ],
+          [
+            111,
+            117
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk_fast",
+      "period_ns": 1.6,
+      "brief": "## Target T3 -- segment, 59% of the design's timing failure\n\nrepresentative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q\nslack           -0.0523 ns (3% short of a 1.6 ns cycle)\nclock           clk_fast, 1.6 ns period\nsegment         stages 30-67 of 67 on the worst path\n                0.9338 ns, 59% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.623  (impact 0.59, severity 0.52, tractability 0.88)\n\ncell mix        26x xor, 8x aoi_oai, 2x mux, 1x flop\nfanout peak     13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 36 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 26 XOR, 8 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - high fanout on the critical path: fanout 13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN (1 stage(s) at or above 8)\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> XNOR2_X1 -> XNOR2_X1 -> MUX2_X1 -> MUX2_X1 -> DFFR_X1\n\nRTL this target resolves to:\n  dual_clock.v:82  24 stage(s), 0.6809 ns via driver via cone origin\n       82 |             fb_q[0] <= f_b;\n  dual_clock.v:114  13 stage(s), 0.2529 ns via driver via cone origin\n      114 |         else if (f_valid_q) f_acc_p <= acc[TAPS-1];\n  signals: fb_q, f_acc_p\n\nskills the library offers for this pattern:\n- [UNTESTED] high-fanout signal on the critical path  ->  replicate the driver so each load group has its own copy\n    why: A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain"
+    }
+  ],
+  "k_requested": 3,
+  "k_effective": 3,
+  "collapsed": true,
+  "clusters": [
+    {
+      "members": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "value": 0.8025503125,
+      "terms": {
+        "impact": 0.9973999999999998,
+        "severity": 0.51634375,
+        "tractability": 0.865
+      },
+      "tns_share": 1.0,
+      "p_critical": 0.9973999999999998
+    }
+  ],
+  "cluster_count": 13,
+  "distribution": [
+    {
+      "rank": 10,
+      "p_critical": 0.08005,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 3,
+      "p_critical": 0.07915,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 4,
+      "p_critical": 0.07885,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 1,
+      "p_critical": 0.0783,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 5,
+      "p_critical": 0.0783,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 12,
+      "p_critical": 0.07705,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 9,
+      "p_critical": 0.0768,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 8,
+      "p_critical": 0.07665,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 2,
+      "p_critical": 0.07655,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 6,
+      "p_critical": 0.0745,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 11,
+      "p_critical": 0.07435,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 7,
+      "p_critical": 0.0731,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 13,
+      "p_critical": 0.07295,
+      "slack_ns": -0.0523,
+      "status": "VIOLATED",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[27]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 18,
+      "p_critical": 0.0015,
+      "slack_ns": 0.1894,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[10]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 14,
+      "p_critical": 0.00065,
+      "slack_ns": 0.0315,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[14]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 19,
+      "p_critical": 0.0004,
+      "slack_ns": 0.2234,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[9]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 21,
+      "p_critical": 0.00025,
+      "slack_ns": 0.2619,
+      "status": "MET",
+      "startpoint": "fa_q[0][0]_DFFR_X1_D",
+      "endpoint": "f_acc_p[8]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 20,
+      "p_critical": 0.0002,
+      "slack_ns": 0.2497,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[7]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 15,
+      "p_critical": 0.00015,
+      "slack_ns": 0.0596,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[13]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 29,
+      "p_critical": 0.0001,
+      "slack_ns": 0.6291,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[26]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 30,
+      "p_critical": 0.0001,
+      "slack_ns": 0.6332,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[25]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 33,
+      "p_critical": 5e-05,
+      "slack_ns": 0.7169,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[22]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 16,
+      "p_critical": 0.0,
+      "slack_ns": 0.1062,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[12]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 17,
+      "p_critical": 0.0,
+      "slack_ns": 0.1273,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[11]_DFFR_X1_Q",
+      "cone": 0
+    },
+    {
+      "rank": 22,
+      "p_critical": 0.0,
+      "slack_ns": 0.3278,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[6]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 23,
+      "p_critical": 0.0,
+      "slack_ns": 0.3511,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[5]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 24,
+      "p_critical": 0.0,
+      "slack_ns": 0.4014,
+      "status": "MET",
+      "startpoint": "fa_q[0][0]_DFFR_X1_D",
+      "endpoint": "f_acc_p[4]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 25,
+      "p_critical": 0.0,
+      "slack_ns": 0.4276,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[3]_DFFR_X1_Q",
+      "cone": 1
+    },
+    {
+      "rank": 26,
+      "p_critical": 0.0,
+      "slack_ns": 0.4712,
+      "status": "MET",
+      "startpoint": "fa_q[0][0]_DFFR_X1_D",
+      "endpoint": "f_acc_p[2]_DFFR_X1_Q",
+      "cone": 2
+    },
+    {
+      "rank": 27,
+      "p_critical": 0.0,
+      "slack_ns": 0.5051,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "f_acc_p[1]_DFFR_X1_Q",
+      "cone": 3
+    },
+    {
+      "rank": 28,
+      "p_critical": 0.0,
+      "slack_ns": 0.6208,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[27]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 31,
+      "p_critical": 0.0,
+      "slack_ns": 0.6972,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[24]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 32,
+      "p_critical": 0.0,
+      "slack_ns": 0.7127,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[23]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 34,
+      "p_critical": 0.0,
+      "slack_ns": 0.7808,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[21]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 35,
+      "p_critical": 0.0,
+      "slack_ns": 0.7963,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[20]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 36,
+      "p_critical": 0.0,
+      "slack_ns": 0.8005,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[19]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 37,
+      "p_critical": 0.0,
+      "slack_ns": 0.8645,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[18]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 38,
+      "p_critical": 0.0,
+      "slack_ns": 0.8799,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[17]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 39,
+      "p_critical": 0.0,
+      "slack_ns": 0.8841,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[16]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 40,
+      "p_critical": 0.0,
+      "slack_ns": 0.8892,
+      "status": "MET",
+      "startpoint": "f_b[0]_DFFR_X1_D",
+      "endpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "cone": 3
+    },
+    {
+      "rank": 41,
+      "p_critical": 0.0,
+      "slack_ns": 0.9481,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[15]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 42,
+      "p_critical": 0.0,
+      "slack_ns": 0.9635,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[14]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 43,
+      "p_critical": 0.0,
+      "slack_ns": 0.9734,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[13]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 44,
+      "p_critical": 0.0,
+      "slack_ns": 1.0329,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[12]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 45,
+      "p_critical": 0.0,
+      "slack_ns": 1.0484,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[11]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 46,
+      "p_critical": 0.0,
+      "slack_ns": 1.0582,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[10]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 47,
+      "p_critical": 0.0,
+      "slack_ns": 1.1178,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[9]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 48,
+      "p_critical": 0.0,
+      "slack_ns": 1.1333,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[8]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 49,
+      "p_critical": 0.0,
+      "slack_ns": 1.1431,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[7]_DFFR_X1_Q",
+      "cone": 4
+    },
+    {
+      "rank": 50,
+      "p_critical": 0.0,
+      "slack_ns": 1.2025,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[6]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 51,
+      "p_critical": 0.0,
+      "slack_ns": 1.218,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[5]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 52,
+      "p_critical": 0.0,
+      "slack_ns": 1.2278,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[4]_DFFR_X1_Q",
+      "cone": 5
+    },
+    {
+      "rank": 53,
+      "p_critical": 0.0,
+      "slack_ns": 1.2679,
+      "status": "MET",
+      "startpoint": "f_valid",
+      "endpoint": "f_valid_DFFR_X1_D",
+      "cone": 6
+    },
+    {
+      "rank": 54,
+      "p_critical": 0.0,
+      "slack_ns": 1.2837,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[3]_DFFR_X1_Q",
+      "cone": 7
+    },
+    {
+      "rank": 55,
+      "p_critical": 0.0,
+      "slack_ns": 1.3224,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[2]_DFFR_X1_Q",
+      "cone": 7
+    },
+    {
+      "rank": 56,
+      "p_critical": 0.0,
+      "slack_ns": 1.3436,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[1]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 57,
+      "p_critical": 0.0,
+      "slack_ns": 1.3464,
+      "status": "MET",
+      "startpoint": "fb_q[7][0]_XNOR2_X1_A_ZN_NAND2_X1_A2_ZN_NAND3_X1_A2_ZN_OAI21_X1_A_ZN_DFFR_X1_D",
+      "endpoint": "f_acc[0]_DFFR_X1_Q",
+      "cone": 8
+    },
+    {
+      "rank": 58,
+      "p_critical": 0.0,
+      "slack_ns": 1.3928,
+      "status": "MET",
+      "startpoint": "fa_q[4][11]_DFFR_X1_D",
+      "endpoint": "fa_q[6][11]_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 59,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "f_a[1]_DFFR_X1_D",
+      "endpoint": "fa_q[0][1]_DFFR_X1_D",
+      "cone": 10
+    },
+    {
+      "rank": 60,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "f_a[3]_DFFR_X1_D",
+      "endpoint": "fa_q[0][3]_DFFR_X1_D",
+      "cone": 10
+    },
+    {
+      "rank": 61,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "f_a[5]_DFFR_X1_D",
+      "endpoint": "fa_q[0][5]_DFFR_X1_D",
+      "cone": 10
+    },
+    {
+      "rank": 62,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "f_a[7]_DFFR_X1_D",
+      "endpoint": "fa_q[0][7]_DFFR_X1_D",
+      "cone": 10
+    },
+    {
+      "rank": 63,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[0][1]_DFFR_X1_D",
+      "endpoint": "fa_q[1][1]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 64,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[0][3]_DFFR_X1_D",
+      "endpoint": "fa_q[1][3]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 65,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[0][5]_DFFR_X1_D",
+      "endpoint": "fa_q[1][5]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 66,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[0][7]_DFFR_X1_D",
+      "endpoint": "fa_q[1][7]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 67,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[1][1]_DFFR_X1_D",
+      "endpoint": "fa_q[2][1]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 68,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[1][3]_DFFR_X1_D",
+      "endpoint": "fa_q[2][3]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 69,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[1][5]_DFFR_X1_D",
+      "endpoint": "fa_q[2][5]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 70,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[1][7]_DFFR_X1_D",
+      "endpoint": "fa_q[2][7]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 71,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[2][1]_DFFR_X1_D",
+      "endpoint": "fa_q[3][1]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 72,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[2][3]_DFFR_X1_D",
+      "endpoint": "fa_q[3][3]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 73,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[2][5]_DFFR_X1_D",
+      "endpoint": "fa_q[3][5]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 74,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[2][7]_DFFR_X1_D",
+      "endpoint": "fa_q[3][7]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 75,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[3][1]_DFFR_X1_D",
+      "endpoint": "fa_q[4][1]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 76,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[3][3]_DFFR_X1_D",
+      "endpoint": "fa_q[4][3]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 77,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[3][5]_DFFR_X1_D",
+      "endpoint": "fa_q[4][5]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 78,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[3][7]_DFFR_X1_D",
+      "endpoint": "fa_q[4][7]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 79,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[2][9]_DFFR_X1_D",
+      "endpoint": "fa_q[4][9]_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 80,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[4][1]_DFFR_X1_D",
+      "endpoint": "fa_q[5][1]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 81,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[4][3]_DFFR_X1_D",
+      "endpoint": "fa_q[5][3]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 82,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[4][5]_DFFR_X1_D",
+      "endpoint": "fa_q[5][5]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 83,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[4][7]_DFFR_X1_D",
+      "endpoint": "fa_q[5][7]_DFFR_X1_D",
+      "cone": 9
+    },
+    {
+      "rank": 84,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[5][1]_DFFR_X1_D",
+      "endpoint": "fa_q[7][1]_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 85,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[5][3]_DFFR_X1_D",
+      "endpoint": "fa_q[7][3]_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 86,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[5][5]_DFFR_X1_D",
+      "endpoint": "fa_q[7][5]_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 87,
+      "p_critical": 0.0,
+      "slack_ns": 1.3934,
+      "status": "MET",
+      "startpoint": "fa_q[5][7]_DFFR_X1_D",
+      "endpoint": "fa_q[7][7]_DFFR_X1_Q",
+      "cone": 9
+    },
+    {
+      "rank": 88,
+      "p_critical": 0.0,
+      "slack_ns": 1.3937,
+      "status": "MET",
+      "startpoint": "f_b[1]_DFFR_X1_D",
+      "endpoint": "fb_q[0][1]_DFFR_X1_D",
+      "cone": 11
+    },
+    {
+      "rank": 89,
+      "p_critical": 0.0,
+      "slack_ns": 4.0885,
+      "status": "MET",
+      "startpoint": "s_any_DFFR_X1_Q",
+      "endpoint": "s_any",
+      "cone": 12
+    }
+  ],
+  "cone_distribution": [
+    {
+      "cone": 0,
+      "p_critical": 0.9973999999999998,
+      "paths": 17,
+      "worst_slack_ns": -0.0523
+    },
+    {
+      "cone": 1,
+      "p_critical": 0.0021,
+      "paths": 6,
+      "worst_slack_ns": 0.1894
+    },
+    {
+      "cone": 2,
+      "p_critical": 0.00025,
+      "paths": 3,
+      "worst_slack_ns": 0.2619
+    },
+    {
+      "cone": 3,
+      "p_critical": 0.0,
+      "paths": 2,
+      "worst_slack_ns": 0.5051
+    },
+    {
+      "cone": 4,
+      "p_critical": 0.00025,
+      "paths": 21,
+      "worst_slack_ns": 0.6208
+    },
+    {
+      "cone": 5,
+      "p_critical": 0.0,
+      "paths": 3,
+      "worst_slack_ns": 1.2025
+    },
+    {
+      "cone": 6,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.2679
+    },
+    {
+      "cone": 7,
+      "p_critical": 0.0,
+      "paths": 2,
+      "worst_slack_ns": 1.2837
+    },
+    {
+      "cone": 8,
+      "p_critical": 0.0,
+      "paths": 2,
+      "worst_slack_ns": 1.3436
+    },
+    {
+      "cone": 9,
+      "p_critical": 0.0,
+      "paths": 26,
+      "worst_slack_ns": 1.3928
+    },
+    {
+      "cone": 10,
+      "p_critical": 0.0,
+      "paths": 4,
+      "worst_slack_ns": 1.3934
+    },
+    {
+      "cone": 11,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 1.3937
+    },
+    {
+      "cone": 12,
+      "p_critical": 0.0,
+      "paths": 1,
+      "worst_slack_ns": 4.0885
+    }
+  ],
+  "sigma": 0.05,
+  "rho": 0.7,
+  "clocks": {
+    "groups": {
+      "clk_fast": {
+        "paths": 60,
+        "period_ns": 1.6,
+        "resolved": true
+      },
+      "clk_fast_div2": {
+        "paths": 28,
+        "period_ns": 3.2,
+        "resolved": true
+      },
+      "clk_slow": {
+        "paths": 1,
+        "period_ns": 5.0,
+        "resolved": true
+      }
+    },
+    "unresolved": [],
+    "all_resolved": true
+  },
+  "pool": {
+    "paths": 89,
+    "violating": 13,
+    "tns_ns": -0.6798155564232565,
+    "truncated": false
+  }
+}

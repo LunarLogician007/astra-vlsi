@@ -1,0 +1,38 @@
+{
+  "files": [
+    "vending_machine.v"
+  ],
+  "findings": [
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 1024 bits on `total_discount` -- 11 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 1024,
+        "levels_each": 11
+      },
+      "file": "vending_machine.v",
+      "line": 46,
+      "end_line": 46,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 1024 bits on `total_discount` -- 11 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 1024,
+        "levels_each": 11
+      },
+      "file": "vending_machine.v",
+      "line": 53,
+      "end_line": 53,
+      "severity": "medium"
+    }
+  ],
+  "counts": {
+    "declarations": 14,
+    "assignments": 31,
+    "parameters": 3
+  }
+}

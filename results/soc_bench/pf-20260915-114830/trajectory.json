@@ -1,0 +1,2027 @@
+{
+  "design": "soc_bench",
+  "top": "soc_bench",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk_sys",
+    "period_ns": 2.0
+  },
+  "clocks": [
+    {
+      "name": "clk_sys",
+      "period_ns": 2.0,
+      "port": "clk_sys"
+    },
+    {
+      "name": "clk_dsp",
+      "period_ns": 3.0,
+      "port": "clk_dsp"
+    },
+    {
+      "name": "clk_mem",
+      "period_ns": 4.0,
+      "port": "clk_mem"
+    },
+    {
+      "name": "clk_aux",
+      "period_ns": 5.0,
+      "port": "clk_aux"
+    },
+    {
+      "name": "clk_io",
+      "period_ns": 8.0,
+      "port": "clk_io"
+    },
+    {
+      "name": "clk_sys_div2",
+      "period_ns": 4.0,
+      "port": "clk_sys_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_sys",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_dsp_div2",
+      "period_ns": 6.0,
+      "port": "clk_dsp_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_dsp",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_dsp_div4",
+      "period_ns": 12.0,
+      "port": "clk_dsp_div2_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_dsp_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_mem_div2",
+      "period_ns": 8.0,
+      "port": "clk_mem_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_mem",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_mem_div4",
+      "period_ns": 16.0,
+      "port": "clk_mem_div4_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_mem_div2",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_mem_div8",
+      "period_ns": 32.0,
+      "port": "clk_mem_div4_r_DFFR_X1_CK/Q",
+      "generated_from": "clk_mem_div4",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_aux_div2",
+      "period_ns": 10.0,
+      "port": "clk_aux_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_aux",
+      "divide_by": 2
+    },
+    {
+      "name": "clk_io_div2",
+      "period_ns": 16.0,
+      "port": "clk_io_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_io",
+      "divide_by": 2
+    }
+  ],
+  "weights": {
+    "alpha": 0.5,
+    "beta": 0.35,
+    "gamma": 0.15,
+    "area_penalty": 0.5,
+    "area_threshold": 0.1
+  },
+  "config": {
+    "candidates_per_iteration": 4,
+    "max_iterations": 1,
+    "top_k_paths": 3,
+    "sec": {
+      "engine": "auto",
+      "depth": 20
+    },
+    "model": "haiku",
+    "llm": true,
+    "targets_per_iteration": 3,
+    "mmr_lambda": 0.5,
+    "cluster_at": 0.65,
+    "delay_sigma": 0.05,
+    "cone_rho": 0.7,
+    "cleanup_candidates": 1,
+    "merge_agent": true,
+    "stage": "sta",
+    "skill_document": "/home/sreeavyay/astra-vlsi/.claude/skills/rtl-timing-optimization/SKILL.md"
+  },
+  "created_at": "2026-09-15T11:48:30",
+  "baseline": {
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -6.512576440245186,
+      "tns_ns": -65.14013690604592,
+      "violating_endpoints": 60,
+      "hold_wns_ns": 0.00941800830646686,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk_sys": {
+            "endpoints": 398,
+            "wns_ns": -2.038377,
+            "tns_ns": -44.58724000000001,
+            "violating_endpoints": 36
+          },
+          "clk_dsp": {
+            "endpoints": 411,
+            "wns_ns": -1.024823,
+            "tns_ns": -14.040318999999998,
+            "violating_endpoints": 23
+          },
+          "clk_mem": {
+            "endpoints": 1515,
+            "wns_ns": 1.98495,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_aux": {
+            "endpoints": 36,
+            "wns_ns": 3.639663,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_io": {
+            "endpoints": 31,
+            "wns_ns": 6.446653,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_sys_div2": {
+            "endpoints": 41,
+            "wns_ns": 0.600356,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_dsp_div2": {
+            "endpoints": 1,
+            "wns_ns": 5.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_dsp_div4": {
+            "endpoints": 40,
+            "wns_ns": 2.755156,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_mem_div2": {
+            "endpoints": 1,
+            "wns_ns": 7.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_mem_div4": {
+            "endpoints": 1,
+            "wns_ns": 15.843857,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_mem_div8": {
+            "endpoints": 7,
+            "wns_ns": 3.757081,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_aux_div2": {
+            "endpoints": 1,
+            "wns_ns": -6.512577,
+            "tns_ns": -6.512577,
+            "violating_endpoints": 1
+          },
+          "clk_io_div2": {
+            "endpoints": 8,
+            "wns_ns": 7.780566,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -6.512577,
+        "design_wns_ns": -6.512576440245186
+      },
+      "area_um2": 68665.24,
+      "cells": 49935,
+      "runtime_s": 142.16,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline/02_sta/timing.json"
+    },
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/designs/soc_bench/rtl/soc_bench.v"
+    ],
+    "score": 0.0
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "parent": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/baseline",
+      "stage": "sta",
+      "portfolio": {
+        "k_requested": 3,
+        "k_effective": 3,
+        "collapsed": true,
+        "cluster_count": 45,
+        "pool": {
+          "paths": 347,
+          "violating": 60,
+          "tns_ns": -65.14013690604592,
+          "truncated": false
+        },
+        "targets": [
+          {
+            "id": "T1",
+            "kind": "segment",
+            "rank": 1,
+            "slack_ns": -2.0384,
+            "value": 0.59667865257752,
+            "value_terms": {
+              "impact": 0.17558219091300728,
+              "severity": 1.0,
+              "tractability": 0.8383333333333334
+            },
+            "p_critical": 0.9999999999999999,
+            "tns_share": 0.11885491122526251,
+            "tns_share_truncated": false,
+            "mass_ns": 7.742208917213602,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "sys_b[3]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_sys",
+              "path_type": "max",
+              "slack_ns": -2.0384,
+              "status": "VIOLATED",
+              "arrival_ns": 3.9467,
+              "required_ns": 1.9083,
+              "logic_depth": 198
+            },
+            "member_count": 33,
+            "members": [
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.9696,
+                "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.8821,
+                "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.8435,
+                "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.7586,
+                "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.7197,
+                "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.6449,
+                "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.606,
+                "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              0,
+              24
+            ],
+            "delay_ns": 0.6929,
+            "delay_share": 0.1756,
+            "cell_families": {
+              "and_or": 10,
+              "xor": 6,
+              "nand_nor": 4,
+              "flop": 2
+            },
+            "cell_walk": [
+              "DFFR_X1",
+              "DFFR_X1",
+              "AND4_X1",
+              "AND4_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "OR3_X1",
+              "OR3_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND3_X1",
+              "NAND3_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "XOR2_X1",
+              "XOR2_X1"
+            ],
+            "max_fanout": 34,
+            "fanout_pins": [
+              "sys_b[3]_DFFR_X1_D/Q"
+            ],
+            "regions": [
+              {
+                "file": "soc_bench.v",
+                "line": 63,
+                "end_line": 63,
+                "via": "declaration via cone origin",
+                "stages": 20,
+                "delay_ns": 0.4794,
+                "source": [
+                  "   63 |     input  wire signed [W-1:0]   sys_a,"
+                ]
+              },
+              {
+                "file": "soc_bench.v",
+                "line": 64,
+                "end_line": 64,
+                "via": "declaration via cone origin",
+                "stages": 2,
+                "delay_ns": 0.2135,
+                "source": [
+                  "   64 |     input  wire signed [W-1:0]   sys_b,"
+                ]
+              }
+            ],
+            "signals": [
+              "sys_b",
+              "sys_a"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "20 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 20,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "high fanout on the critical path",
+                "evidence": "fanout 34 at sys_b[3]_DFFR_X1_D/Q (1 stage(s) at or above 8)",
+                "metric": {
+                  "max_fanout": 34,
+                  "threshold": 8,
+                  "pins": [
+                    "sys_b[3]_DFFR_X1_D/Q"
+                  ]
+                }
+              },
+              {
+                "pattern": "delay concentrated in a few stages",
+                "evidence": "72% of the path delay sits in 5 of 24 stages -- a local fix can recover most of it",
+                "metric": {
+                  "top5_fraction": 0.719
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "high-fanout-signal-on-the-critical-path::replicate-the-driver-so-each-load-group-has-its-",
+                "pattern": "high-fanout signal on the critical path",
+                "strategy": "replicate the driver so each load group has its own copy",
+                "rationale": "A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.",
+                "example": "reg sel_a, sel_b;  // two copies of one condition\nalways @(posedge clk) begin sel_a <= cond; sel_b <= cond; end",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.8
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "high-fanout-operand-driving-multiplier-with-38-l::replicate-operand-registers-to-split-fanout",
+                "pattern": "High-fanout operand driving multiplier with 38+ loads",
+                "strategy": "Replicate operand registers to split fanout",
+                "rationale": "A single register driving 38 gates requires large width and exhibits heavy transitional delay. Two identical registers halve the per-register load; synthesis can distribute the multiplier inputs across both copies, reducing driver-to-load capacitance and slew on each path through the Wallace tree.",
+                "example": "// Replicate high-fanout operand\nreg [39:0] operand_a, operand_b;\nalways @(*) {\n  operand_a = source;\n  operand_b = source;\n}\nwire prod1 = multiply(operand_a, factor1);\nwire prod2 = multiply(operand_b, factor2);",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 8,
+                  "sec_pass": 8,
+                  "sec_fail": 0,
+                  "inconclusive": 1,
+                  "advantage_sum": -3.4738058526759783,
+                  "advantage_n": 6,
+                  "score_delta_sum": -1.6661094783845731,
+                  "score_delta_n": 4,
+                  "designs": [
+                    "mac_chain",
+                    "soc_bench"
+                  ],
+                  "iterations": 9
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.5327,
+                "mean_advantage": -0.578967642112663,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.25
+              }
+            ],
+            "allowed_lines": {
+              "soc_bench.v": [
+                [
+                  60,
+                  67
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_sys",
+            "period_ns": 2.0,
+            "brief": "## Target T1 -- segment, 12% of the design's timing failure\n\nrepresentative  sys_b[3]_DFFR_X1_D -> sys_acc_p[35]_DFFR_X1_Q\nslack           -2.0384 ns (102% short of a 2 ns cycle)\nclock           clk_sys, 2 ns period\nsegment         stages 0-24 of 203 on the worst path\n                0.6929 ns, 18% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.597  (impact 0.18, severity 1.00, tractability 0.84)\n\ncell mix        10x and_or, 6x xor, 4x nand_nor, 2x flop\nfanout peak     34 at sys_b[3]_DFFR_X1_D/Q\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 20 combinational cells between the launch and capture flops\n  - high fanout on the critical path: fanout 34 at sys_b[3]_DFFR_X1_D/Q (1 stage(s) at or above 8)\n  - delay concentrated in a few stages: 72% of the path delay sits in 5 of 24 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  DFFR_X1 -> DFFR_X1 -> AND4_X1 -> AND4_X1 -> NOR2_X1 -> NOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OR3_X1 -> OR3_X1 -> AND2_X1 -> AND2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OR2_X1 -> OR2_X1 -> NAND3_X1 -> NAND3_X1 -> AND2_X1 -> AND2_X1 -> XOR2_X1 -> XOR2_X1\n\nRTL this target resolves to:\n  soc_bench.v:63  20 stage(s), 0.4794 ns via declaration via cone origin\n       63 |     input  wire signed [W-1:0]   sys_a,\n  soc_bench.v:64  2 stage(s), 0.2135 ns via declaration via cone origin\n       64 |     input  wire signed [W-1:0]   sys_b,\n  signals: sys_b, sys_a\n\nskills the library offers for this pattern:\n- [UNTESTED] high-fanout signal on the critical path  ->  replicate the driver so each load group has its own copy\n    why: A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] High-fanout operand driving multiplier with 38+ loads  ->  Replicate operand registers to split fanout\n    why: A single register driving 38 gates requires large width and exhibits heavy transitional delay. Two identical registers halve the per-register load; synthesis can distribute the multiplier inputs across both copies, reducing driver-to-load capacitance and slew on each path through the Wallace tree.\n    record: 7 decided use(s), SEC pass 7/7, confidence 0.53, mean advantage -0.579, seen on mac_chain"
+          },
+          {
+            "id": "T2",
+            "kind": "segment",
+            "rank": 2,
+            "slack_ns": -2.0384,
+            "value": 0.6842500570154323,
+            "value_terms": {
+              "impact": 0.36500012670096066,
+              "severity": 1.0,
+              "tractability": 0.8500000000000001
+            },
+            "p_critical": 0.9999999999999999,
+            "tns_share": 0.24707550025814415,
+            "tns_share_truncated": false,
+            "mass_ns": 16.094498086815513,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "sys_b[3]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_sys",
+              "path_type": "max",
+              "slack_ns": -2.0384,
+              "status": "VIOLATED",
+              "arrival_ns": 3.9467,
+              "required_ns": 1.9083,
+              "logic_depth": 198
+            },
+            "member_count": 33,
+            "members": [
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.9696,
+                "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.8821,
+                "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.8435,
+                "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.7586,
+                "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.7197,
+                "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.6449,
+                "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.606,
+                "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              24,
+              83
+            ],
+            "delay_ns": 1.4404,
+            "delay_share": 0.365,
+            "cell_families": {
+              "xor": 39,
+              "and_or": 10,
+              "nand_nor": 10
+            },
+            "cell_walk": [
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "AND3_X1",
+              "AND3_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "NOR3_X1",
+              "NOR3_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "OR3_X1",
+              "OR3_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "OR3_X1",
+              "OR3_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1"
+            ],
+            "max_fanout": 3,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "soc_bench.v",
+                "line": 281,
+                "end_line": 281,
+                "via": "driver via cone origin",
+                "stages": 41,
+                "delay_ns": 0.9893,
+                "source": [
+                  "  281 |             sys_acc_p <= sys_sat_val;"
+                ]
+              },
+              {
+                "file": "soc_bench.v",
+                "line": 63,
+                "end_line": 63,
+                "via": "declaration via cone origin",
+                "stages": 18,
+                "delay_ns": 0.4511,
+                "source": [
+                  "   63 |     input  wire signed [W-1:0]   sys_a,"
+                ]
+              }
+            ],
+            "signals": [
+              "sys_a",
+              "sys_acc_p"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "59 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 59,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "wide arithmetic / carry propagation",
+                "evidence": "0 adder cells, 39 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                "metric": {
+                  "adder": 0,
+                  "xor": 39,
+                  "aoi_oai": 0
+                }
+              },
+              {
+                "pattern": "delay spread evenly along the path",
+                "evidence": "the 5 worst of 59 stages hold only 24% of the delay -- no single hot cell; the depth itself is the problem",
+                "metric": {
+                  "top5_fraction": 0.244
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+                "pattern": "carry propagation across a wide accumulator",
+                "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+                "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+                "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.5
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+                "pattern": "Carry propagation in accumulator tree",
+                "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+                "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+                "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 5,
+                  "sec_pass": 5,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 2.766699071489424,
+                  "advantage_n": 2,
+                  "score_delta_sum": 0.009092027113597176,
+                  "score_delta_n": 2,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 5
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.037,
+                "mean_advantage": 1.383349535744712,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.333
+              },
+              {
+                "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+                "pattern": "carry propagation in sequential 40-bit additions",
+                "strategy": "unable to reduce depth safely while maintaining equivalence",
+                "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.8904758344281221,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T02:13:35+00:00"
+                },
+                "confidence": 0.214,
+                "mean_advantage": -0.8904758344281221,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:13:35+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+                "pattern": "Carry propagation in 40-bit final accumulate",
+                "strategy": "No equivalent optimization available",
+                "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:20:02+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.7071067811865541,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 2,
+                  "at": "2026-09-09T02:20:02+00:00"
+                },
+                "confidence": 0.2011,
+                "mean_advantage": -0.7071067811865541,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:20:02+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+                "pattern": "40-bit carry propagation in balanced adder tree",
+                "strategy": "Unable to optimize while maintaining fixed latency",
+                "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T16:03:21+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.4599339721746848,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:03:21+00:00"
+                },
+                "confidence": 0.125,
+                "mean_advantage": 0.0,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:03:21+00:00",
+                "match_score": 0.25
+              }
+            ],
+            "allowed_lines": {
+              "soc_bench.v": [
+                [
+                  60,
+                  66
+                ],
+                [
+                  278,
+                  284
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_sys",
+            "period_ns": 2.0,
+            "brief": "## Target T2 -- segment, 25% of the design's timing failure\n\nrepresentative  sys_b[3]_DFFR_X1_D -> sys_acc_p[35]_DFFR_X1_Q\nslack           -2.0384 ns (102% short of a 2 ns cycle)\nclock           clk_sys, 2 ns period\nsegment         stages 24-83 of 203 on the worst path\n                1.4404 ns, 36% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.684  (impact 0.37, severity 1.00, tractability 0.85)\n\ncell mix        39x xor, 10x and_or, 10x nand_nor\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 59 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 39 XOR, 0 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 59 stages hold only 24% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> AND3_X1 -> AND3_X1 -> NOR2_X1 -> NOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> NOR3_X1 -> NOR3_X1  ... 19 more ...  XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> OR3_X1 -> OR3_X1 -> AND2_X1 -> AND2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1\n\nRTL this target resolves to:\n  soc_bench.v:281  41 stage(s), 0.9893 ns via driver via cone origin\n      281 |             sys_acc_p <= sys_sat_val;\n  soc_bench.v:63  18 stage(s), 0.4511 ns via declaration via cone origin\n       63 |     input  wire signed [W-1:0]   sys_a,\n  signals: sys_a, sys_acc_p\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+          },
+          {
+            "id": "T3",
+            "kind": "segment",
+            "rank": 3,
+            "slack_ns": -2.0384,
+            "value": 0.7267379570737148,
+            "value_terms": {
+              "impact": 0.45941768238603287,
+              "severity": 1.0,
+              "tractability": 0.8500000000000001
+            },
+            "p_critical": 0.9999999999999999,
+            "tns_share": 0.310988532329919,
+            "tns_share_truncated": false,
+            "mass_ns": 20.25779299597093,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "sys_b[3]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_sys",
+              "path_type": "max",
+              "slack_ns": -2.0384,
+              "status": "VIOLATED",
+              "arrival_ns": 3.9467,
+              "required_ns": 1.9083,
+              "logic_depth": 198
+            },
+            "member_count": 33,
+            "members": [
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[35]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[36]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[37]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[38]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -2.0384,
+                "endpoint": "sys_acc_p[39]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.9696,
+                "endpoint": "sys_acc_p[34]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.8821,
+                "endpoint": "sys_acc_p[32]_DFFR_X1_Q_D_OAI21_X1_ZN_A_NAND3_X1_ZN_A3_NAND2_X1_A2_ZN_XNOR2_X1_A_ZN_MUX2_X1_B_Z_DFFR_X1_D",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.8435,
+                "endpoint": "sys_acc_p[32]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.7586,
+                "endpoint": "sys_acc_p[31]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.7197,
+                "endpoint": "sys_acc_p[30]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.6449,
+                "endpoint": "sys_acc_p[29]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -1.606,
+                "endpoint": "sys_acc_p[28]_DFFR_X1_Q",
+                "startpoint": "sys_b[3]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              83,
+              203
+            ],
+            "delay_ns": 1.813,
+            "delay_share": 0.4594,
+            "cell_families": {
+              "and_or": 52,
+              "nand_nor": 52,
+              "aoi_oai": 10,
+              "xor": 3,
+              "inv_buf": 2,
+              "flop": 1
+            },
+            "cell_walk": [
+              "XOR2_X1",
+              "OR3_X1",
+              "OR3_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "NOR2_X1",
+              "NOR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "AND2_X1",
+              "AND2_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "AND3_X1",
+              "AND3_X1",
+              "OR2_X1",
+              "OR2_X1",
+              "AOI22_X1",
+              "AOI22_X1",
+              "INV_X1",
+              "INV_X1",
+              "NAND2_X1",
+              "NAND2_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "DFFR_X1"
+            ],
+            "max_fanout": 5,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "soc_bench.v",
+                "line": 281,
+                "end_line": 281,
+                "via": "driver via cone origin",
+                "stages": 120,
+                "delay_ns": 1.813,
+                "source": [
+                  "  281 |             sys_acc_p <= sys_sat_val;"
+                ]
+              }
+            ],
+            "signals": [
+              "sys_acc_p"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "119 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 119,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "wide arithmetic / carry propagation",
+                "evidence": "0 adder cells, 3 XOR, 10 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                "metric": {
+                  "adder": 0,
+                  "xor": 3,
+                  "aoi_oai": 10
+                }
+              },
+              {
+                "pattern": "delay spread evenly along the path",
+                "evidence": "the 5 worst of 120 stages hold only 16% of the delay -- no single hot cell; the depth itself is the problem",
+                "metric": {
+                  "top5_fraction": 0.163
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+                "pattern": "carry propagation across a wide accumulator",
+                "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+                "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+                "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.5
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+                "pattern": "Carry propagation in accumulator tree",
+                "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+                "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+                "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 5,
+                  "sec_pass": 5,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 2.766699071489424,
+                  "advantage_n": 2,
+                  "score_delta_sum": 0.009092027113597176,
+                  "score_delta_n": 2,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 5
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.037,
+                "mean_advantage": 1.383349535744712,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.333
+              },
+              {
+                "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+                "pattern": "carry propagation in sequential 40-bit additions",
+                "strategy": "unable to reduce depth safely while maintaining equivalence",
+                "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.8904758344281221,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T02:13:35+00:00"
+                },
+                "confidence": 0.214,
+                "mean_advantage": -0.8904758344281221,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:13:35+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+                "pattern": "Carry propagation in 40-bit final accumulate",
+                "strategy": "No equivalent optimization available",
+                "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:20:02+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.7071067811865541,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 2,
+                  "at": "2026-09-09T02:20:02+00:00"
+                },
+                "confidence": 0.2011,
+                "mean_advantage": -0.7071067811865541,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:20:02+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+                "pattern": "40-bit carry propagation in balanced adder tree",
+                "strategy": "Unable to optimize while maintaining fixed latency",
+                "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T16:03:21+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.4599339721746848,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:03:21+00:00"
+                },
+                "confidence": 0.125,
+                "mean_advantage": 0.0,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:03:21+00:00",
+                "match_score": 0.25
+              }
+            ],
+            "allowed_lines": {
+              "soc_bench.v": [
+                [
+                  278,
+                  284
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_sys",
+            "period_ns": 2.0,
+            "brief": "## Target T3 -- segment, 31% of the design's timing failure\n\nrepresentative  sys_b[3]_DFFR_X1_D -> sys_acc_p[35]_DFFR_X1_Q\nslack           -2.0384 ns (102% short of a 2 ns cycle)\nclock           clk_sys, 2 ns period\nsegment         stages 83-203 of 203 on the worst path\n                1.8130 ns, 46% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.727  (impact 0.46, severity 1.00, tractability 0.85)\n\ncell mix        52x and_or, 52x nand_nor, 10x aoi_oai, 3x xor, 2x inv_buf, 1x flop\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 119 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 3 XOR, 10 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 120 stages hold only 16% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XOR2_X1 -> OR3_X1 -> OR3_X1 -> AND2_X1 -> AND2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OR2_X1 -> OR2_X1 -> NAND2_X1 -> NAND2_X1 -> AND2_X1 -> AND2_X1 -> NOR2_X1 -> NOR2_X1 -> OR2_X1 -> OR2_X1 -> NAND2_X1 -> NAND2_X1 -> AND2_X1  ... 80 more ...  AND2_X1 -> AOI21_X1 -> AOI21_X1 -> OR2_X1 -> OR2_X1 -> OR2_X1 -> OR2_X1 -> AND3_X1 -> AND3_X1 -> OR2_X1 -> OR2_X1 -> AOI22_X1 -> AOI22_X1 -> INV_X1 -> INV_X1 -> NAND2_X1 -> NAND2_X1 -> OAI21_X1 -> OAI21_X1 -> DFFR_X1\n\nRTL this target resolves to:\n  soc_bench.v:281  120 stage(s), 1.8130 ns via driver via cone origin\n      281 |             sys_acc_p <= sys_sat_val;\n  signals: sys_acc_p\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+          }
+        ]
+      },
+      "group_stats": {
+        "n": 1,
+        "mean": -0.35096653756564083,
+        "std": 0.0
+      },
+      "candidates": [
+        {
+          "id": "t1",
+          "target_id": "T1",
+          "target_kind": "segment",
+          "target_value": 0.59667865257752,
+          "pattern": "High-fanout operand registers feeding multiplier array",
+          "strategy": "Replicate operand pipelines to split fanout",
+          "rationale": "The sys_a_q and sys_b_q registers each drive 12 multipliers (fanout 34). Splitting into two identical copies reduces per-register fanout from 12 to 6, lowering driver capacitance and slew delay on the launch path. Synthesis will map each copy to a faster driver, and the reduced load directly shortens the path.",
+          "target": "sys_a_q, sys_b_q pipeline registers, lines 102-123; multiplier generation, lines 132-137",
+          "expected_slack_recovery_ns": 0.45,
+          "area_cost": "small \u2014 two duplicate register sets, but operands are 16 bits \u00d7 12 taps each, and synthesis will optimize identical pipelines into shared structure if beneficial",
+          "equivalence_argument": "The two operand pipelines (sys_a_q + sys_a_q_dup, sys_b_q + sys_b_q_dup) are identically initialized (both to zero) and updated with identical inputs on every cycle. Both reset to zero synchronously. The first 6 products use (sys_a_q, sys_b_q), the last 6 use (sys_a_q_dup, sys_b_q_dup); since the operand pairs are always identical, the products are identical bit-for-bit. The products feed the same addition tree, producing identical sys_s[i] values and identical final sys_acc_p and sys_sat_p outputs. Reset timing is identical (both pipelines reset on the same edge), and all intermediate widths (16 bits) are preserved. Equivalence is trivial: the design now computes 12 products from two duplicate source pipes instead of one, but the results are identical.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t1/rtl/soc_bench.v"
+          ],
+          "changed_files": [
+            "soc_bench.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*",
+              "*_div_cnt",
+              "dsp_div_cnt",
+              "mem_div_cnt"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t1/sec/regcorr",
+            "paired": 2644,
+            "unpaired_gold": 192,
+            "unpaired_gate": 384,
+            "ports_total": 10586,
+            "ports_structural": 10545,
+            "sat_ports": [
+              "sys_acc_p[0]@d",
+              "sys_acc_p[1]@d",
+              "sys_acc_p[2]@d",
+              "sys_acc_p[3]@d",
+              "sys_acc_p[4]@d",
+              "sys_acc_p[5]@d",
+              "sys_acc_p[6]@d",
+              "sys_acc_p[7]@d",
+              "sys_acc_p[8]@d",
+              "sys_acc_p[9]@d",
+              "sys_acc_p[10]@d",
+              "sys_acc_p[11]@d",
+              "sys_acc_p[12]@d",
+              "sys_acc_p[13]@d",
+              "sys_acc_p[14]@d",
+              "sys_acc_p[15]@d",
+              "sys_acc_p[16]@d",
+              "sys_acc_p[17]@d",
+              "sys_acc_p[18]@d",
+              "sys_acc_p[19]@d"
+            ],
+            "equivalent": false,
+            "method": "regcorr-unproven",
+            "reason": "register correspondence left 192 of 507 matched signals unproven; undecided, not a refutation; the bounded fallback is disabled (timeout 0)",
+            "unproven": 192,
+            "equiv_cells": 507,
+            "attempt": null,
+            "runtime_s": 135.98,
+            "steps": [
+              {
+                "name": "prove",
+                "status": "failed",
+                "error": "unproven 192 of 507"
+              }
+            ]
+          },
+          "metrics": {
+            "status": "sec_failed",
+            "reason": "register correspondence left 192 of 507 matched signals unproven; undecided, not a refutation; the bounded fallback is disabled (timeout 0)"
+          },
+          "score": null,
+          "score_detail": null,
+          "advantage": null,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "soc_bench.v": [
+                [
+                  60,
+                  67
+                ]
+              ]
+            },
+            "outside": [
+              "soc_bench.v:1-39",
+              "soc_bench.v:228-228",
+              "soc_bench.v:236-236",
+              "soc_bench.v:241-241",
+              "soc_bench.v:244-244",
+              "soc_bench.v:252-252",
+              "soc_bench.v:254-254"
+            ],
+            "violation": true,
+            "changed_lines": 45
+          }
+        },
+        {
+          "id": "t2",
+          "target_id": "T2",
+          "target_kind": "segment",
+          "target_value": 0.6842500570154323,
+          "pattern": "Serial accumulate chain in 12-term MAC",
+          "strategy": "Rebalance serial add chain into balanced binary tree",
+          "rationale": "Breaking 11-level serial dependency into 4-level tree allows synthesis to parallelize carry chains across independent branches. Each 40-bit add still has ripple carry, but now they overlap; serial-path depth drops from 11\u00d7carry_depth to 4\u00d7carry_depth.",
+          "target": "sys domain: sys_s[0..11] generation loop (lines 273-281)",
+          "expected_slack_recovery_ns": 0.35,
+          "area_cost": "none \u2014 same number of adders, same register count, tree wires are temporary",
+          "equivalence_argument": "All 12 sign-extended products are summed to identical 40-bit precision. Saturation is applied to the final sum via comparison against SYS_LIMIT. Reordering additions in a binary tree produces the same final sys_acc_p and sys_sat_p because the saturator operates on the same numerical result; fixed-width overflow in intermediate nodes is absorbed by the final comparison and mux, not used downstream.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/rtl/soc_bench.v"
+          ],
+          "changed_files": [
+            "soc_bench.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*",
+              "*_div_cnt",
+              "dsp_div_cnt",
+              "mem_div_cnt"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/sec/regcorr",
+            "paired": 2836,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 11354,
+            "ports_structural": 11354,
+            "sat_ports": [],
+            "equivalent": true,
+            "method": "regcorr",
+            "unproven": 0,
+            "equiv_cells": 0,
+            "runtime_s": 1.99,
+            "reason": "register correspondence: all 11354 outputs of 2836 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -6.512576440245186,
+            "tns_ns": -38.099270594554426,
+            "violating_endpoints": 50,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_sys": {
+                  "endpoints": 398,
+                  "wns_ns": -1.164101,
+                  "tns_ns": -18.004270999999996,
+                  "violating_endpoints": 26
+                },
+                "clk_dsp": {
+                  "endpoints": 411,
+                  "wns_ns": -1.00484,
+                  "tns_ns": -13.582424000000001,
+                  "violating_endpoints": 23
+                },
+                "clk_mem": {
+                  "endpoints": 1515,
+                  "wns_ns": 1.930568,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_aux": {
+                  "endpoints": 36,
+                  "wns_ns": 3.642692,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_io": {
+                  "endpoints": 31,
+                  "wns_ns": 6.446653,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_sys_div2": {
+                  "endpoints": 41,
+                  "wns_ns": 0.644523,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_dsp_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 5.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_dsp_div4": {
+                  "endpoints": 40,
+                  "wns_ns": 2.755156,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_mem_div2": {
+                  "endpoints": 1,
+                  "wns_ns": 7.843854,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_mem_div4": {
+                  "endpoints": 1,
+                  "wns_ns": 15.843857,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_mem_div8": {
+                  "endpoints": 7,
+                  "wns_ns": 3.757081,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_aux_div2": {
+                  "endpoints": 1,
+                  "wns_ns": -6.512577,
+                  "tns_ns": -6.512577,
+                  "violating_endpoints": 1
+                },
+                "clk_io_div2": {
+                  "endpoints": 8,
+                  "wns_ns": 7.780566,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -6.512577,
+              "design_wns_ns": -6.512576440245186
+            },
+            "area_um2": 68604.858,
+            "cells": 49455,
+            "runtime_s": 150.19,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/eval/02_sta/timing.json",
+            "wns_cycles": -0.6512577,
+            "tns_cycles": -14.180867866666665
+          },
+          "score": -0.35096653756564083,
+          "score_detail": {
+            "score": -0.35096653756564083,
+            "terms": {
+              "wns": -0.1805018404348165,
+              "tns": -0.17033279196308584,
+              "area": -0.00013190516773846345,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.361003680869633,
+              "tns": -0.486665119894531,
+              "area": -0.0008793677849230897
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": 0.0,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "soc_bench.v": [
+                [
+                  60,
+                  66
+                ],
+                [
+                  278,
+                  284
+                ]
+              ]
+            },
+            "outside": [
+              "soc_bench.v:257-257",
+              "soc_bench.v:259-259",
+              "soc_bench.v:260-265",
+              "soc_bench.v:269-269",
+              "soc_bench.v:270-271",
+              "soc_bench.v:274-274"
+            ],
+            "violation": true,
+            "changed_lines": 12
+          }
+        },
+        {
+          "id": "t3",
+          "target_id": "T3",
+          "target_kind": "segment",
+          "target_value": 0.7267379570737148,
+          "pattern": "Serial accumulate chain over many products",
+          "strategy": "Rebalance into a tree of parallel additions",
+          "rationale": "Serial chain creates 11 stages of full-width carry propagation. A balanced tree groups 12 products into 6 parallel pairs, then recursively combines them in 4 levels instead of 11\u2014same result in bounded 2's-complement arithmetic (associative modulo 2^40), but depth falls from O(n) to O(log n).",
+          "target": "soc_bench.v:254-265 (sys_s array and g_sys_add generate block replaced with tree computation)",
+          "expected_slack_recovery_ns": 1.2,
+          "area_cost": "none \u2014 tree uses the same operators, just reordered",
+          "equivalence_argument": "Both serial and tree add all 12 sign-extended products. Addition is associative modulo 2^40 in 2's-complement arithmetic, so (a+b)+c = a+(b+c) in fixed width. The final sum sys_sum_final equals sys_s[11] bit-for-bit. Saturation is applied identically afterward. Reset handled by sys_acc_p register, unchanged.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v",
+            "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/netproc.v"
+          ],
+          "changed_files": [
+            "netproc.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*",
+              "*_div_cnt",
+              "dsp_div_cnt",
+              "mem_div_cnt"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": false,
+            "method": "error",
+            "reason": "regcorr elaboration produced no verdict (exit 1): Warning: Replacing memory \\dsp_coef_q with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:325\nWarning: Replacing memory \\dsp_line with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:307\nWarning: Replacing memory \\sys_b_q with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:235\nWarning: Replacing memory \\sys_a_q with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:234\nSuccessfully finished Verilog frontend.\n\n10. Executing Verilog-2005 frontend: /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/netproc.v\n/work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/netproc.v:1: ERROR: Re-definition of module `\\soc_bench'!; the bounded fallback is disabled (timeout 0)",
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t3/sec/regcorr",
+            "runtime_s": 1.0
+          },
+          "metrics": {
+            "status": "sec_failed",
+            "reason": "regcorr elaboration produced no verdict (exit 1): Warning: Replacing memory \\dsp_coef_q with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:325\nWarning: Replacing memory \\dsp_line with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:307\nWarning: Replacing memory \\sys_b_q with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:235\nWarning: Replacing memory \\sys_a_q with list of registers. See /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/soc_bench.v:234\nSuccessfully finished Verilog frontend.\n\n10. Executing Verilog-2005 frontend: /work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/netproc.v\n/work/runs/soc_bench/pf-20260915-114830/iter_01/t3/rtl/netproc.v:1: ERROR: Re-definition of module `\\soc_bench'!; the bounded fallback is disabled (timeout 0)"
+          },
+          "score": null,
+          "score_detail": null,
+          "advantage": null,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "soc_bench.v": [
+                [
+                  278,
+                  284
+                ]
+              ]
+            },
+            "outside": [],
+            "violation": false,
+            "changed_lines": 0
+          }
+        }
+      ],
+      "unions": [],
+      "merge": {
+        "eligible": [
+          "t2"
+        ],
+        "mechanical": [],
+        "agent": null,
+        "reason": "only 1 candidate(s) survived evaluation; there is nothing to combine"
+      },
+      "selected": "t2",
+      "skill_learning": {
+        "recorded": [
+          "high-fanout-operand-driving-multiplier-with-38-l::replicate-operand-registers-to-split-fanout",
+          "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+          "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree"
+        ],
+        "abstracted": [
+          {
+            "id": "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+            "verdict": "effective",
+            "evidence": "t2: A_i=0.0000 (group baseline), WNS=-6.51ns, TNS=-38.10ns, area=68605um\u00b2, SEC PASS unbounded."
+          },
+          {
+            "id": "high-fanout-operand-driving-multiplier-with-38-l::replicate-operand-registers-to-split-fanout",
+            "verdict": "ineffective",
+            "evidence": "t1: SEC FAIL (192 of 507 matched signals unproven by yosys/regcorr bounded mode). No PPA data; verification blocked further evaluation."
+          },
+          {
+            "id": "memory-backed-serial-computation::rebalance-with-parallel-tree-over-array-contents",
+            "verdict": "breaks-equivalence",
+            "evidence": "t3: SEC FAIL (yosys elaboration error: module redefinition of soc_bench). Tool cannot handle array replacement in this transformation context."
+          }
+        ],
+        "observations": "Only one of three candidates achieved equivalence verification. Tree rebalancing (t2) is reliable and effective; fanout reduction (t1) fails SEC verification suggesting tool limits on register correspondence depth; memory array restructuring (t3) breaks tool elaboration. Key learning: pure arithmetic tree rebalancing transfers well, but array and high-fanout register transformations require independent verification\u2014they are high-risk.",
+        "raw_reply": "```json\n{\n  \"skills\": [\n    {\n      \"pattern\": \"Serial accumulate chain in wide MAC\",\n      \"strategy\": \"Rebalance into balanced binary tree\",\n      \"rationale\": \"Serial dependency O(n) becomes O(log n) tree depth, enabling overlapping carry chains across parallel independent branches. Only successful candidate in group; SEC verified unbounded across all clock interleavings.\",\n      \"example\": \"// Serial: r = a+b+c+d+e+f+g+h+i+j+k (11 stages)\\n// Tree: pairs (a+b), (c+d), (e+f), (g+h), (i+j), k in parallel; recursively combine\",\n      \"verdict\": \"effective\",\n      \"evidence\": \"t2: A_i=0.0000 (group baseline), WNS=-6.51ns, TNS=-38.10ns, area=68605um\u00b2, SEC PASS unbounded.\"\n    },\n    {\n      \"pattern\": \"High-fanout operand registers feeding multipliers\",\n      \"strategy\": \"Register replication to reduce fanout per driver\",\n      \"rationale\": \"Splitting operand pipelines (sys_a_q, sys_b_q fanout 34\u219212 each) into two copies halves per-register fanout. Reduces slew delay on launch paths. However, SEC verification could not prove register correspondence.\",\n      \"example\": \"// Before: sys_a_q[39:0] drives all 12 multiplier blocks\\n// After: sys_a_q_0[39:0], sys_a_q_1[39:0] each drive 6\",\n      \"verdict\": \"ineffective\",\n      \"evidence\": \"t1: SEC FAIL (192 of 507 matched signals unproven by yosys/regcorr bounded mode). No PPA data; verification blocked further evaluation.\"\n    },\n    {\n      \"pattern\": \"Memory-backed serial computation\",\n      \"strategy\": \"Rebalance with parallel tree over array contents\",\n      \"rationale\": \"Attempting tree restructuring of serial memory accesses causes tool elaboration failure. When yosys replaced memories with register lists, module redefinition conflict prevented SEC evaluation.\",\n      \"example\": \"// Tool limitation: memory-to-register expansion during rebalancing causes redefinition\",\n      \"verdict\": \"breaks-equivalence\",\n      \"evidence\": \"t3: SEC FAIL (yosys elaboration error: module redefinition of soc_bench). Tool cannot handle array replacement in this transformation context.\"\n    }\n  ],\n  \"observations\": \"Only one of three candidates achieved equivalence verification. Tree rebalancing (t2) is reliable and effective; fanout reduction (t1) fails SEC verification suggesting tool limits on register correspondence depth; memory array restructuring (t3) breaks tool elaboration. Key learning: pure arithmetic tree rebalancing transfers well, but array and high-fanout register transformations require independent verification\u2014they are high-risk.\"\n}\n```"
+      }
+    }
+  ],
+  "best": {
+    "id": "t2",
+    "iteration": 1,
+    "score": -0.35096653756564083,
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -6.512576440245186,
+      "tns_ns": -38.099270594554426,
+      "violating_endpoints": 50,
+      "hold_wns_ns": 0.00941800830646686,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk_sys": {
+            "endpoints": 398,
+            "wns_ns": -1.164101,
+            "tns_ns": -18.004270999999996,
+            "violating_endpoints": 26
+          },
+          "clk_dsp": {
+            "endpoints": 411,
+            "wns_ns": -1.00484,
+            "tns_ns": -13.582424000000001,
+            "violating_endpoints": 23
+          },
+          "clk_mem": {
+            "endpoints": 1515,
+            "wns_ns": 1.930568,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_aux": {
+            "endpoints": 36,
+            "wns_ns": 3.642692,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_io": {
+            "endpoints": 31,
+            "wns_ns": 6.446653,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_sys_div2": {
+            "endpoints": 41,
+            "wns_ns": 0.644523,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_dsp_div2": {
+            "endpoints": 1,
+            "wns_ns": 5.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_dsp_div4": {
+            "endpoints": 40,
+            "wns_ns": 2.755156,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_mem_div2": {
+            "endpoints": 1,
+            "wns_ns": 7.843854,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_mem_div4": {
+            "endpoints": 1,
+            "wns_ns": 15.843857,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_mem_div8": {
+            "endpoints": 7,
+            "wns_ns": 3.757081,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_aux_div2": {
+            "endpoints": 1,
+            "wns_ns": -6.512577,
+            "tns_ns": -6.512577,
+            "violating_endpoints": 1
+          },
+          "clk_io_div2": {
+            "endpoints": 8,
+            "wns_ns": 7.780566,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -6.512577,
+        "design_wns_ns": -6.512576440245186
+      },
+      "area_um2": 68604.858,
+      "cells": 49455,
+      "runtime_s": 150.19,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/eval",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/eval/02_sta/timing.json",
+      "wns_cycles": -0.6512577,
+      "tns_cycles": -14.180867866666665
+    },
+    "pattern": "Serial accumulate chain in 12-term MAC",
+    "strategy": "Rebalance serial add chain into balanced binary tree",
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/rtl/soc_bench.v"
+    ],
+    "sec": {
+      "engine": "yosys",
+      "stage": "regcorr",
+      "log": "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/iter_01/t2/sec/regcorr",
+      "paired": 2836,
+      "unpaired_gold": 0,
+      "unpaired_gate": 0,
+      "ports_total": 11354,
+      "ports_structural": 11354,
+      "sat_ports": [],
+      "equivalent": true,
+      "method": "regcorr",
+      "unproven": 0,
+      "equiv_cells": 0,
+      "runtime_s": 1.99,
+      "reason": "register correspondence: all 11354 outputs of 2836 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+    }
+  },
+  "convergence_steps": 1,
+  "mode": "portfolio",
+  "budget": {
+    "planned_calls": 6,
+    "actual_calls": 5
+  },
+  "cleanup": {
+    "candidates": [
+      {
+        "id": "clean0",
+        "directive_index": 0,
+        "directive": "",
+        "pattern": "serial accumulation chains and unreachable comparisons",
+        "strategy": "replace serial adds with balanced trees, hardcode unreachable saturate logic",
+        "rationale": "serial chain depth falls from 12 to 4 adders (sys/dsp), and from 256 to 8 XOR (aux). Comparisons that cannot fire are removed entirely.",
+        "target": "sys_s accumulation, dsp_s accumulation, sys overflow detection, aux_par_chain reduction",
+        "expected_slack_recovery_ns": 2.5,
+        "area_cost": "small \u2014 removed comparison logic, slightly fewer intermediates in carry propagation",
+        "equivalence_argument": "Each tree computes the identical sum in the same width. Reset unaffected: all wires combinational. Saturation result is identical because sys_s cannot overflow SYS_LIMIT (provable from operand bounds), so always-false comparisons become the identity on sys_s. Aux parity is XOR reduction, which is associative and commutative \u2014 ^data_q is identical to the serial chain through all 256 bits.",
+        "rtl": [
+          "/home/sreeavyay/astra-vlsi/runs/soc_bench/pf-20260915-114830/cleanup/clean0/rtl/soc_bench.v"
+        ],
+        "changed_files": [
+          "soc_bench.v"
+        ],
+        "protected": {
+          "ok": false,
+          "patterns": [
+            "cdc_*",
+            "clk_*_div*",
+            "*_div_cnt",
+            "dsp_div_cnt",
+            "mem_div_cnt"
+          ],
+          "files": {
+            "soc_bench.v": [
+              "removed or altered: else aux_parity <= aux_par_chain[XW] ^ cdc_aux_from_dsp[1];",
+              "introduced: else aux_parity <= aux_parity_xor ^ cdc_aux_from_dsp[1];"
+            ]
+          }
+        },
+        "metrics": {
+          "status": "protected_edit",
+          "reason": "protected regions edited (patterns: cdc_*, clk_*_div*, *_div_cnt, dsp_div_cnt, mem_div_cnt)\n  soc_bench.v:\n    - removed or altered: else aux_parity <= aux_par_chain[XW] ^ cdc_aux_from_dsp[1];\n    - introduced: else aux_parity <= aux_parity_xor ^ cdc_aux_from_dsp[1];"
+        },
+        "sec": {
+          "equivalent": false,
+          "method": "skipped",
+          "reason": "protected regions edited (patterns: cdc_*, clk_*_div*, *_div_cnt, dsp_div_cnt, mem_div_cnt)\n  soc_bench.v:\n    - removed or altered: else aux_parity <= aux_par_chain[XW] ^ cdc_aux_from_dsp[1];\n    - introduced: else aux_parity <= aux_parity_xor ^ cdc_aux_from_dsp[1];",
+          "engine": "none"
+        },
+        "score": null,
+        "score_detail": null,
+        "advantage": null
+      }
+    ],
+    "adopted": false,
+    "gate": 0.01,
+    "reason": "no candidate passed SEC"
+  },
+  "usage": {
+    "calls": 5,
+    "input_tokens": 45,
+    "output_tokens": 71364,
+    "cache_read_input_tokens": 130214,
+    "cost_usd": 0.5494364,
+    "duration_s": 639.339
+  }
+}

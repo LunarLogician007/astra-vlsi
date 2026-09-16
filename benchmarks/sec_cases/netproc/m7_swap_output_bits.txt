@@ -1,0 +1,1 @@
+two rx_status output bits swapped

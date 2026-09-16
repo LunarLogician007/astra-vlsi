@@ -1,0 +1,14 @@
+{
+  "id": "t3",
+  "target_id": "T3",
+  "target_kind": "segment",
+  "target_value": 0.7267379570737148,
+  "pattern": "Serial accumulate chain over many products",
+  "strategy": "Rebalance into a tree of parallel additions",
+  "rationale": "Serial chain creates 11 stages of full-width carry propagation. A balanced tree groups 12 products into 6 parallel pairs, then recursively combines them in 4 levels instead of 11\u2014same result in bounded 2's-complement arithmetic (associative modulo 2^40), but depth falls from O(n) to O(log n).",
+  "target": "soc_bench.v:254-265 (sys_s array and g_sys_add generate block replaced with tree computation)",
+  "expected_slack_recovery_ns": 1.2,
+  "area_cost": "none \u2014 tree uses the same operators, just reordered",
+  "equivalence_argument": "Both serial and tree add all 12 sign-extended products. Addition is associative modulo 2^40 in 2's-complement arithmetic, so (a+b)+c = a+(b+c) in fixed width. The final sum sys_sum_final equals sys_s[11] bit-for-bit. Saturation is applied identically afterward. Reset handled by sys_acc_p register, unchanged.",
+  "declared_changed": true
+}

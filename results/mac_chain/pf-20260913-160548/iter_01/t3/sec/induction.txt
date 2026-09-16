@@ -1,0 +1,110 @@
+
+8. Executing SAT pass (solving SAT problems in the circuit).
+
+Setting up time step 1:
+Final constraint equation: { } = { }
+Imported 51 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$148 when 1'1.
+
+** Trying induction with length 1 **
+
+Setting up time step 1:
+Final constraint equation: { } = { }
+Imported 51 cells to SAT database.
+Final init constraint equation: { \gold.sat_flag \gate.valid_q \gate.valid_out \gate.a0_q \gate.a1_q \gate.a2_q \gate.a3_q \gate.b0_q \gate.b1_q \gate.b2_q \gate.b3_q \gold.acc_out \gate.acc_out } = 211'0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$148 when 1'1.
+
+[base case 1] Solving problem with 48071 variables and 142166 clauses..
+Base case for induction length 1 proven.
+
+Setting up time step 2:
+Final constraint equation: { } = { }
+Imported 51 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$148 when 1'1.
+
+[induction step 1] Solving problem with 96607 variables and 285137 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                  Dec       Hex                                         Bin
+  ---- -------------------- ----------- --------- -------------------------------------------
+  init \gate.a0_q                 50948      c704                            1100011100000100
+  init \gate.a1_q                 56242      dbb2                            1101101110110010
+  init \gate.a2_q                 15902      3e1e                            0011111000011110
+  init \gate.a3_q                 15547      3cbb                            0011110010111011
+  init \gate.acc_out                 --        --    0000000000000000000000000000000000000000
+  init \gate.b0_q                 56136      db48                            1101101101001000
+  init \gate.b1_q                  8504      2138                            0010000100111000
+  init \gate.b2_q                 50546      c572                            1100010101110010
+  init \gate.b3_q                 29410      72e2                            0111001011100010
+  init \gate.valid_out                0         0                                           0
+  init \gate.valid_q                  0         0                                           0
+  init \gold.acc_out                 --        --    0000000000000000000000000000000000000000
+  init \gold.sat_flag                 0         0                                           0
+
+** Trying induction with length 2 **
+
+Setting up time step 2:
+Final constraint equation: { } = { }
+Imported 51 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$148 when 1'1.
+
+[base case 2] Solving problem with 97597 variables and 288528 clauses..
+Base case for induction length 2 proven.
+
+Setting up time step 3:
+Final constraint equation: { } = { }
+Imported 51 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$148 when 1'1.
+
+[induction step 2] Solving problem with 146767 variables and 433611 clauses..
+Induction step failed. Incrementing induction length.
+
+  Time Signal Name                  Dec       Hex                                         Bin
+  ---- -------------------- ----------- --------- -------------------------------------------
+  init \gate.a0_q                 19917      4dcd                            0100110111001101
+  init \gate.a1_q                  5181      143d                            0001010000111101
+  init \gate.a2_q                 11238      2be6                            0010101111100110
+  init \gate.a3_q                 47864      baf8                            1011101011111000
+  init \gate.acc_out                 --        --    0000000010011011000000110100001000010001
+  init \gate.b0_q                 29501      733d                            0111001100111101
+  init \gate.b1_q                  1620       654                            0000011001010100
+  init \gate.b2_q                 30523      773b                            0111011100111011
+  init \gate.b3_q                 56412      dc5c                            1101110001011100
+  init \gate.valid_out                0         0                                           0
+  init \gate.valid_q                  1         1                                           1
+  init \gold.acc_out                 --        --    0000000010011011000000110100001000010001
+  init \gold.sat_flag                 0         0                                           0
+
+** Trying induction with length 3 **
+
+Setting up time step 3:
+Final constraint equation: { } = { }
+Imported 51 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$148 when 1'1.
+
+[base case 3] Solving problem with 147757 variables and 437002 clauses..
+SAT temporal induction proof finished - model found for base case: FAIL!
+
+   ______                   ___       ___       _ _            _ _ 
+  (_____ \                 / __)     / __)     (_) |          | | |
+   _____) )___ ___   ___ _| |__    _| |__ _____ _| | _____  __| | |
+  |  ____/ ___) _ \ / _ (_   __)  (_   __|____ | | || ___ |/ _  |_|
+  | |   | |  | |_| | |_| || |       | |  / ___ | | || ____( (_| |_ 
+  |_|   |_|   \___/ \___/ |_|       |_|  \_____|_|\_)_____)\____|_|
+
+
+  Time Signal Name                  Dec       Hex                                         Bin
+  ---- -------------------- ----------- --------- -------------------------------------------
+  init \gate.a0_q                     0         0                            0000000000000000
+  init \gate.a1_q                     0         0                            0000000000000000
+  init \gate.a2_q                     0         0                            0000000000000000
+  init \gate.a3_q                     0         0                            0000000000000000
+  init \gate.acc_out                 --        --    0000000000000000000000000000000000000000
+  init \gate.b0_q                     0         0                            0000000000000000
+  init \gate.b1_q                     0         0                            0000000000000000
+  init \gate.b2_q                     0         0                            0000000000000000
+  init \gate.b3_q                     0         0                            0000000000000000
+  init \gate.valid_out                0         0                                           0
+  init \gate.valid_q                  0         0                                           0
+  init \gold.acc_out                 --        --    0000000000000000000000000000000000000000
+  init \gold.sat_flag                 0         0                                           0

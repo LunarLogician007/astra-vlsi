@@ -1,0 +1,23 @@
+--- vending_machine.v (parent)
++++ vending_machine.v (t3)
+@@ -35,7 +35,10 @@
+     output reg [K*DATA_WIDTH-1:0] total_discount;
+ 
+     reg [3:0] next_state;
+-    reg [3:0] state;  // 3-bit state representation for S0 to S6
++    reg [3:0] state;
++
++    wire [K*DATA_WIDTH-1:0] op1 = sel ? discountA : discountC;
++    wire [K*DATA_WIDTH-1:0] op2 = sel ? discountB : discountD;
+ 
+     // Sequential logic for state transitions
+     always @(posedge clk or posedge reset) begin
+@@ -47,7 +50,7 @@
+     end
+ 
+     always @(*) begin
+-        total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);
++        total_discount = op1 + op2;
+     end
+ 
+     // Combinatorial logic for next state and output

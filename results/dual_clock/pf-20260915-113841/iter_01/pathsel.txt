@@ -1,0 +1,152 @@
+path pool: 89 reported, 13 violating, 13 distinct cone(s)
+portfolio: k_effective 3 of 3 requested  [one cone -- cut into segments]
+
+Which cone limits the clock (delay sigma 5% of the period, within-cone correlation 0.70):
+  cone 0    99.7%    17 path(s)   worst slack -0.0523
+  cone 1     0.2%     6 path(s)   worst slack 0.1894
+
+Per path, most likely first:
+    8.0%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[24]_DFFR_X1_Q
+    7.9%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[17]_DFFR_X1_Q
+    7.9%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[18]_DFFR_X1_Q
+    7.8%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[15]_DFFR_X1_Q
+    7.8%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[19]_DFFR_X1_Q
+    7.7%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[26]_DFFR_X1_Q
+    7.7%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[23]_DFFR_X1_Q
+    7.7%  slack   -0.0523  (VIOLATED)  cone 0  -> f_acc_p[22]_DFFR_X1_Q
+
+## Target T1 -- segment, 18% of the design's timing failure
+
+representative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q
+slack           -0.0523 ns (3% short of a 1.6 ns cycle)
+clock           clk_fast, 1.6 ns period
+segment         stages 0-10 of 67 on the worst path
+                0.2768 ns, 18% of the path's delay
+criticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model
+value           0.370  (impact 0.18, severity 0.52, tractability 0.55)
+
+cell mix        6x xor, 2x flop
+
+root causes (mechanical, from the STA report):
+  - delay concentrated in a few stages: 100% of the path delay sits in 5 of 10 stages -- a local fix can recover most of it
+
+cell walk in path order (this is the topology -- a run of
+AOI/OAI/XOR is carry propagation, a run of AND/OR feeding a
+wide reduction is comparison or selection logic):
+  DFFR_X1 -> DFFR_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1
+
+RTL this target resolves to:
+  dual_clock.v:82  6 stage(s), 0.1522 ns via driver via cone origin
+       82 |             fb_q[0] <= f_b;
+  dual_clock.v:40  2 stage(s), 0.1246 ns via declaration via cone origin
+       40 |     input  wire signed [W-1:0]    f_b,
+  signals: f_b, fb_q
+
+
+## Target T2 -- segment, 23% of the design's timing failure
+
+representative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q
+slack           -0.0523 ns (3% short of a 1.6 ns cycle)
+clock           clk_fast, 1.6 ns period
+segment         stages 10-30 of 67 on the worst path
+                0.3615 ns, 23% of the path's delay
+criticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model
+value           0.454  (impact 0.23, severity 0.52, tractability 0.85)
+
+cell mix        20x aoi_oai
+
+root causes (mechanical, from the STA report):
+  - deep combinational logic: 20 combinational cells between the launch and capture flops
+  - wide arithmetic / carry propagation: 0 adder cells, 0 XOR, 20 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree
+  - delay concentrated in a few stages: 63% of the path delay sits in 5 of 20 stages -- a local fix can recover most of it
+
+cell walk in path order (this is the topology -- a run of
+AOI/OAI/XOR is carry propagation, a run of AND/OR feeding a
+wide reduction is comparison or selection logic):
+  OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1
+
+RTL this target resolves to:
+  dual_clock.v:82  20 stage(s), 0.3615 ns via driver via cone origin
+       82 |             fb_q[0] <= f_b;
+  signals: fb_q
+
+skills the library offers for this pattern:
+- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder
+    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.
+    record: 0 decided use(s), SEC pass 0/0, confidence 0.00
+- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form
+    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.
+    record: 0 decided use(s), SEC pass 0/0, confidence 0.00
+- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression
+    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.
+    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain
+- [ATTEMPTED] carry propagation in sequential 40-bit additions
+    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence
+    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.
+    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.
+    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain
+- [ATTEMPTED] Carry propagation in 40-bit final accumulate
+    a previous run tried this and recorded: No equivalent optimization available
+    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.
+    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.
+    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain
+- [ATTEMPTED] 40-bit carry propagation in balanced adder tree
+    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency
+    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.
+    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.
+    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain
+
+## Target T3 -- segment, 59% of the design's timing failure
+
+representative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q
+slack           -0.0523 ns (3% short of a 1.6 ns cycle)
+clock           clk_fast, 1.6 ns period
+segment         stages 30-67 of 67 on the worst path
+                0.9338 ns, 59% of the path's delay
+criticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model
+value           0.623  (impact 0.59, severity 0.52, tractability 0.88)
+
+cell mix        26x xor, 8x aoi_oai, 2x mux, 1x flop
+fanout peak     13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN
+
+root causes (mechanical, from the STA report):
+  - deep combinational logic: 36 combinational cells between the launch and capture flops
+  - wide arithmetic / carry propagation: 0 adder cells, 26 XOR, 8 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree
+  - high fanout on the critical path: fanout 13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN (1 stage(s) at or above 8)
+
+cell walk in path order (this is the topology -- a run of
+AOI/OAI/XOR is carry propagation, a run of AND/OR feeding a
+wide reduction is comparison or selection logic):
+  XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> XNOR2_X1 -> XNOR2_X1 -> MUX2_X1 -> MUX2_X1 -> DFFR_X1
+
+RTL this target resolves to:
+  dual_clock.v:82  24 stage(s), 0.6809 ns via driver via cone origin
+       82 |             fb_q[0] <= f_b;
+  dual_clock.v:114  13 stage(s), 0.2529 ns via driver via cone origin
+      114 |         else if (f_valid_q) f_acc_p <= acc[TAPS-1];
+  signals: fb_q, f_acc_p
+
+skills the library offers for this pattern:
+- [UNTESTED] high-fanout signal on the critical path  ->  replicate the driver so each load group has its own copy
+    why: A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.
+    record: 0 decided use(s), SEC pass 0/0, confidence 0.00
+- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder
+    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.
+    record: 0 decided use(s), SEC pass 0/0, confidence 0.00
+- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form
+    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.
+    record: 0 decided use(s), SEC pass 0/0, confidence 0.00
+- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression
+    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.
+    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain
+- [ATTEMPTED] carry propagation in sequential 40-bit additions
+    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence
+    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.
+    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.
+    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain
+- [ATTEMPTED] Carry propagation in 40-bit final accumulate
+    a previous run tried this and recorded: No equivalent optimization available
+    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.
+    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.
+    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain
+

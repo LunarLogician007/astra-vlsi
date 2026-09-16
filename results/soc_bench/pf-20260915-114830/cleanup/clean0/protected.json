@@ -1,0 +1,16 @@
+{
+  "ok": false,
+  "patterns": [
+    "cdc_*",
+    "clk_*_div*",
+    "*_div_cnt",
+    "dsp_div_cnt",
+    "mem_div_cnt"
+  ],
+  "files": {
+    "soc_bench.v": [
+      "removed or altered: else aux_parity <= aux_par_chain[XW] ^ cdc_aux_from_dsp[1];",
+      "introduced: else aux_parity <= aux_parity_xor ^ cdc_aux_from_dsp[1];"
+    ]
+  }
+}

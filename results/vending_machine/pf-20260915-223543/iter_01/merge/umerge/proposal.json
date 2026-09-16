@@ -1,0 +1,18 @@
+{
+  "id": "umerge",
+  "kind": "union",
+  "union_source": "agent",
+  "pattern": "combined fixes from several targets",
+  "strategy": "union of independently verified rewrites",
+  "included": [
+    "t2",
+    "t3"
+  ],
+  "excluded": [
+    "t1"
+  ],
+  "rationale": "t1 regressed to 0.1806 from the parent's -0.7356, a clear scoring failure despite passing SEC. Although the mechanical union achieved -0.7356 by combining all three candidates, that recovery comes from t2 and t3's contributions, not t1. Dropping t1 removes the regression entirely without sacrificing benefit: both t2 and t3 independently measured -0.7356, maintaining the parent's score. t1's line 50 change to `sel ? (discountA + discountB) : (discountC + discountD)` was an attempt to reorganize the mux\u2013add structure that backfired on timing; t3's alternative (extracting intermediate wires op1 and op2, then computing `op1 + op2`) achieved the target score cleanly.",
+  "conflicts_resolved": "Line 50 is resolved using t3's version: the design extracts the intermediate wires defined by t3 at lines 37-38, then uses `total_discount = op1 + op2` instead of the parent's inline conditional muxing. t1's reordered-parentheses version is rejected as a regression.",
+  "expected_vs_mechanical": "This combined design (t2+t3, excluding t1) should score identically to the mechanical union (-0.7356) because it removes only the regressive part (t1's line 50) that the union had already accommodated by synthesis. The union measured the same score despite carrying t1's deficit, meaning t2 and t3's synergistic benefits already absorbed it. Without t1's drag, the design is lighter.",
+  "equivalence_argument": "t3's intermediate wires op1 and op2 are purely structural: op1 \u2261 (sel ? discountA : discountC) and op2 \u2261 (sel ? discountB : discountD) by definition. The total_discount calculation `op1 + op2` evaluates identically to `(sel ? discountA : discountC) + (sel ? discountB : discountD)` cycle-for-cycle. The wire extraction does not change reset behavior\u2014state still resets to S0, and both wires are combinatorial dependents of sel and the discount inputs, unaffected by async reset. No widths are reassociated; the sums remain 1024-bit additions. Bit-exact equivalence to the original is preserved."
+}

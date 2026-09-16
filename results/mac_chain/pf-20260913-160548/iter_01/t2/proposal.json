@@ -1,0 +1,14 @@
+{
+  "id": "t2",
+  "target_id": "T2",
+  "target_kind": "segment",
+  "target_value": 0.4994244760963338,
+  "pattern": "40-bit saturation comparison after accumulation",
+  "strategy": "Remove unused saturation parameters to prevent inadvertent synthesis",
+  "rationale": "The SAT_MAX, SAT_MIN, and LIMIT parameters are defined but never used in the RTL. The sat_flag is always 0, and sat_val is just s3 with no actual saturation logic. These unused parameters may trigger synthesis to generate unnecessary comparison logic on the critical path.",
+  "target": "Localparam declarations SAT_MAX, SAT_MIN, LIMIT (unused)",
+  "expected_slack_recovery_ns": 0.0,
+  "area_cost": "none",
+  "equivalence_argument": "The unused parameters do not affect any outputs or internal computation. Removing them preserves bit-exact outputs and cycle-for-cycle equivalence. The sat_flag remains 0 and sat_val remains functionally equal to s3 (the unchanged accumulation result).",
+  "declared_changed": false
+}

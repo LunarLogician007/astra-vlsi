@@ -1,0 +1,12 @@
+{
+  "id": "clean0",
+  "directive_index": 0,
+  "directive": "",
+  "pattern": "serial accumulation chains and unreachable comparisons",
+  "strategy": "replace serial adds with balanced trees, hardcode unreachable saturate logic",
+  "rationale": "serial chain depth falls from 12 to 4 adders (sys/dsp), and from 256 to 8 XOR (aux). Comparisons that cannot fire are removed entirely.",
+  "target": "sys_s accumulation, dsp_s accumulation, sys overflow detection, aux_par_chain reduction",
+  "expected_slack_recovery_ns": 2.5,
+  "area_cost": "small \u2014 removed comparison logic, slightly fewer intermediates in carry propagation",
+  "equivalence_argument": "Each tree computes the identical sum in the same width. Reset unaffected: all wires combinational. Saturation result is identical because sys_s cannot overflow SYS_LIMIT (provable from operand bounds), so always-false comparisons become the identity on sys_s. Aux parity is XOR reduction, which is associative and commutative \u2014 ^data_q is identical to the serial chain through all 256 bits."
+}

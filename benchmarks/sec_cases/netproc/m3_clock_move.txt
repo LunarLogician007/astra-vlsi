@@ -1,0 +1,1 @@
+l_idx_p/l_hit_p moved from clk_look to clk_look_div2_r

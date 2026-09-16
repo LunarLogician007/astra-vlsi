@@ -1,0 +1,47 @@
+{
+  "top": "netproc",
+  "description": "The objective-6 benchmark built to be checkable: five asynchronous masters, generated clocks at ratios 2/4/8, crossings between all five, an FSM -- and no multipliers anywhere, so a bounded equivalence check can actually close. soc_bench meets the same structural requirements and cannot be certified; cell count was never the problem, multipliers were.",
+  "rtl": ["rtl/netproc.v"],
+  "sdc": "constraints/netproc.sdc",
+  "pdk": "nangate45",
+  "clocks": [
+    { "name": "clk_rx",    "port": "clk_rx",    "period_ns": 2.0 },
+    { "name": "clk_parse", "port": "clk_parse", "period_ns": 3.0 },
+    { "name": "clk_look",  "port": "clk_look",  "period_ns": 4.0 },
+    { "name": "clk_xfrm",  "port": "clk_xfrm",  "period_ns": 5.0 },
+    { "name": "clk_tx",    "port": "clk_tx",    "period_ns": 7.0 },
+
+    { "name": "clk_rx_div2", "generated_from": "clk_rx", "divide_by": 2,
+      "port": "clk_rx_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_parse_div2", "generated_from": "clk_parse", "divide_by": 2,
+      "port": "clk_parse_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_parse_div4", "generated_from": "clk_parse_div2", "divide_by": 2,
+      "port": "clk_parse_div2_r_DFFR_X1_CK/Q" },
+    { "name": "clk_look_div2", "generated_from": "clk_look", "divide_by": 2,
+      "port": "clk_look_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_look_div4", "generated_from": "clk_look_div2", "divide_by": 2,
+      "port": "clk_look_div4_r_DFFR_X1_Q/Q" },
+    { "name": "clk_look_div8", "generated_from": "clk_look_div4", "divide_by": 2,
+      "port": "clk_look_div4_r_DFFR_X1_CK/Q" },
+    { "name": "clk_xfrm_div2", "generated_from": "clk_xfrm", "divide_by": 2,
+      "port": "clk_xfrm_div2_r_DFFR_X1_Q/Q" },
+    { "name": "clk_tx_div2", "generated_from": "clk_tx", "divide_by": 2,
+      "port": "clk_tx_div2_r_DFFR_X1_Q/Q" }
+  ],
+  "protected": ["cdc_*", "clk_*_div*"],
+  "sec_depth": 6,
+  "notes": {
+    "latency_cycles": { "rx": 2, "parse": 2, "look": 3, "xfrm": 2, "tx": 3 },
+    "known_bottlenecks": [
+      "rx: bit-serial CRC32 shift, 8 dependent XOR/mux stages per byte, where a parallel update over the whole byte is the fix",
+      "parse: 96-way priority select written as a serial mux cascade, so bit 95 waits on all 95 below it",
+      "look: 256-entry CAM whose hit index resolves through a serial priority cascade over the match vector",
+      "xfrm: 512-bit parity as a serial XOR chain, depth 512 instead of 9",
+      "tx: serial accumulate over 16 terms instead of a balanced adder tree"
+    ],
+    "invariants": "rewrites must preserve each domain's latency exactly and be bit-exact. The five datapaths share no signal except through the cdc_ synchronisers, and may be rewritten independently.",
+    "cdc_off_limits": "cdc_* and clk_*_div* -- enforced by tools/protect.py before synthesis. See docs/equivalence-contract.md.",
+    "no_multipliers": "deliberate. A bounded check unrolls the design once per solver step, and unpipelined multipliers make that intractable -- measured on soc_bench, where a bad candidate is refuted in 21 s but a good one times out at 1800 s or is OOM-killed.",
+    "purpose": "objective 6, in the form where the loop can both reject and promote."
+  }
+}

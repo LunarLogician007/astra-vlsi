@@ -41,7 +41,9 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import astra          # noqa: E402  flow driver: synthesis + STA
+import clocks         # noqa: E402
 import llm            # noqa: E402
+import protect        # noqa: E402
 import rtl_map        # noqa: E402
 import score as scoring  # noqa: E402
 import sec as sec_mod    # noqa: E402
@@ -171,14 +173,19 @@ class EvaluationAgent:
 
     def __init__(self, cfg: dict[str, Any], period: float, npaths: int,
                  sec_depth: int, sec_engine: str, sec_timeout: int,
-                 no_flatten: bool = False, quiet: bool = True) -> None:
+                 no_flatten: bool = False, quiet: bool = True,
+                 sec_regcorr_timeout: int = sec_mod.REGCORR_TIMEOUT,
+                 sec_fallback_timeout: int = sec_mod.FALLBACK_TIMEOUT) -> None:
         self.cfg = cfg
         self.period = period
+        self.clocks = astra.design_clocks(cfg, period)
         self.args = SimpleNamespace(quiet=quiet, no_flatten=no_flatten,
                                     npaths=npaths)
         self.sec_depth = sec_depth
         self.sec_engine = sec_engine
         self.sec_timeout = sec_timeout
+        self.sec_regcorr_timeout = sec_regcorr_timeout
+        self.sec_fallback_timeout = sec_fallback_timeout
 
     # -- synthesis + STA ----------------------------------------------------
 
@@ -203,14 +210,14 @@ class EvaluationAgent:
             copied.append(str(dst))
 
         sdc_src = (self.cfg["_dir"] / self.cfg["sdc"]).resolve()
-        text = sdc_src.read_text().replace("@CLK_PERIOD@", f"{self.period:g}")
+        text = clocks.substitute(sdc_src.read_text(), self.clocks)
         sdc = idir / sdc_src.name
         sdc.write_text(text)
 
         astra.write_metrics(outdir, {
             "design": self.cfg["_name"], "run_id": outdir.name,
             "label": label, "pdk": self.cfg["pdk"], "top": self.cfg["top"],
-            "clock": {"name": self.cfg["clock"]["name"], "period_ns": self.period},
+            **self.clocks.to_metrics(),
             "created_at": datetime.now().isoformat(timespec="seconds"),
             "inputs": {"rtl": copied, "sdc": str(sdc)},
         })
@@ -241,6 +248,7 @@ class EvaluationAgent:
             "tns_ns": sta.get("tns_ns"),
             "violating_endpoints": sta.get("violating_endpoints"),
             "hold_wns_ns": sta.get("hold_wns_ns"),
+            "clock_groups": sta.get("clock_groups"),
             "area_um2": syn.get("area_um2"),
             "cells": syn.get("cells"),
             "runtime_s": round(time.time() - t0, 2),
@@ -261,7 +269,10 @@ class EvaluationAgent:
                           workdir: Path) -> dict[str, Any]:
         return sec_mod.check(self.cfg["top"], gold, gate, workdir,
                              depth=self.sec_depth, engine=self.sec_engine,
-                             timeout=self.sec_timeout)
+                             timeout=self.sec_timeout,
+                             clock_set=self.clocks,
+                             regcorr_timeout=self.sec_regcorr_timeout,
+                             fallback_timeout=self.sec_fallback_timeout)
 
 
 # ===========================================================================
@@ -315,7 +326,7 @@ class TimingAnalysisAgent:
         self.timeout = timeout
         self.top_k = top_k
 
-    def analyse(self, run_dir: Path, design_dir: Path, period: float,
+    def analyse(self, run_dir: Path, design_dir: Path, period: Any,
                 dry_run: bool = False) -> dict[str, Any]:
         """Mechanical localisation first, then optional LLM root-causing.
 
@@ -392,9 +403,12 @@ class TimingAnalysisAgent:
                 run_dir: Path, period: float) -> str:
         rtl = "\n\n".join(f"----- {p.name} -----\n{p.read_text()}"
                           for p in sorted((run_dir / "00_inputs").glob("*.v")))
+        clock_context = clocks.render_context(
+            period if hasattr(period, "is_multi") else None,
+            period if isinstance(period, (int, float)) else None)
         return f"""# Timing analysis request
 
-target clock period: {period:g} ns
+{clock_context}
 
 ## Mechanical path-to-RTL mapping (computed, not inferred)
 
@@ -422,6 +436,11 @@ Hard constraints, all of them checked by tools after you answer:
 2. LATENCY AND INTERFACE ARE FIXED. Same module name, same port names, same
    port widths, same pipeline depth. You may redistribute or duplicate
    registers; you may not add or remove a pipeline stage.
+   Keep existing register names; rename or add intermediate wires freely. The
+   equivalence check pairs registers by name, so an edit that keeps them is
+   proved in seconds, while one that moves or renames a register takes a far
+   slower check that may not finish -- and an unfinished check promotes
+   nothing.
 3. SYNTHESISABLE VERILOG-2005 ONLY. No initial blocks, no delays, no
    testbench constructs, no SystemVerilog interfaces.
 4. You must return the COMPLETE file, not a diff and not an excerpt.
@@ -500,21 +519,28 @@ _DIRECTIVES = [
 
 
 class RtlOptimizationAgent:
-    def __init__(self, model: str, timeout: int) -> None:
+    def __init__(self, model: str, timeout: int,
+                 system: str | None = None,
+                 directives: list[str] | None = None) -> None:
         self.model = model
         self.timeout = timeout
+        # A subclass may swap the mandate without reimplementing the reply
+        # handling, which is the fiddly part and the part worth sharing.
+        self.system = system or OPT_SYSTEM
+        self.directives = directives or _DIRECTIVES
 
     def propose(self, ctx: dict[str, Any], index: int,
                 dry_run: bool = False) -> dict[str, Any]:
         prompt = self._prompt(ctx, index)
-        cand: dict[str, Any] = {"id": f"cand{index}", "directive_index": index,
-                                "directive": _DIRECTIVES[index % len(_DIRECTIVES)]}
+        cand: dict[str, Any] = {
+            "id": f"cand{index}", "directive_index": index,
+            "directive": self.directives[index % len(self.directives)]}
         if dry_run:
             cand["prompt"] = prompt
             return cand
 
         try:
-            reply = llm.call(prompt, OPT_SYSTEM, self.model, self.timeout)
+            reply = llm.call(prompt, self.system, self.model, self.timeout)
         except llm.LLMError as e:
             cand["error"] = str(e)
             return cand
@@ -541,7 +567,7 @@ class RtlOptimizationAgent:
     def _prompt(self, ctx: dict[str, Any], index: int) -> str:
         return f"""# Design: {ctx['design']}   (candidate {index + 1} of {ctx['n']})
 
-target clock  {ctx['period']:g} ns
+{ctx['clock_context']}
 current WNS   {fmt(ctx['metrics'].get('wns_ns'))} ns
 current TNS   {fmt(ctx['metrics'].get('tns_ns'))} ns
 current area  {fmt(ctx['metrics'].get('area_um2'))} um^2
@@ -550,6 +576,9 @@ iteration     {ctx['iteration']} of {ctx['max_iters']}
 ## Invariants this design declares (from config.json)
 
 {ctx['invariants']}
+## Off limits -- do not edit (checked mechanically, before synthesis)
+
+{ctx['protected']}
 
 ## Timing analysis
 
@@ -577,7 +606,7 @@ iteration     {ctx['iteration']} of {ctx['max_iters']}
 
 ## Your directive for this candidate
 
-{_DIRECTIVES[index % len(_DIRECTIVES)]}
+{self.directives[index % len(self.directives)]}
 """
 
 
@@ -665,7 +694,11 @@ class SkillLearningAgent:
                 rationale=c.get("rationale", ""),
                 score_delta=c.get("score"),
             )
-            recorded.append(entry["id"])
+            if entry.get("id"):
+                recorded.append(entry["id"])
+            else:
+                warn(f"{c['id']}: {entry.get('skipped')} "
+                     f"({strategy[:60]!r}) -- not added to the library")
 
         out: dict[str, Any] = {"recorded": recorded, "abstracted": [],
                                "observations": ""}
@@ -686,26 +719,38 @@ class SkillLearningAgent:
             return out
 
         parsed = extract_json(reply) or {}
+        # What the group actually established. An abstraction may only claim
+        # a verdict the checks reached: measured on vending_machine, two
+        # correct rewrites whose SEC *crashed* were summarised as
+        # "breaks-equivalence" and recorded as refutations, which marked a
+        # sound transformation "SEC pass 0/1" for every later design.
+        refuted = any(scoring.sec_decided(c) and not scoring.sec_passed(c)
+                      for c in group)
+        proved = any(scoring.sec_passed(c) for c in group)
         for s in (parsed.get("skills") or [])[:4]:
             if not s.get("pattern") or not s.get("strategy"):
                 continue
             verdict = (s.get("verdict") or "").lower()
+            breaks = verdict == "breaks-equivalence"
             # The abstraction is credited with the group's own outcome for
             # that verdict, not invented statistics: "effective" earns one
             # SEC-passing observation at the group's best advantage,
-            # "breaks-equivalence" earns a SEC failure.
+            # "breaks-equivalence" earns a SEC failure -- and either counts as
+            # undecided when no check in the group reached that verdict.
             best = min((c.get("advantage") for c in group
                         if c.get("advantage") is not None), default=None)
             entry = self.lib.record(
                 s["pattern"], s["strategy"],
-                sec_pass=verdict != "breaks-equivalence",
+                sec_pass=not breaks,
+                conclusive=refuted if breaks else proved,
                 advantage=best if verdict == "effective" else None,
                 design=design, iteration=iteration,
                 rationale=s.get("rationale", ""),
                 example=s.get("example", ""),
             )
-            out["abstracted"].append({"id": entry["id"], "verdict": verdict,
-                                      "evidence": s.get("evidence", "")})
+            if entry.get("id"):
+                out["abstracted"].append({"id": entry["id"], "verdict": verdict,
+                                          "evidence": s.get("evidence", "")})
         out["observations"] = parsed.get("observations", "")
         out["raw_reply"] = reply
         self.lib.save()
@@ -745,6 +790,10 @@ group size {stats['n']}, mean score {fmt(stats['mean'])}, sigma {fmt(stats['std'
 
 
 class Orchestrator:
+    # Subclasses running a different loop write to their own run prefix, so a
+    # portfolio run and a base run never collide in runs/<design>/.
+    RUN_PREFIX = "opt-"
+
     def __init__(self, args: argparse.Namespace) -> None:
         self.args = args
         self.cfg = astra.load_design(args.design)
@@ -752,6 +801,18 @@ class Orchestrator:
             self.cfg["pdk"] = args.pdk
         self.period = float(args.period if args.period is not None
                             else self.cfg["clock"]["period_ns"])
+        self.clocks = astra.design_clocks(self.cfg, args.period)
+        # Identifier globs the optimiser may not touch -- CDC and clock
+        # generation, which the equivalence proof cuts and therefore cannot
+        # check. See tools/protect.py.
+        self.protected = list(self.cfg.get("protected") or [])
+        # A bounded check is worth exactly what its depth can see, and the
+        # depth a difference needs to reach an output is a property of the
+        # DESIGN, not a global default -- on dual_clock a genuine bug is
+        # invisible at depth 4 and refuted at 6. So a design may record the
+        # depth its author actually verified, and --sec-depth overrides it.
+        self.sec_depth = int(args.sec_depth if args.sec_depth is not None
+                             else self.cfg.get("sec_depth", 20))
         self.design = args.design
 
         self.weights = dict(scoring.DEFAULT_WEIGHTS)
@@ -761,14 +822,16 @@ class Orchestrator:
                 self.weights[k] = float(v)
 
         self.outdir = RUNS / self.design / (
-            "opt-" + datetime.now().strftime("%Y%m%d-%H%M%S")
+            self.RUN_PREFIX + datetime.now().strftime("%Y%m%d-%H%M%S")
             + (f"-{args.tag}" if args.tag else ""))
         self.outdir.mkdir(parents=True, exist_ok=True)
 
         self.lib = skills_mod.SkillLibrary(args.skills)
         self.evaluator = EvaluationAgent(
-            self.cfg, self.period, args.npaths, args.sec_depth,
-            args.sec_engine, args.sec_timeout, args.no_flatten, quiet=True)
+            self.cfg, self.period, args.npaths, self.sec_depth,
+            args.sec_engine, args.sec_timeout, args.no_flatten, quiet=True,
+            sec_regcorr_timeout=args.sec_regcorr_timeout,
+            sec_fallback_timeout=args.sec_fallback_timeout)
         self.analyst = TimingAnalysisAgent(
             not args.no_llm, args.model, args.timeout, args.top_k)
         self.optimizer = RtlOptimizationAgent(args.model, args.timeout)
@@ -782,13 +845,13 @@ class Orchestrator:
             "design": self.design,
             "top": self.cfg["top"],
             "pdk": self.cfg["pdk"],
-            "clock": {"name": self.cfg["clock"]["name"], "period_ns": self.period},
+            **self.clocks.to_metrics(),
             "weights": self.weights,
             "config": {
                 "candidates_per_iteration": args.n,
                 "max_iterations": args.iters,
                 "top_k_paths": args.top_k,
-                "sec": {"engine": args.sec_engine, "depth": args.sec_depth},
+                "sec": {"engine": args.sec_engine, "depth": self.sec_depth},
                 "model": args.model, "llm": not args.no_llm,
             },
             "created_at": datetime.now().isoformat(timespec="seconds"),
@@ -803,6 +866,39 @@ class Orchestrator:
     def _save(self) -> None:
         (self.outdir / "trajectory.json").write_text(
             json.dumps(self.state, indent=2, default=str) + "\n")
+
+    def _score_period(self, base_metrics: dict[str, Any] | None = None) -> float:
+        """The period Eq. 3's normalisation is scaled by.
+
+        One number is needed here because WNS and TNS are design-wide scalars.
+        On a multi-clock design it is the period of the domain that owns the
+        worst slack -- the domain the reported WNS came from.
+        """
+        groups = (base_metrics or {}).get("clock_groups")
+        return scoring.critical_period(groups, self.clocks, self.period)
+
+    def _score(self, group: list[dict[str, Any]],
+               base: dict[str, Any]) -> dict[str, Any]:
+        """Eq. 3 over a candidate group, in whichever unit is well defined.
+
+        Cycle-normalised WNS/TNS where the per-group data exists, because the
+        nanosecond scalars sum across domains of different worth; nanoseconds
+        against the critical group's period otherwise. Both sides are converted
+        together or neither is -- comparing a candidate in cycles against a
+        baseline in nanoseconds would be worse than not converting at all.
+
+        Returns the baseline actually used, since the caller needs the same one
+        for any per-candidate scoring it does afterwards.
+        """
+        base_c = scoring.with_cycles(base, self.clocks)
+        for c in group:
+            if c.get("metrics"):
+                c["metrics"] = scoring.with_cycles(c["metrics"], self.clocks)
+        sides = [c["metrics"] for c in group if c.get("metrics")] + [base_c]
+        period = 1.0 if scoring.cycles_available(*sides) \
+            else self._score_period(base)
+        scoring.score_group(group, base_c, self.weights, period)
+        return base_c
 
     def _rtl_paths(self, d: Path) -> list[Path]:
         return sorted(p for p in d.glob("*.v")) + sorted(p for p in d.glob("*.sv"))
@@ -834,8 +930,10 @@ class Orchestrator:
         info(f"--- iteration {t} " + "-" * 50)
 
         # 1. Timing Analysis Agent
+        # The ClockSet, not the scalar period: rtl_map resolves each path's
+        # own clock from it, and the prompt renders every domain.
         analysis = self.analyst.analyse(parent_dir, self.cfg["_dir"],
-                                        self.period, self.args.dry_run)
+                                        self.clocks, self.args.dry_run)
         (idir / "analysis.txt").write_text(analysis["text"] + "\n")
         (idir / "analysis.json").write_text(
             json.dumps({k: v for k, v in analysis.items() if k != "prompt"},
@@ -868,7 +966,7 @@ class Orchestrator:
 
         # 4. Eq. 3 / Eq. 5 -- score the group and compute relative advantage
         baseline_metrics = self.state["baseline"]["metrics"]
-        scoring.score_group(group, baseline_metrics, self.weights, self.period)
+        self._score(group, baseline_metrics)
         stats = scoring.group_stats(group)
 
         for c in group:
@@ -933,7 +1031,8 @@ class Orchestrator:
     # -- per-candidate evaluation -------------------------------------------
 
     def _evaluate_candidate(self, cand: dict[str, Any], idir: Path,
-                            parent_rtl: list[Path]) -> None:
+                            parent_rtl: list[Path],
+                            gold: list[Path] | None = None) -> None:
         cdir = idir / cand["id"]
         cdir.mkdir(parents=True, exist_ok=True)
         (cdir / "proposal.json").write_text(json.dumps(
@@ -965,11 +1064,34 @@ class Orchestrator:
         cand["rtl"] = [str(p) for p in files]
         cand["changed_files"] = sorted(cand["files"].keys())
 
+        # Protected regions before anything else. CDC and clock-generation
+        # logic sits on the far side of the cut the equivalence proof makes,
+        # so SEC cannot refute a change to it -- it would pass, and be wrong
+        # silicon. This is the only gate that can catch it, so it runs before
+        # the gate that cannot.
+        guard = protect.check_files(
+            {p.name: p.read_text() for p in parent_rtl},
+            {p.name: p.read_text() for p in files},
+            self.protected)
+        cand["protected"] = guard
+        if not guard["ok"]:
+            (cdir / "protected.json").write_text(
+                json.dumps(guard, indent=2) + "\n")
+            reason = protect.render(guard)
+            cand["metrics"] = {"status": "protected_edit", "reason": reason}
+            cand["sec"] = {"equivalent": False, "method": "skipped",
+                           "reason": reason, "engine": "none"}
+            return
+
         # SEC first: a broken rewrite's timing numbers are not worth the
         # synthesis time, and reporting them at all invites reading them.
         # Gold is D_0, not the parent -- equivalence has to hold against the
         # original design, or it drifts one accepted rewrite at a time.
-        gold = [Path(p) for p in self.state["baseline"]["rtl"]]
+        # Gold defaults to D_0. A caller passes it explicitly when the working
+        # parent is no longer the original design -- a pre-synthesis cleanup
+        # replaces the parent, and equivalence must still hold against what the
+        # user actually wrote, not against an already-rewritten intermediate.
+        gold = [Path(p) for p in (gold or self.state["baseline"]["rtl"])]
         cand["sec"] = self.evaluator.check_equivalence(gold, files, cdir / "sec")
 
         if not cand["sec"]["equivalent"]:
@@ -1010,8 +1132,10 @@ class Orchestrator:
             "iteration": t,
             "max_iters": self.args.iters,
             "period": self.period,
+            "clock_context": clocks.render_context(self.clocks),
             "metrics": metrics,
             "invariants": json.dumps(notes, indent=2) if notes else "<none declared>",
+            "protected": protect.describe(self.protected),
             "analysis_summary": analysis.get("summary")
                                 or "(no narrative summary; see the mapping below)",
             "bottleneck_text": "\n".join(bl) or "(none identified)",
@@ -1131,7 +1255,7 @@ class Orchestrator:
             f"# Dr. RTL optimisation -- {self.design}",
             "",
             f"run           {self.outdir.name}",
-            f"target clock  {self.period:g} ns",
+            f"{clocks.render_context(self.clocks)}",
             f"iterations    {len(self.state['iterations'])} "
             f"(converged at {self.state.get('convergence_steps') or 'n/a'})",
             f"candidates    {self.args.n} per iteration",
@@ -1148,12 +1272,12 @@ class Orchestrator:
             "",
         ]
 
-        total = sum(len(it.get("candidates", [])) for it in self.state["iterations"])
-        passed = sum(1 for it in self.state["iterations"]
-                     for c in it.get("candidates", [])
-                     if (c.get("sec") or {}).get("equivalent"))
-        lines += [f"SEC pass rate {passed}/{total}"
-                  + (f" ({passed / total:.0%})" if total else ""), ""]
+        # Counted over candidates that actually reached a verdict. A reply the
+        # model never produced says nothing about whether the transformation
+        # was sound, and folding it in reports a flaky harness as a bad method.
+        cands = [c for it in self.state["iterations"]
+                 for c in it.get("candidates", [])]
+        lines += [scoring.render_sec_tally(scoring.sec_tally(cands)), ""]
 
         lines.append("## Iterations")
         lines.append("")
@@ -1227,9 +1351,19 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--gamma", type=float, help="Eq. 3 area weight (default 0.15)")
 
     p.add_argument("--sec-engine", choices=("auto", "eqy", "yosys"), default="auto")
-    p.add_argument("--sec-depth", type=int, default=20,
+    # Default None, not 20, so a design's own verified sec_depth can be told
+    # apart from the fallback -- see Orchestrator.__init__.
+    p.add_argument("--sec-depth", type=int, default=None,
                    help="cycles for the bounded equivalence check")
-    p.add_argument("--sec-timeout", type=int, default=1800)
+    p.add_argument("--sec-timeout", type=int, default=1800,
+                   help="single-clock equivalence check")
+    # Multi-clock designs are asked two questions, cheap one first -- see
+    # sec.check. The fallback is the whole-design bounded check; 0 skips it,
+    # which leaves anything register correspondence cannot prove undecided.
+    p.add_argument("--sec-regcorr-timeout", type=int, default=sec_mod.REGCORR_TIMEOUT,
+                   help="multi-clock register-correspondence stage")
+    p.add_argument("--sec-fallback-timeout", type=int, default=sec_mod.FALLBACK_TIMEOUT,
+                   help="multi-clock bounded fallback; 0 skips it")
 
     p.add_argument("--model", default="opus")
     p.add_argument("--timeout", type=int, default=900, help="per model call")

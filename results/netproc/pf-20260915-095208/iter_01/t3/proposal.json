@@ -1,0 +1,14 @@
+{
+  "id": "t3",
+  "target_id": "T3",
+  "target_kind": "segment",
+  "target_value": 0.7027478761709444,
+  "pattern": "Serial XOR reduction in parity tree",
+  "strategy": "Replace depth-512 chain with balanced binary XOR tree",
+  "rationale": "XOR is associative and commutative. A 512-input parity tree computed as a balanced binary tree has depth ceil(log2(512)) = 9 instead of 512, reducing critical path by ~500 XOR gate delays (~10 ns in a modern cell library). The value computed is identical: XOR of all 512 bits.",
+  "target": "par_chain combinational logic at lines 345-360, output wire par_chain_out assignment",
+  "expected_slack_recovery_ns": 9.5,
+  "area_cost": "none \u2014 replacing 512 serial gates with 509 total tree gates (9 levels, roughly 256+128+64+32+16+8+4+2+1). Gate count is identical, layout improves.",
+  "equivalence_argument": "The tree computes XOR(xd_q[511:0]). Since XOR is associative and commutative, ((a^b)^(c^d)) = a^b^c^d, and the tree result is bit-identical to the serial chain for all possible inputs. Reset behavior: xd_q resets to 0, so the tree result is 0 (same as serial chain starting value). No width truncation or sign issues \u2014 all operations are single-bit XOR.",
+  "declared_changed": true
+}

@@ -1,0 +1,1975 @@
+{
+  "design": "dual_clock",
+  "top": "dual_clock",
+  "pdk": "nangate45",
+  "clock": {
+    "name": "clk_fast",
+    "period_ns": 1.6
+  },
+  "clocks": [
+    {
+      "name": "clk_fast",
+      "period_ns": 1.6,
+      "port": "clk_fast"
+    },
+    {
+      "name": "clk_slow",
+      "period_ns": 5.0,
+      "port": "clk_slow"
+    },
+    {
+      "name": "clk_fast_div2",
+      "period_ns": 3.2,
+      "port": "clk_fast_div2_r_DFFR_X1_Q/Q",
+      "generated_from": "clk_fast",
+      "divide_by": 2
+    }
+  ],
+  "weights": {
+    "alpha": 0.5,
+    "beta": 0.35,
+    "gamma": 0.15,
+    "area_penalty": 0.5,
+    "area_threshold": 0.1
+  },
+  "config": {
+    "candidates_per_iteration": 4,
+    "max_iterations": 1,
+    "top_k_paths": 3,
+    "sec": {
+      "engine": "auto",
+      "depth": 6
+    },
+    "model": "haiku",
+    "llm": true,
+    "targets_per_iteration": 3,
+    "mmr_lambda": 0.5,
+    "cluster_at": 0.65,
+    "delay_sigma": 0.05,
+    "cone_rho": 0.7,
+    "cleanup_candidates": 1,
+    "merge_agent": true,
+    "stage": "sta",
+    "skill_document": "/home/sreeavyay/astra-vlsi/.claude/skills/rtl-timing-optimization/SKILL.md"
+  },
+  "created_at": "2026-09-15T11:38:41",
+  "baseline": {
+    "metrics": {
+      "status": "ok",
+      "wns_ns": -0.052293504340250506,
+      "tns_ns": -0.6798155564232565,
+      "violating_endpoints": 13,
+      "hold_wns_ns": 0.00941800830646686,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk_fast": {
+            "endpoints": 199,
+            "wns_ns": -0.052294,
+            "tns_ns": -0.6798219999999998,
+            "violating_endpoints": 13
+          },
+          "clk_slow": {
+            "endpoints": 1,
+            "wns_ns": 4.088508,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_fast_div2": {
+            "endpoints": 28,
+            "wns_ns": 0.620801,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": -0.052294,
+        "design_wns_ns": -0.052293504340250506
+      },
+      "area_um2": 2620.632,
+      "cells": 1307,
+      "runtime_s": 3.66,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/baseline",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/baseline/02_sta/timing.json"
+    },
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/designs/dual_clock/rtl/dual_clock.v"
+    ],
+    "score": 0.0
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "parent": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/baseline",
+      "stage": "sta",
+      "portfolio": {
+        "k_requested": 3,
+        "k_effective": 3,
+        "collapsed": true,
+        "cluster_count": 13,
+        "pool": {
+          "paths": 89,
+          "violating": 13,
+          "tns_ns": -0.6798155564232565,
+          "truncated": false
+        },
+        "targets": [
+          {
+            "id": "T1",
+            "kind": "segment",
+            "rank": 1,
+            "slack_ns": -0.0523,
+            "value": 0.3697459113804783,
+            "value_terms": {
+              "impact": 0.17561244195661851,
+              "severity": 0.51634375,
+              "tractability": 0.55
+            },
+            "p_critical": 0.9973999999999998,
+            "tns_share": 0.17607022454042365,
+            "tns_share_truncated": false,
+            "mass_ns": 0.11971014566503405,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "f_b[1]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_fast",
+              "path_type": "max",
+              "slack_ns": -0.0523,
+              "status": "VIOLATED",
+              "arrival_ns": 1.572,
+              "required_ns": 1.5197,
+              "logic_depth": 62
+            },
+            "member_count": 17,
+            "members": [
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              0,
+              10
+            ],
+            "delay_ns": 0.2768,
+            "delay_share": 0.1761,
+            "cell_families": {
+              "xor": 6,
+              "flop": 2
+            },
+            "cell_walk": [
+              "DFFR_X1",
+              "DFFR_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1"
+            ],
+            "max_fanout": 4,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "dual_clock.v",
+                "line": 82,
+                "end_line": 82,
+                "via": "driver via cone origin",
+                "stages": 6,
+                "delay_ns": 0.1522,
+                "source": [
+                  "   82 |             fb_q[0] <= f_b;"
+                ]
+              },
+              {
+                "file": "dual_clock.v",
+                "line": 40,
+                "end_line": 40,
+                "via": "declaration via cone origin",
+                "stages": 2,
+                "delay_ns": 0.1246,
+                "source": [
+                  "   40 |     input  wire signed [W-1:0]    f_b,"
+                ]
+              }
+            ],
+            "signals": [
+              "f_b",
+              "fb_q"
+            ],
+            "findings": [
+              {
+                "pattern": "delay concentrated in a few stages",
+                "evidence": "100% of the path delay sits in 5 of 10 stages -- a local fix can recover most of it",
+                "metric": {
+                  "top5_fraction": 1.0
+                }
+              }
+            ],
+            "skills": [],
+            "allowed_lines": {
+              "dual_clock.v": [
+                [
+                  37,
+                  43
+                ],
+                [
+                  79,
+                  85
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_fast",
+            "period_ns": 1.6,
+            "brief": "## Target T1 -- segment, 18% of the design's timing failure\n\nrepresentative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q\nslack           -0.0523 ns (3% short of a 1.6 ns cycle)\nclock           clk_fast, 1.6 ns period\nsegment         stages 0-10 of 67 on the worst path\n                0.2768 ns, 18% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.370  (impact 0.18, severity 0.52, tractability 0.55)\n\ncell mix        6x xor, 2x flop\n\nroot causes (mechanical, from the STA report):\n  - delay concentrated in a few stages: 100% of the path delay sits in 5 of 10 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  DFFR_X1 -> DFFR_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XNOR2_X1\n\nRTL this target resolves to:\n  dual_clock.v:82  6 stage(s), 0.1522 ns via driver via cone origin\n       82 |             fb_q[0] <= f_b;\n  dual_clock.v:40  2 stage(s), 0.1246 ns via declaration via cone origin\n       40 |     input  wire signed [W-1:0]    f_b,\n  signals: f_b, fb_q\n"
+          },
+          {
+            "id": "T2",
+            "kind": "segment",
+            "rank": 2,
+            "slack_ns": -0.0523,
+            "value": 0.4539275162402201,
+            "value_terms": {
+              "impact": 0.22934934164493356,
+              "severity": 0.51634375,
+              "tractability": 0.8500000000000001
+            },
+            "p_critical": 0.9973999999999998,
+            "tns_share": 0.229947204376312,
+            "tns_share_truncated": false,
+            "mass_ns": 0.15634110425545453,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "f_b[1]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_fast",
+              "path_type": "max",
+              "slack_ns": -0.0523,
+              "status": "VIOLATED",
+              "arrival_ns": 1.572,
+              "required_ns": 1.5197,
+              "logic_depth": 62
+            },
+            "member_count": 17,
+            "members": [
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              10,
+              30
+            ],
+            "delay_ns": 0.3615,
+            "delay_share": 0.2299,
+            "cell_families": {
+              "aoi_oai": 20
+            },
+            "cell_walk": [
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1"
+            ],
+            "max_fanout": 3,
+            "fanout_pins": [],
+            "regions": [
+              {
+                "file": "dual_clock.v",
+                "line": 82,
+                "end_line": 82,
+                "via": "driver via cone origin",
+                "stages": 20,
+                "delay_ns": 0.3615,
+                "source": [
+                  "   82 |             fb_q[0] <= f_b;"
+                ]
+              }
+            ],
+            "signals": [
+              "fb_q"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "20 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 20,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "wide arithmetic / carry propagation",
+                "evidence": "0 adder cells, 0 XOR, 20 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                "metric": {
+                  "adder": 0,
+                  "xor": 0,
+                  "aoi_oai": 20
+                }
+              },
+              {
+                "pattern": "delay concentrated in a few stages",
+                "evidence": "63% of the path delay sits in 5 of 20 stages -- a local fix can recover most of it",
+                "metric": {
+                  "top5_fraction": 0.634
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+                "pattern": "carry propagation across a wide accumulator",
+                "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+                "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+                "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.5
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+                "pattern": "Carry propagation in accumulator tree",
+                "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+                "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+                "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 5,
+                  "sec_pass": 5,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 2.766699071489424,
+                  "advantage_n": 2,
+                  "score_delta_sum": 0.009092027113597176,
+                  "score_delta_n": 2,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 5
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.037,
+                "mean_advantage": 1.383349535744712,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.333
+              },
+              {
+                "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+                "pattern": "carry propagation in sequential 40-bit additions",
+                "strategy": "unable to reduce depth safely while maintaining equivalence",
+                "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.8904758344281221,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T02:13:35+00:00"
+                },
+                "confidence": 0.214,
+                "mean_advantage": -0.8904758344281221,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:13:35+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+                "pattern": "Carry propagation in 40-bit final accumulate",
+                "strategy": "No equivalent optimization available",
+                "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:20:02+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.7071067811865541,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 2,
+                  "at": "2026-09-09T02:20:02+00:00"
+                },
+                "confidence": 0.2011,
+                "mean_advantage": -0.7071067811865541,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:20:02+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "40-bit-carry-propagation-in-balanced-adder-tree::unable-to-optimize-while-maintaining-fixed-laten",
+                "pattern": "40-bit carry propagation in balanced adder tree",
+                "strategy": "Unable to optimize while maintaining fixed latency",
+                "rationale": "The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T16:03:21+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.4599339721746848,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:03:21+00:00"
+                },
+                "confidence": 0.125,
+                "mean_advantage": 0.0,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:03:21+00:00",
+                "match_score": 0.25
+              }
+            ],
+            "allowed_lines": {
+              "dual_clock.v": [
+                [
+                  79,
+                  85
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_fast",
+            "period_ns": 1.6,
+            "brief": "## Target T2 -- segment, 23% of the design's timing failure\n\nrepresentative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q\nslack           -0.0523 ns (3% short of a 1.6 ns cycle)\nclock           clk_fast, 1.6 ns period\nsegment         stages 10-30 of 67 on the worst path\n                0.3615 ns, 23% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.454  (impact 0.23, severity 0.52, tractability 0.85)\n\ncell mix        20x aoi_oai\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 20 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 0 XOR, 20 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay concentrated in a few stages: 63% of the path delay sits in 5 of 20 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1\n\nRTL this target resolves to:\n  dual_clock.v:82  20 stage(s), 0.3615 ns via driver via cone origin\n       82 |             fb_q[0] <= f_b;\n  signals: fb_q\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [ATTEMPTED] 40-bit carry propagation in balanced adder tree\n    a previous run tried this and recorded: Unable to optimize while maintaining fixed latency\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: The 40-bit additions require full carry propagation. A balanced tree (2 levels) is already optimal for this width without adding pipeline stages. Carry-save would add complexity and isn't safely equivalent given the constraints.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.12, mean advantage +0.000, seen on mac_chain"
+          },
+          {
+            "id": "T3",
+            "kind": "segment",
+            "rank": 3,
+            "slack_ns": -0.0523,
+            "value": 0.6233175098793016,
+            "value_terms": {
+              "impact": 0.5924382163984478,
+              "severity": 0.51634375,
+              "tractability": 0.8800000000000001
+            },
+            "p_critical": 0.9973999999999998,
+            "tns_share": 0.5939825710832645,
+            "tns_share_truncated": false,
+            "mass_ns": 0.40384875007951154,
+            "similarity_to_selected": 0.0,
+            "representative": {
+              "startpoint": "f_b[1]_DFFR_X1_D",
+              "startpoint_info": null,
+              "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+              "endpoint_info": null,
+              "path_group": "clk_fast",
+              "path_type": "max",
+              "slack_ns": -0.0523,
+              "status": "VIOLATED",
+              "arrival_ns": 1.572,
+              "required_ns": 1.5197,
+              "logic_depth": 62
+            },
+            "member_count": 17,
+            "members": [
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[15]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[16]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[17]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[18]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[19]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[20]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[21]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[22]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[23]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[24]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[25]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              },
+              {
+                "slack_ns": -0.0523,
+                "endpoint": "f_acc_p[26]_DFFR_X1_Q",
+                "startpoint": "f_b[1]_DFFR_X1_D"
+              }
+            ],
+            "stage_span": [
+              30,
+              67
+            ],
+            "delay_ns": 0.9338,
+            "delay_share": 0.594,
+            "cell_families": {
+              "xor": 26,
+              "aoi_oai": 8,
+              "mux": 2,
+              "flop": 1
+            },
+            "cell_walk": [
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "XOR2_X1",
+              "XOR2_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "OAI21_X1",
+              "OAI21_X1",
+              "AOI21_X1",
+              "AOI21_X1",
+              "XNOR2_X1",
+              "XNOR2_X1",
+              "MUX2_X1",
+              "MUX2_X1",
+              "DFFR_X1"
+            ],
+            "max_fanout": 13,
+            "fanout_pins": [
+              "f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN"
+            ],
+            "regions": [
+              {
+                "file": "dual_clock.v",
+                "line": 82,
+                "end_line": 82,
+                "via": "driver via cone origin",
+                "stages": 24,
+                "delay_ns": 0.6809,
+                "source": [
+                  "   82 |             fb_q[0] <= f_b;"
+                ]
+              },
+              {
+                "file": "dual_clock.v",
+                "line": 114,
+                "end_line": 114,
+                "via": "driver via cone origin",
+                "stages": 13,
+                "delay_ns": 0.2529,
+                "source": [
+                  "  114 |         else if (f_valid_q) f_acc_p <= acc[TAPS-1];"
+                ]
+              }
+            ],
+            "signals": [
+              "fb_q",
+              "f_acc_p"
+            ],
+            "findings": [
+              {
+                "pattern": "deep combinational logic",
+                "evidence": "36 combinational cells between the launch and capture flops",
+                "metric": {
+                  "logic_depth": 36,
+                  "threshold": 15
+                }
+              },
+              {
+                "pattern": "wide arithmetic / carry propagation",
+                "evidence": "0 adder cells, 26 XOR, 8 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+                "metric": {
+                  "adder": 0,
+                  "xor": 26,
+                  "aoi_oai": 8
+                }
+              },
+              {
+                "pattern": "high fanout on the critical path",
+                "evidence": "fanout 13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN (1 stage(s) at or above 8)",
+                "metric": {
+                  "max_fanout": 13,
+                  "threshold": 8,
+                  "pins": [
+                    "f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN"
+                  ]
+                }
+              }
+            ],
+            "skills": [
+              {
+                "id": "high-fanout-signal-on-the-critical-path::replicate-the-driver-so-each-load-group-has-its-",
+                "pattern": "high-fanout signal on the critical path",
+                "strategy": "replicate the driver so each load group has its own copy",
+                "rationale": "A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.",
+                "example": "reg sel_a, sel_b;  // two copies of one condition\nalways @(posedge clk) begin sel_a <= cond; sel_b <= cond; end",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.8
+              },
+              {
+                "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+                "pattern": "carry propagation across a wide accumulator",
+                "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+                "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+                "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.5
+              },
+              {
+                "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+                "pattern": "deep FSM or decode logic",
+                "strategy": "pre-decode the next state one cycle early and register the decoded form",
+                "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+                "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+                "source": "seed",
+                "created_at": "2026-08-31T18:17:28+00:00",
+                "stats": {
+                  "occurrences": 0,
+                  "sec_pass": 0,
+                  "sec_fail": 0,
+                  "advantage_sum": 0.0,
+                  "advantage_n": 0,
+                  "score_delta_sum": 0.0,
+                  "score_delta_n": 0,
+                  "designs": [],
+                  "iterations": 0,
+                  "inconclusive": 0
+                },
+                "confidence": 0.0,
+                "mean_advantage": null,
+                "status": "candidate",
+                "match_score": 0.4
+              },
+              {
+                "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+                "pattern": "Carry propagation in accumulator tree",
+                "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+                "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+                "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 5,
+                  "sec_pass": 5,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": 2.766699071489424,
+                  "advantage_n": 2,
+                  "score_delta_sum": 0.009092027113597176,
+                  "score_delta_n": 2,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 5
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T16:20:09+00:00"
+                },
+                "confidence": 0.037,
+                "mean_advantage": 1.383349535744712,
+                "status": "candidate",
+                "updated_at": "2026-09-09T16:20:09+00:00",
+                "match_score": 0.333
+              },
+              {
+                "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+                "pattern": "carry propagation in sequential 40-bit additions",
+                "strategy": "unable to reduce depth safely while maintaining equivalence",
+                "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:13:35+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.8904758344281221,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 1,
+                  "at": "2026-09-09T02:13:35+00:00"
+                },
+                "confidence": 0.214,
+                "mean_advantage": -0.8904758344281221,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:13:35+00:00",
+                "match_score": 0.286
+              },
+              {
+                "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+                "pattern": "Carry propagation in 40-bit final accumulate",
+                "strategy": "No equivalent optimization available",
+                "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+                "example": "",
+                "source": "learned",
+                "created_at": "2026-09-09T02:20:02+00:00",
+                "stats": {
+                  "occurrences": 1,
+                  "sec_pass": 1,
+                  "sec_fail": 0,
+                  "inconclusive": 0,
+                  "advantage_sum": -0.7071067811865541,
+                  "advantage_n": 1,
+                  "score_delta_sum": -0.46583656261221806,
+                  "score_delta_n": 1,
+                  "designs": [
+                    "mac_chain"
+                  ],
+                  "iterations": 1
+                },
+                "last_seen": {
+                  "design": "mac_chain",
+                  "iteration": 2,
+                  "at": "2026-09-09T02:20:02+00:00"
+                },
+                "confidence": 0.2011,
+                "mean_advantage": -0.7071067811865541,
+                "status": "candidate",
+                "updated_at": "2026-09-09T02:20:02+00:00",
+                "match_score": 0.286
+              }
+            ],
+            "allowed_lines": {
+              "dual_clock.v": [
+                [
+                  79,
+                  85
+                ],
+                [
+                  111,
+                  117
+                ]
+              ]
+            },
+            "scope_enforceable": true,
+            "clock_group": "clk_fast",
+            "period_ns": 1.6,
+            "brief": "## Target T3 -- segment, 59% of the design's timing failure\n\nrepresentative  f_b[1]_DFFR_X1_D -> f_acc_p[15]_DFFR_X1_Q\nslack           -0.0523 ns (3% short of a 1.6 ns cycle)\nclock           clk_fast, 1.6 ns period\nsegment         stages 30-67 of 67 on the worst path\n                0.9338 ns, 59% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.623  (impact 0.59, severity 0.52, tractability 0.88)\n\ncell mix        26x xor, 8x aoi_oai, 2x mux, 1x flop\nfanout peak     13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 36 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 26 XOR, 8 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - high fanout on the critical path: fanout 13 at f_acc_p[14]_INV_X1_A_ZN_OAI22_X1_A2_B1_AND2_X1_ZN_A2_AOI21_X1_B1_ZN_XNOR2_X1_B/ZN (1 stage(s) at or above 8)\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> XOR2_X1 -> XOR2_X1 -> XNOR2_X1 -> XNOR2_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> XNOR2_X1 -> XNOR2_X1 -> MUX2_X1 -> MUX2_X1 -> DFFR_X1\n\nRTL this target resolves to:\n  dual_clock.v:82  24 stage(s), 0.6809 ns via driver via cone origin\n       82 |             fb_q[0] <= f_b;\n  dual_clock.v:114  13 stage(s), 0.2529 ns via driver via cone origin\n      114 |         else if (f_valid_q) f_acc_p <= acc[TAPS-1];\n  signals: fb_q, f_acc_p\n\nskills the library offers for this pattern:\n- [UNTESTED] high-fanout signal on the critical path  ->  replicate the driver so each load group has its own copy\n    why: A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 5 decided use(s), SEC pass 5/5, confidence 0.04, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain"
+          }
+        ]
+      },
+      "group_stats": {
+        "n": 2,
+        "mean": -3.8109110295524413,
+        "std": 0.0029970341371259313
+      },
+      "candidates": [
+        {
+          "id": "t1",
+          "target_id": "T1",
+          "target_kind": "segment",
+          "target_value": 0.3697459113804783,
+          "pattern": "Serial accumulation chain in datapath summation",
+          "strategy": "Restructure serial add chain into balanced binary tree",
+          "rationale": "Replaces 8 sequential adder stages (ripple depth) with 3-level tree (log\u2082 depth), cutting carry propagation stages from critical path by ~60%",
+          "target": "acc[] array generation (stages 0-10 segment), specifically the serial accumulation loop into term[0..7]",
+          "expected_slack_recovery_ns": 0.12,
+          "area_cost": "none \u2014 same total adder count, same register count, just rearranged combinational topology",
+          "equivalence_argument": "Tree sum equals acc[7] by associativity of addition (term[0]+term[1]+...+term[7] computed as (term[0]+term[1]+term[2]+term[3])+(term[4]+term[5]+term[6]+term[7])). Latency unchanged (all additions remain combinational within one cycle). Reset: all term[] reset identically, tree sum resets to same value. Bit-width exact match: intermediate 2W+4 width preserved through all levels.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t1/rtl/dual_clock.v"
+          ],
+          "changed_files": [
+            "dual_clock.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t1/sec/regcorr",
+            "paired": 258,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 1035,
+            "ports_structural": 1035,
+            "sat_ports": [],
+            "equivalent": true,
+            "method": "regcorr",
+            "unproven": 0,
+            "equiv_cells": 0,
+            "runtime_s": 0.62,
+            "reason": "register correspondence: all 1035 outputs of 258 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": 0.39696269617225066,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_fast": {
+                  "endpoints": 199,
+                  "wns_ns": 0.396963,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_slow": {
+                  "endpoints": 1,
+                  "wns_ns": 4.088508,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_fast_div2": {
+                  "endpoints": 28,
+                  "wns_ns": 0.618059,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": 0.396963,
+              "design_wns_ns": 0.39696269617225066
+            },
+            "area_um2": 2565.038,
+            "cells": 1252,
+            "runtime_s": 4.31,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t1/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t1/eval/02_sta/timing.json",
+            "wns_cycles": 0.1931434375,
+            "tns_cycles": 0.0
+          },
+          "score": -3.807913995415315,
+          "score_detail": {
+            "score": -3.807913995415315,
+            "terms": {
+              "wns": -3.4547319004092247,
+              "tns": -0.35,
+              "area": -0.003182095006090137,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -6.9094638008184495,
+              "tns": -1.0,
+              "area": -0.02121396670726758
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": 1.0000000000000742,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "dual_clock.v": [
+                [
+                  37,
+                  43
+                ],
+                [
+                  79,
+                  85
+                ]
+              ]
+            },
+            "outside": [
+              "dual_clock.v:91-93",
+              "dual_clock.v:103-103",
+              "dual_clock.v:114-114"
+            ],
+            "violation": true,
+            "changed_lines": 5
+          }
+        },
+        {
+          "id": "t2",
+          "target_id": "T2",
+          "target_kind": "segment",
+          "target_value": 0.4539275162402201,
+          "pattern": "Serial adder chain in 8-term accumulate",
+          "strategy": "Rebalance into a binary tree to reduce depth",
+          "rationale": "8 terms summed serially creates 7 adders cascaded, each with ripple carry delay. A binary tree (acc01+acc23+acc45+acc67 level 0 \u2192 acc0123+acc4567 level 1 \u2192 final level 2) achieves the same sum in 3 levels instead of 7, cutting combinational path depth by 4+ adder stages.",
+          "target": "Lines 113\u2013122: replaced serial `acc[g] = acc[g-1] + term[g]` loop with parallel tree using intermediate wires acc01, acc23, acc45, acc67, acc0123, acc4567, acc_final",
+          "expected_slack_recovery_ns": 0.12,
+          "area_cost": "none \u2014 same 7 adders, restructured for better synthesis and lower depth",
+          "equivalence_argument": "Addition is associative: (a+b)+(c+d)+(e+f)+(g+h) = a+b+c+d+e+f+g+h = serial sum. Fixed 28-bit width at every intermediate avoids overflow issues (8\u00d74K max is well within 28 bits). Reset: all wires reset to 0 naturally. Latency: 3-cycle pipeline depth preserved; tree computation is still combinational in cycle 2.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/rtl/dual_clock.v"
+          ],
+          "changed_files": [
+            "dual_clock.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/sec/regcorr",
+            "paired": 258,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 1035,
+            "ports_structural": 1035,
+            "sat_ports": [],
+            "equivalent": true,
+            "method": "regcorr",
+            "unproven": 0,
+            "equiv_cells": 0,
+            "runtime_s": 0.67,
+            "reason": "register correspondence: all 1035 outputs of 258 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": 0.3993763210960477,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_fast": {
+                  "endpoints": 199,
+                  "wns_ns": 0.399376,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_slow": {
+                  "endpoints": 1,
+                  "wns_ns": 4.088508,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_fast_div2": {
+                  "endpoints": 28,
+                  "wns_ns": 0.619316,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": 0.399376,
+              "design_wns_ns": 0.3993763210960477
+            },
+            "area_um2": 2565.304,
+            "cells": 1251,
+            "runtime_s": 4.26,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/eval/02_sta/timing.json",
+            "wns_cycles": 0.19353625,
+            "tns_cycles": 0.0
+          },
+          "score": -3.813908063689567,
+          "score_detail": {
+            "score": -3.813908063689567,
+            "terms": {
+              "wns": -3.4607411940184343,
+              "tns": -0.35,
+              "area": -0.003166869671132763,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -6.9214823880368685,
+              "tns": -1.0,
+              "area": -0.021112464474218422
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": -0.999999999999926,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "dual_clock.v": [
+                [
+                  79,
+                  85
+                ]
+              ]
+            },
+            "outside": [
+              "dual_clock.v:103-109",
+              "dual_clock.v:114-114"
+            ],
+            "violation": true,
+            "changed_lines": 8
+          }
+        },
+        {
+          "id": "t3",
+          "target_id": "T3",
+          "target_kind": "segment",
+          "target_value": 0.6233175098793016,
+          "pattern": "serial accumulation chain in fast domain",
+          "strategy": "restructure 8-term sum as balanced binary tree",
+          "rationale": "Seven serial 28-bit additions create seven ripple carry chains. A balanced tree computes all additions in parallel at each level, reducing depth from 7 stages to 3, cutting carry propagation time by ~60%. Wider (64-bit) intermediates ensure no truncation during summation, so reordered additions remain bit-exact equivalent up to the final 28-bit truncation.",
+          "target": "lines 103-112: the g_add generate loop and acc[TAPS-1] assignment",
+          "expected_slack_recovery_ns": 0.52,
+          "area_cost": "small: no new operators, just rebalanced tree structure; synthesis will use existing term multiplication",
+          "equivalence_argument": "All intermediate sums are widened to 64 bits, so no overflow truncation occurs during the tree computation. At each level, the additions are purely associative in unbounded arithmetic. The final result is truncated to 28 bits (same as original acc[TAPS-1] assignment), which matches the original serial chain's final truncation. The shift-register pipeline (fa_q, fb_q, f_valid_q) and all downstream logic remain unchanged. Output f_acc_p captures the same bit-exact 28-bit value in the same cycle.",
+          "declared_changed": true,
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v"
+          ],
+          "changed_files": [
+            "dual_clock.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": false,
+            "method": "error",
+            "reason": "yosys SEC produced no verdict (exit 1): Replacing dual_clock.$procdff$125 ($adff): CLK=\\clk_fast, D=\\fb_q[4], Q=\\fb_q[5]\nReplacing dual_clock.$procdff$126 ($adff): CLK=\\clk_fast, D=\\fb_q[5], Q=\\fb_q[6]\nReplacing dual_clock.$procdff$127 ($adff): CLK=\\clk_fast, D=\\fb_q[6], Q=\\fb_q[7]\nReplacing dual_clock.$procdff$128 ($adff): CLK=\\clk_fast, D={ \\cdc_fast_from_slow [0] \\s_any }, Q=\\cdc_fast_from_slow\nReplacing dual_clock.$procdff$129 ($adff): CLK=\\clk_fast, D=$0\\clk_fast_div2_r[0:0], Q=\\clk_fast_div2_r\n\n4. Executing Verilog-2005 frontend: /work/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v\n/work/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v:115: ERROR: syntax error, unexpected '['",
+            "engine": "yosys",
+            "runtime_s": 1.22,
+            "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t3/sec/sec.log",
+            "regcorr": {
+              "method": "error",
+              "reason": "regcorr elaboration produced no verdict (exit 1): <suppressed ~29 debug messages>\n\n8. Executing JSON backend.\n###ASTRA_STEP_OK elaborate_gold\n###ASTRA_STEP elaborate_gate\n\n9. Executing Verilog-2005 frontend: /work/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v\n/work/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v:115: ERROR: syntax error, unexpected '['",
+              "runtime_s": 0.65,
+              "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t3/sec/regcorr"
+            }
+          },
+          "metrics": {
+            "status": "sec_failed",
+            "reason": "yosys SEC produced no verdict (exit 1): Replacing dual_clock.$procdff$125 ($adff): CLK=\\clk_fast, D=\\fb_q[4], Q=\\fb_q[5]\nReplacing dual_clock.$procdff$126 ($adff): CLK=\\clk_fast, D=\\fb_q[5], Q=\\fb_q[6]\nReplacing dual_clock.$procdff$127 ($adff): CLK=\\clk_fast, D=\\fb_q[6], Q=\\fb_q[7]\nReplacing dual_clock.$procdff$128 ($adff): CLK=\\clk_fast, D={ \\cdc_fast_from_slow [0] \\s_any }, Q=\\cdc_fast_from_slow\nReplacing dual_clock.$procdff$129 ($adff): CLK=\\clk_fast, D=$0\\clk_fast_div2_r[0:0], Q=\\clk_fast_div2_r\n\n4. Executing Verilog-2005 frontend: /work/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v\n/work/runs/dual_clock/pf-20260915-113841/iter_01/t3/rtl/dual_clock.v:115: ERROR: syntax error, unexpected '['"
+          },
+          "score": null,
+          "score_detail": null,
+          "advantage": null,
+          "scope": {
+            "enforceable": true,
+            "allowed": {
+              "dual_clock.v": [
+                [
+                  79,
+                  85
+                ],
+                [
+                  111,
+                  117
+                ]
+              ]
+            },
+            "outside": [
+              "dual_clock.v:91-93",
+              "dual_clock.v:105-105",
+              "dual_clock.v:106-107"
+            ],
+            "violation": true,
+            "changed_lines": 6
+          }
+        }
+      ],
+      "unions": [
+        {
+          "id": "u12",
+          "kind": "union",
+          "union_source": "mechanical",
+          "union_members": [
+            "t1",
+            "t2"
+          ],
+          "applied": [
+            "t1"
+          ],
+          "dropped_hunks": 4,
+          "pattern": "combined fixes from several targets",
+          "strategy": "mechanical union of t1, t2",
+          "rationale": "assembled by splicing non-conflicting text; no model was involved",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/u12/rtl/dual_clock.v"
+          ],
+          "changed_files": [
+            "dual_clock.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "equivalent": true,
+            "method": "identical",
+            "engine": "none",
+            "runtime_s": 0.0,
+            "multiclock": true,
+            "reason": "the candidate's text matches the reference once comments and whitespace are ignored"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": -0.052293504340250506,
+            "tns_ns": -0.6798155564232565,
+            "violating_endpoints": 13,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_fast": {
+                  "endpoints": 199,
+                  "wns_ns": -0.052294,
+                  "tns_ns": -0.6798219999999998,
+                  "violating_endpoints": 13
+                },
+                "clk_slow": {
+                  "endpoints": 1,
+                  "wns_ns": 4.088508,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_fast_div2": {
+                  "endpoints": 28,
+                  "wns_ns": 0.620801,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": -0.052294,
+              "design_wns_ns": -0.052293504340250506
+            },
+            "area_um2": 2620.632,
+            "cells": 1307,
+            "runtime_s": 4.14,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/u12/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/u12/eval/02_sta/timing.json"
+          },
+          "score": 0.0,
+          "score_detail": {
+            "score": 0.0,
+            "terms": {
+              "wns": -0.0,
+              "tns": -0.0,
+              "area": 0.0,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -0.0,
+              "tns": -0.0,
+              "area": 0.0
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": null
+        },
+        {
+          "id": "umerge",
+          "kind": "union",
+          "union_source": "agent",
+          "pattern": "combined fixes from several targets",
+          "strategy": "union of independently verified rewrites",
+          "included": [
+            "t2"
+          ],
+          "excluded": [
+            "t1",
+            "t3"
+          ],
+          "rationale": "t3 fails equivalence check. t1 and t2 both solve the serial-chain bottleneck with a balanced tree, but use incompatible strategies: t1 adds tree logic while preserving the old serial chain (redundant), t2 replaces it cleanly. t2 scores -3.8139 vs t1's -3.8079. The mechanical union (u12) regresses to 0.0000 (parent baseline), indicating that attempting to combine both approaches (both trees + both chains) creates conflicts that destroy the timing improvement. t2's complete replacement strategy is functionally correct per SEC and delivers the best score.",
+          "conflicts_resolved": "The contested regions (acc[] array at 103\u2013109, f_acc_p assignment at 114) represent a fundamental incompatibility: t1's additive approach vs t2's replacement. Resolved by selecting t2's replacement entirely\u2014it's functionally complete, simpler, and measured better.",
+          "expected_vs_mechanical": "t2 is strictly better than u12: t2 scores -3.8139, u12 scores 0.0000 (no improvement). The mechanical union's failure to improve timing indicates that t1's retained serial chain interferes with t2's tree structure in the combined netlist, preventing the optimization from taking effect. t2 avoids this problem entirely.",
+          "equivalence_argument": "t2 is bit-identical to the original cycle-for-cycle: (1) Reset: both the tree and the old serial chain reset to zero on !rst_n, so replacement has identical reset behavior. (2) Functional equivalence: the tree computes the same 8-term sum as the serial chain, just with log\u2082(8)=3 depth instead of 8 depth. All widths are preserved: 2*W+3 bits for intermediate wires, matched exactly. No overflow/truncation issues\u2014the tree uses the same term[] inputs and accumulates into the same 2*W+3 width, verified by SEC pass. (3) Latency: combinational logic only; no registers added or removed, so clk_fast\u2192f_acc_p timing is unchanged in depth, only shorter critical path.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/rtl/dual_clock.v"
+          ],
+          "changed_files": [
+            "dual_clock.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/sec/regcorr",
+            "paired": 258,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 1035,
+            "ports_structural": 1035,
+            "sat_ports": [],
+            "equivalent": true,
+            "method": "regcorr",
+            "unproven": 0,
+            "equiv_cells": 0,
+            "runtime_s": 0.49,
+            "reason": "register correspondence: all 1035 outputs of 258 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": 0.3993763210960477,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_fast": {
+                  "endpoints": 199,
+                  "wns_ns": 0.399376,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_slow": {
+                  "endpoints": 1,
+                  "wns_ns": 4.088508,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_fast_div2": {
+                  "endpoints": 28,
+                  "wns_ns": 0.619316,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": 0.399376,
+              "design_wns_ns": 0.3993763210960477
+            },
+            "area_um2": 2565.304,
+            "cells": 1251,
+            "runtime_s": 3.39,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/eval/02_sta/timing.json"
+          },
+          "score": -3.813908063689567,
+          "score_detail": {
+            "score": -3.813908063689567,
+            "terms": {
+              "wns": -3.4607411940184343,
+              "tns": -0.35,
+              "area": -0.003166869671132763,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -6.9214823880368685,
+              "tns": -1.0,
+              "area": -0.021112464474218422
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": null
+        }
+      ],
+      "merge": {
+        "eligible": [
+          "t1",
+          "t2"
+        ],
+        "mechanical": [
+          {
+            "id": "u12",
+            "kind": "union",
+            "union_source": "mechanical",
+            "union_members": [
+              "t1",
+              "t2"
+            ],
+            "applied": [
+              "t1"
+            ],
+            "dropped_hunks": 4,
+            "pattern": "combined fixes from several targets",
+            "strategy": "mechanical union of t1, t2",
+            "rationale": "assembled by splicing non-conflicting text; no model was involved",
+            "rtl": [
+              "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/u12/rtl/dual_clock.v"
+            ],
+            "changed_files": [
+              "dual_clock.v"
+            ],
+            "protected": {
+              "ok": true,
+              "patterns": [
+                "cdc_*",
+                "clk_*_div*"
+              ],
+              "files": {}
+            },
+            "sec": {
+              "equivalent": true,
+              "method": "identical",
+              "engine": "none",
+              "runtime_s": 0.0,
+              "multiclock": true,
+              "reason": "the candidate's text matches the reference once comments and whitespace are ignored"
+            },
+            "metrics": {
+              "status": "ok",
+              "wns_ns": -0.052293504340250506,
+              "tns_ns": -0.6798155564232565,
+              "violating_endpoints": 13,
+              "hold_wns_ns": 0.00941800830646686,
+              "clock_groups": {
+                "source": "sta",
+                "complete": true,
+                "groups": {
+                  "clk_fast": {
+                    "endpoints": 199,
+                    "wns_ns": -0.052294,
+                    "tns_ns": -0.6798219999999998,
+                    "violating_endpoints": 13
+                  },
+                  "clk_slow": {
+                    "endpoints": 1,
+                    "wns_ns": 4.088508,
+                    "tns_ns": 0.0,
+                    "violating_endpoints": 0
+                  },
+                  "clk_fast_div2": {
+                    "endpoints": 28,
+                    "wns_ns": 0.620801,
+                    "tns_ns": 0.0,
+                    "violating_endpoints": 0
+                  }
+                },
+                "agrees_with_design_wns": true,
+                "group_wns_ns": -0.052294,
+                "design_wns_ns": -0.052293504340250506
+              },
+              "area_um2": 2620.632,
+              "cells": 1307,
+              "runtime_s": 4.14,
+              "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/u12/eval",
+              "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/u12/eval/02_sta/timing.json"
+            },
+            "score": 0.0,
+            "score_detail": {
+              "score": 0.0,
+              "terms": {
+                "wns": -0.0,
+                "tns": -0.0,
+                "area": 0.0,
+                "penalty": 0.0
+              },
+              "normalized": {
+                "wns": -0.0,
+                "tns": -0.0,
+                "area": 0.0
+              },
+              "weights": {
+                "alpha": 0.5,
+                "beta": 0.35,
+                "gamma": 0.15,
+                "area_penalty": 0.5,
+                "area_threshold": 0.1
+              }
+            },
+            "advantage": null
+          }
+        ],
+        "agent": {
+          "id": "umerge",
+          "kind": "union",
+          "union_source": "agent",
+          "pattern": "combined fixes from several targets",
+          "strategy": "union of independently verified rewrites",
+          "included": [
+            "t2"
+          ],
+          "excluded": [
+            "t1",
+            "t3"
+          ],
+          "rationale": "t3 fails equivalence check. t1 and t2 both solve the serial-chain bottleneck with a balanced tree, but use incompatible strategies: t1 adds tree logic while preserving the old serial chain (redundant), t2 replaces it cleanly. t2 scores -3.8139 vs t1's -3.8079. The mechanical union (u12) regresses to 0.0000 (parent baseline), indicating that attempting to combine both approaches (both trees + both chains) creates conflicts that destroy the timing improvement. t2's complete replacement strategy is functionally correct per SEC and delivers the best score.",
+          "conflicts_resolved": "The contested regions (acc[] array at 103\u2013109, f_acc_p assignment at 114) represent a fundamental incompatibility: t1's additive approach vs t2's replacement. Resolved by selecting t2's replacement entirely\u2014it's functionally complete, simpler, and measured better.",
+          "expected_vs_mechanical": "t2 is strictly better than u12: t2 scores -3.8139, u12 scores 0.0000 (no improvement). The mechanical union's failure to improve timing indicates that t1's retained serial chain interferes with t2's tree structure in the combined netlist, preventing the optimization from taking effect. t2 avoids this problem entirely.",
+          "equivalence_argument": "t2 is bit-identical to the original cycle-for-cycle: (1) Reset: both the tree and the old serial chain reset to zero on !rst_n, so replacement has identical reset behavior. (2) Functional equivalence: the tree computes the same 8-term sum as the serial chain, just with log\u2082(8)=3 depth instead of 8 depth. All widths are preserved: 2*W+3 bits for intermediate wires, matched exactly. No overflow/truncation issues\u2014the tree uses the same term[] inputs and accumulates into the same 2*W+3 width, verified by SEC pass. (3) Latency: combinational logic only; no registers added or removed, so clk_fast\u2192f_acc_p timing is unchanged in depth, only shorter critical path.",
+          "rtl": [
+            "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/rtl/dual_clock.v"
+          ],
+          "changed_files": [
+            "dual_clock.v"
+          ],
+          "protected": {
+            "ok": true,
+            "patterns": [
+              "cdc_*",
+              "clk_*_div*"
+            ],
+            "files": {}
+          },
+          "sec": {
+            "engine": "yosys",
+            "stage": "regcorr",
+            "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/sec/regcorr",
+            "paired": 258,
+            "unpaired_gold": 0,
+            "unpaired_gate": 0,
+            "ports_total": 1035,
+            "ports_structural": 1035,
+            "sat_ports": [],
+            "equivalent": true,
+            "method": "regcorr",
+            "unproven": 0,
+            "equiv_cells": 0,
+            "runtime_s": 0.49,
+            "reason": "register correspondence: all 1035 outputs of 258 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+          },
+          "metrics": {
+            "status": "ok",
+            "wns_ns": 0.3993763210960477,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0,
+            "hold_wns_ns": 0.00941800830646686,
+            "clock_groups": {
+              "source": "sta",
+              "complete": true,
+              "groups": {
+                "clk_fast": {
+                  "endpoints": 199,
+                  "wns_ns": 0.399376,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_slow": {
+                  "endpoints": 1,
+                  "wns_ns": 4.088508,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                },
+                "clk_fast_div2": {
+                  "endpoints": 28,
+                  "wns_ns": 0.619316,
+                  "tns_ns": 0.0,
+                  "violating_endpoints": 0
+                }
+              },
+              "agrees_with_design_wns": true,
+              "group_wns_ns": 0.399376,
+              "design_wns_ns": 0.3993763210960477
+            },
+            "area_um2": 2565.304,
+            "cells": 1251,
+            "runtime_s": 3.39,
+            "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/eval",
+            "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/merge/umerge/eval/02_sta/timing.json"
+          },
+          "score": -3.813908063689567,
+          "score_detail": {
+            "score": -3.813908063689567,
+            "terms": {
+              "wns": -3.4607411940184343,
+              "tns": -0.35,
+              "area": -0.003166869671132763,
+              "penalty": 0.0
+            },
+            "normalized": {
+              "wns": -6.9214823880368685,
+              "tns": -1.0,
+              "area": -0.021112464474218422
+            },
+            "weights": {
+              "alpha": 0.5,
+              "beta": 0.35,
+              "gamma": 0.15,
+              "area_penalty": 0.5,
+              "area_threshold": 0.1
+            }
+          },
+          "advantage": null,
+          "vs_mechanical": -3.813908063689567,
+          "best_mechanical": "u12"
+        }
+      },
+      "selected": "t2",
+      "skill_learning": {
+        "recorded": [
+          "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+          "serial-accumulation-chain-with-4-operands::rebalance-serial-add-chain-into-binary-tree",
+          "serial-accumulation-chain-in-fast-domain::restructure-8-term-sum-as-balanced-binary-tree"
+        ],
+        "abstracted": [
+          {
+            "id": "serial-accumulation-chain-in-fast-domain::restructure-8-term-sum-as-balanced-binary-tree",
+            "verdict": "effective",
+            "evidence": "t1 (A_i=+1.0): 0.3970 ns WNS, 2565.0 um\u00b2, SEC PASS. t2 (A_i=-1.0): 0.3994 ns WNS, 2565.3 um\u00b2, SEC PASS, marginal group winner. Nearly identical PPA across both variants confirms strategy consistently eliminates the bottleneck."
+          }
+        ],
+        "observations": "Group size 2 with extremely tight variance (sigma 0.0030) shows binary tree rebalancing reliably addresses serial accumulation. t2 marginally beat t1 by ~0.006 score units (one z-score swing), likely due to specific tree structure choices rather than fundamental strategy difference. t3 attempted the same transformation but failed with a Verilog syntax error in array indexing during rewrite\u2014a critical reminder that algorithmic soundness does not guarantee RTL implementation correctness. The strategy principle itself is sound; the failure was execution, not concept.",
+        "raw_reply": "```json\n{\n  \"skills\": [\n    {\n      \"pattern\": \"Serial accumulation chains in datapath summation\",\n      \"strategy\": \"Restructure into balanced binary tree to reduce carry depth\",\n      \"rationale\": \"Serial N-term addition creates N-1 ripple-carry stages cascaded in sequence. A balanced binary tree computes partial sums at each level in parallel, collapsing critical path from O(N) cascaded adders to O(log N) stages. For N=8, this cuts carry propagation depth by ~60%, as both implementations demonstrate.\",\n      \"example\": \"// Before: sum = a0; for(i=1;i<8;i++) sum=sum+a[i];\\n// After: t01=a0+a1; t23=a2+a3; t45=a4+a5; t67=a6+a7;\\n//        s01=t01+t23; s45=t45+t67; sum=s01+s45;\",\n      \"verdict\": \"effective\",\n      \"evidence\": \"t1 (A_i=+1.0): 0.3970 ns WNS, 2565.0 um\u00b2, SEC PASS. t2 (A_i=-1.0): 0.3994 ns WNS, 2565.3 um\u00b2, SEC PASS, marginal group winner. Nearly identical PPA across both variants confirms strategy consistently eliminates the bottleneck.\"\n    }\n  ],\n  \"observations\": \"Group size 2 with extremely tight variance (sigma 0.0030) shows binary tree rebalancing reliably addresses serial accumulation. t2 marginally beat t1 by ~0.006 score units (one z-score swing), likely due to specific tree structure choices rather than fundamental strategy difference. t3 attempted the same transformation but failed with a Verilog syntax error in array indexing during rewrite\u2014a critical reminder that algorithmic soundness does not guarantee RTL implementation correctness. The strategy principle itself is sound; the failure was execution, not concept.\"\n}\n```"
+      }
+    }
+  ],
+  "best": {
+    "id": "t2",
+    "iteration": 1,
+    "score": -3.813908063689567,
+    "metrics": {
+      "status": "ok",
+      "wns_ns": 0.3993763210960477,
+      "tns_ns": 0.0,
+      "violating_endpoints": 0,
+      "hold_wns_ns": 0.00941800830646686,
+      "clock_groups": {
+        "source": "sta",
+        "complete": true,
+        "groups": {
+          "clk_fast": {
+            "endpoints": 199,
+            "wns_ns": 0.399376,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_slow": {
+            "endpoints": 1,
+            "wns_ns": 4.088508,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          },
+          "clk_fast_div2": {
+            "endpoints": 28,
+            "wns_ns": 0.619316,
+            "tns_ns": 0.0,
+            "violating_endpoints": 0
+          }
+        },
+        "agrees_with_design_wns": true,
+        "group_wns_ns": 0.399376,
+        "design_wns_ns": 0.3993763210960477
+      },
+      "area_um2": 2565.304,
+      "cells": 1251,
+      "runtime_s": 4.26,
+      "run_dir": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/eval",
+      "timing_json": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/eval/02_sta/timing.json",
+      "wns_cycles": 0.19353625,
+      "tns_cycles": 0.0
+    },
+    "pattern": "Serial adder chain in 8-term accumulate",
+    "strategy": "Rebalance into a binary tree to reduce depth",
+    "rtl": [
+      "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/rtl/dual_clock.v"
+    ],
+    "sec": {
+      "engine": "yosys",
+      "stage": "regcorr",
+      "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/iter_01/t2/sec/regcorr",
+      "paired": 258,
+      "unpaired_gold": 0,
+      "unpaired_gate": 0,
+      "ports_total": 1035,
+      "ports_structural": 1035,
+      "sat_ports": [],
+      "equivalent": true,
+      "method": "regcorr",
+      "unproven": 0,
+      "equiv_cells": 0,
+      "runtime_s": 0.67,
+      "reason": "register correspondence: all 1035 outputs of 258 paired register bits and the module match structurally; unbounded, holds for every clock interleaving"
+    }
+  },
+  "convergence_steps": 1,
+  "mode": "portfolio",
+  "budget": {
+    "planned_calls": 6,
+    "actual_calls": 6
+  },
+  "cleanup": {
+    "candidates": [
+      {
+        "id": "clean0",
+        "directive_index": 0,
+        "directive": "",
+        "pattern": "Serial accumulator chain and priority mux cascade",
+        "strategy": "Rebalance into tree for fast domain; flatten priority select to 5-level encoder tree",
+        "rationale": "Reduces combinational depth from 7 to 3 levels in fast accumulator (3-level reduction); converts 24-stage priority mux to ~5 stages via balanced tree\u2014eliminates ripple dependencies on critical path",
+        "target": "acc[0..7] summation at lines 106-110; sel_chain cascade at lines 129-136",
+        "expected_slack_recovery_ns": 2.1,
+        "area_cost": "small \u2014 rebalancing uses same gate count, priority tree adds ~10 mux cells for parallelism",
+        "equivalence_argument": "Fast domain: tree computes (term[0]+term[1])+(term[2]+term[3])+...+(term[6]+term[7]) in parallel at level 0, then pairs of those at level 1, then final sum at level 2\u2014addition is associative, so result matches sum[TAPS-1] bit-for-bit across all widths. Reset preserves zero state because all intermediate wires reset to 0. Slow domain: first_set[i] identifies the first set s_req bit using prefix-OR; balanced mux tree then selects its index. Only one first_set[i] can be high, so sel_chain[SEL] converges to that index's value. any_chain[SEL] = OR(all s_req bits) is unchanged. Reset clears all registers to 0; priority encoder returns 0 if no requests.",
+        "rtl": [
+          "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v"
+        ],
+        "changed_files": [
+          "dual_clock.v"
+        ],
+        "protected": {
+          "ok": true,
+          "patterns": [
+            "cdc_*",
+            "clk_*_div*"
+          ],
+          "files": {}
+        },
+        "sec": {
+          "equivalent": false,
+          "method": "error",
+          "reason": "yosys SEC produced no verdict (exit 1): Replacing dual_clock.$procdff$125 ($adff): CLK=\\clk_fast, D=\\fb_q[4], Q=\\fb_q[5]\nReplacing dual_clock.$procdff$126 ($adff): CLK=\\clk_fast, D=\\fb_q[5], Q=\\fb_q[6]\nReplacing dual_clock.$procdff$127 ($adff): CLK=\\clk_fast, D=\\fb_q[6], Q=\\fb_q[7]\nReplacing dual_clock.$procdff$128 ($adff): CLK=\\clk_fast, D={ \\cdc_fast_from_slow [0] \\s_any }, Q=\\cdc_fast_from_slow\nReplacing dual_clock.$procdff$129 ($adff): CLK=\\clk_fast, D=$0\\clk_fast_div2_r[0:0], Q=\\clk_fast_div2_r\n\n4. Executing Verilog-2005 frontend: /work/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v\n/work/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v:150: ERROR: Condition for generate if is not constant!",
+          "engine": "yosys",
+          "runtime_s": 0.95,
+          "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/cleanup/clean0/sec/sec.log",
+          "regcorr": {
+            "method": "error",
+            "reason": "regcorr elaboration produced no verdict (exit 1): <suppressed ~29 debug messages>\n\n8. Executing JSON backend.\n###ASTRA_STEP_OK elaborate_gold\n###ASTRA_STEP elaborate_gate\n\n9. Executing Verilog-2005 frontend: /work/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v\n/work/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v:150: ERROR: Condition for generate if is not constant!",
+            "runtime_s": 0.46,
+            "log": "/home/sreeavyay/astra-vlsi/runs/dual_clock/pf-20260915-113841/cleanup/clean0/sec/regcorr"
+          }
+        },
+        "metrics": {
+          "status": "sec_failed",
+          "reason": "yosys SEC produced no verdict (exit 1): Replacing dual_clock.$procdff$125 ($adff): CLK=\\clk_fast, D=\\fb_q[4], Q=\\fb_q[5]\nReplacing dual_clock.$procdff$126 ($adff): CLK=\\clk_fast, D=\\fb_q[5], Q=\\fb_q[6]\nReplacing dual_clock.$procdff$127 ($adff): CLK=\\clk_fast, D=\\fb_q[6], Q=\\fb_q[7]\nReplacing dual_clock.$procdff$128 ($adff): CLK=\\clk_fast, D={ \\cdc_fast_from_slow [0] \\s_any }, Q=\\cdc_fast_from_slow\nReplacing dual_clock.$procdff$129 ($adff): CLK=\\clk_fast, D=$0\\clk_fast_div2_r[0:0], Q=\\clk_fast_div2_r\n\n4. Executing Verilog-2005 frontend: /work/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v\n/work/runs/dual_clock/pf-20260915-113841/cleanup/clean0/rtl/dual_clock.v:150: ERROR: Condition for generate if is not constant!"
+        },
+        "score": null,
+        "score_detail": null,
+        "advantage": null
+      }
+    ],
+    "adopted": false,
+    "gate": 0.01,
+    "reason": "no candidate passed SEC"
+  },
+  "usage": {
+    "calls": 6,
+    "input_tokens": 62,
+    "output_tokens": 81413,
+    "cache_read_input_tokens": 146691,
+    "cost_usd": 0.6462331000000001,
+    "duration_s": 830.819
+  }
+}

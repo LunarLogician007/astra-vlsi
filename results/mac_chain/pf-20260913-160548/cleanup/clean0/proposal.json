@@ -1,0 +1,12 @@
+{
+  "id": "clean0",
+  "directive_index": 0,
+  "directive": "",
+  "pattern": "Serial accumulator chain and unreachable saturation bounds",
+  "strategy": "Rebalance additions into a tree; remove infeasible comparisons",
+  "rationale": "Serial chain s0\u2192s1\u2192s2\u2192s3 is 3 add-depths; balanced tree is 2. Saturation bounds (\u00b12^37) exceed max output (\u00b12^32) by 16x, so comparisons always false.",
+  "target": "Lines 63\u201369: s0 through s3 accumulation; over/under comparisons and sat_val selection",
+  "expected_slack_recovery_ns": 0.8,
+  "area_cost": "none \u2014 rebalancing uses same operator count; only removes dead comparison logic",
+  "equivalence_argument": "Rebalancing: (a+b)+c+d = (a+b)+(c+d) in unbounded arithmetic; no intermediate overflow in 40-bit (max magnitude ~2^32). Reset unaffected (all wires are combinational). Saturation removal: s3 range is ~[\u22122^32, 2^32]; LIMIT is \u00b12^37; comparisons provably always yield false, so sat_val defaults to s3 and sat_flag to 0, identical to original behavior."
+}

@@ -16,6 +16,13 @@ The Dr. RTL optimisation loop is built on top of those stages:
     astra skills            inspect the learned skill library
     astra opt    <design>   the closed loop: analyse -> rewrite -> evaluate
 
+and the path-portfolio addon on top of that:
+
+    astra scan   <design>   structural smells in the RTL, before any tool runs
+    astra paths  <design>   the distinct critical-path targets worth an agent
+    astra skilldoc          build the RTL timing-optimisation skill document
+    astra portfolio <design>  k scoped specialists, then a merge
+
 Outputs land in runs/<design>/<timestamp>/. Stdlib only.
 """
 
@@ -33,6 +40,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import clocks as clocks_mod  # noqa: E402
 import parse_sta  # noqa: E402
 import toolenv    # noqa: E402
 
@@ -111,10 +119,48 @@ def load_design(name: str) -> dict[str, Any]:
         if key not in cfg:
             die(f"design '{name}': config.json needs a '{key}' key")
     cfg.setdefault("pdk", "nangate45")
-    cfg.setdefault("clock", {})
-    cfg["clock"].setdefault("name", "clk")
-    cfg["clock"].setdefault("period_ns", 10.0)
+    try:
+        cs = clocks_mod.ClockSet.from_config(cfg)
+    except clocks_mod.ClockError as e:
+        die(f"design '{name}': {e}")
+    # Both shapes are kept live: `_clocks` is the whole truth, and the
+    # singular `clock` stays a one-element alias so every pre-multi-clock
+    # reader keeps working unchanged.
+    cfg["_clocks"] = cs
+    cfg["clock"] = {"name": cs.primary.name, "period_ns": cs.primary.period_ns,
+                    **({"port": cs.primary.port} if cs.primary.port else {})}
+    cfg["clocks"] = [c.to_dict() for c in cs]
     return cfg
+
+
+def _clock_deltas(base: Any, cand: Any) -> list[tuple[str, str, str]]:
+    """Every clock that differs between two runs: (name, baseline, candidate).
+
+    Covers appearing and disappearing clocks as well as changed periods, since
+    a run that dropped a domain entirely is no more comparable than one that
+    retimed it.
+    """
+    if base is None or cand is None:
+        return []
+    b = {c.name: c.period_ns for c in base}
+    c = {c.name: c.period_ns for c in cand}
+    out = []
+    for name in sorted(set(b) | set(c)):
+        was, now = b.get(name), c.get(name)
+        if was is None or now is None:
+            out.append((name, "absent" if was is None else f"{was:g} ns",
+                        "absent" if now is None else f"{now:g} ns"))
+        elif abs(was - now) > 1e-9:
+            out.append((name, f"{was:g} ns", f"{now:g} ns"))
+    return out
+
+
+def design_clocks(cfg: dict[str, Any], period: float | None = None):
+    """The design's ClockSet, with a --period override applied if given."""
+    cs = cfg.get("_clocks") or clocks_mod.ClockSet.from_config(cfg)
+    if period is None:
+        return cs
+    return cs.with_period(period)
 
 
 def pdk_config(pdk: str) -> Path:
@@ -197,11 +243,24 @@ def stage_inputs(cfg: dict[str, Any], rdir: Path, period: float) -> dict[str, An
     if not sdc_src.exists():
         die(f"SDC file not found: {sdc_src}")
     text = sdc_src.read_text()
-    if "@CLK_PERIOD@" in text:
-        text = text.replace("@CLK_PERIOD@", f"{period:g}")
-    elif abs(period - float(cfg["clock"]["period_ns"])) > 1e-9:
-        warn(f"{sdc_src.name} has no @CLK_PERIOD@ placeholder, so --period only "
-             f"changes the synthesis delay target, not the constraint")
+    cs = design_clocks(cfg, period)
+    templated = any(tag in text for tag in
+                    ("@CLK_PERIOD@", "@ASTRA_CLOCK_DEFS@", "@CLK_PERIOD:"))
+    if templated:
+        stale = clocks_mod.unresolved_placeholders(
+            clocks_mod.substitute(text, cs))
+        if stale:
+            die(f"{sdc_src.name} references undeclared clock(s): "
+                f"{', '.join(stale)}\n        declared: {', '.join(cs.names())}")
+        text = clocks_mod.substitute(text, cs)
+    else:
+        if abs(period - float(cfg["clock"]["period_ns"])) > 1e-9:
+            warn(f"{sdc_src.name} has no @CLK_PERIOD@ placeholder, so --period only "
+                 f"changes the synthesis delay target, not the constraint")
+        if cs.is_multi:
+            warn(f"{sdc_src.name} declares its clocks by hand, so the "
+                 f"{len(cs)} clocks in config.json are not applied to it; add "
+                 f"@ASTRA_CLOCK_DEFS@ to generate them")
     sdc = idir / sdc_src.name
     sdc.write_text(text)
 
@@ -215,10 +274,15 @@ def do_syn(cfg: dict[str, Any], rdir: Path, args: argparse.Namespace,
     metrics = read_metrics(rdir)
     inputs = metrics["inputs"]
 
+    cs = design_clocks(cfg, period)
+    if cs.is_multi:
+        info(f"synthesis delay target: {cs.synthesis_period:g} ns "
+             f"(tightest of {len(cs)} clocks); slower domains are "
+             f"over-constrained -- see docs/multi-clock.md")
     env = base_env(cfg) | {
         "ASTRA_OUT_DIR": str(odir),
         "ASTRA_RTL_FILES": " ".join(inputs["rtl"]),
-        "ASTRA_CLK_PERIOD": str(period),
+        "ASTRA_CLK_PERIOD": str(cs.synthesis_period),
         "ASTRA_FLATTEN": "0" if args.no_flatten else "1",
     }
 
@@ -299,6 +363,7 @@ def do_sta(cfg: dict[str, Any], rdir: Path, args: argparse.Namespace) -> dict[st
              "wns_ns": s.get("wns_ns"), "tns_ns": s.get("tns_ns"),
              "violating_endpoints": s.get("violating_endpoints"),
              "hold_wns_ns": (s.get("hold") or {}).get("wns_ns"),
+             "clock_groups": parsed.get("clock_groups"),
              "report": str(odir / "timing.rpt"),
              "timing_json": str(odir / "timing.json")}
     metrics["sta"] = stage
@@ -389,7 +454,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     info(f"run: {rdir}")
     write_metrics(rdir, {
         "design": args.design, "run_id": rdir.name, "pdk": cfg["pdk"], "top": cfg["top"],
-        "clock": {"name": cfg["clock"]["name"], "period_ns": period},
+        **design_clocks(cfg, period).to_metrics(),
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "inputs": stage_inputs(cfg, rdir, period),
     })
@@ -419,8 +484,14 @@ def cmd_list(args: argparse.Namespace) -> int:
     for d in sorted(DESIGNS.glob("*/config.json")):
         cfg = json.loads(d.read_text())
         name = d.parent.name
-        print(_c("1", f"{name}") + f"  top={cfg.get('top')}  pdk={cfg.get('pdk', 'nangate45')}"
-              f"  period={cfg.get('clock', {}).get('period_ns')}ns")
+        try:
+            cs = clocks_mod.ClockSet.from_config(cfg)
+            clk = (f"period={cs.primary.period_ns:g}ns" if not cs.is_multi else
+                   "clocks=" + ",".join(f"{c.name}@{c.period_ns:g}ns" for c in cs))
+        except clocks_mod.ClockError as e:
+            clk = f"clocks=INVALID ({e})"
+        print(_c("1", f"{name}") + f"  top={cfg.get('top')}  "
+              f"pdk={cfg.get('pdk', 'nangate45')}  {clk}")
         runs = sorted(p for p in (RUNS / name).glob("*") if p.is_dir() and not p.is_symlink())
         for r in runs[-args.limit:]:
             m = read_metrics(r)
@@ -552,11 +623,60 @@ def cmd_localise(args: argparse.Namespace) -> int:
     import rtl_map
     cfg = load_design(args.design)
     rdir = find_run(args.design, args.run)
-    if not (rdir / "02_sta" / "timing.json").is_file():
-        die(f"no timing.json in {rdir.name}. Run: astra run {args.design}")
-    data = rtl_map.from_run(rdir, cfg["_dir"], top_k=args.top_k)
+    sdir = rtl_map._STAGE_DIRS[args.stage]
+    if not (rdir / sdir / "timing.json").is_file():
+        die(f"no {sdir}/timing.json in {rdir.name}. Run: astra run "
+            f"{args.design}" + (" --pnr" if args.stage == "pnr" else ""))
+    data = rtl_map.from_run(rdir, cfg["_dir"], top_k=args.top_k, stage=args.stage)
     print(json.dumps(data, indent=2) if args.json else rtl_map.render(data))
     return 0
+
+
+def cmd_paths(args: argparse.Namespace) -> int:
+    """The path-portfolio: which distinct bottlenecks are worth an agent call."""
+    import pathsel
+    import skills as skills_mod
+    cfg = load_design(args.design)
+    rdir = find_run(args.design, args.run)
+    lib = None if args.no_skills else skills_mod.SkillLibrary()
+    try:
+        sel = pathsel.from_run(rdir, cfg["_dir"], k=args.top_k, stage=args.stage,
+                               lam=args.mmr_lambda, cluster_at=args.cluster_at,
+                               lib=lib, sigma=args.delay_sigma, rho=args.cone_rho)
+    except (FileNotFoundError, ValueError) as e:
+        die(str(e))
+    if args.json:
+        out = dict(sel)
+        out["targets"] = [t.to_dict() for t in sel["targets"]]
+        print(json.dumps(out, indent=2, default=str))
+    else:
+        print(pathsel.render(sel))
+    return 0
+
+
+def cmd_scan(args: argparse.Namespace) -> int:
+    """Structural smells in the source, before synthesis has run."""
+    import rtlscan
+    cfg = load_design(args.design)
+    files = [(cfg["_dir"] / r).resolve() for r in cfg["rtl"]]
+    missing = [str(f) for f in files if not f.is_file()]
+    if missing:
+        die(f"missing RTL: {', '.join(missing)}")
+    report = rtlscan.scan(files)
+    print(json.dumps(report, indent=2, default=str) if args.json
+          else rtlscan.render(report))
+    return 0
+
+
+def cmd_skilldoc(args: argparse.Namespace) -> int:
+    import skillgen
+    return skillgen.main(["astra-skilldoc", *args.rest])
+
+
+def cmd_portfolio(args: argparse.Namespace) -> int:
+    import portfolio
+    return portfolio.PortfolioOrchestrator(
+        portfolio.build_parser().parse_args(args.rest)).run()
 
 
 def cmd_score(args: argparse.Namespace) -> int:
@@ -575,22 +695,36 @@ def cmd_score(args: argparse.Namespace) -> int:
         return {"wns_ns": m.get("sta", {}).get("wns_ns"),
                 "tns_ns": m.get("sta", {}).get("tns_ns"),
                 "area_um2": m.get("synth", {}).get("area_um2"),
+                "clock_groups": m.get("sta", {}).get("clock_groups"),
                 "_period": (m.get("clock") or {}).get("period_ns"),
+                "_clocks": clocks_mod.from_metrics(m),
                 "_run": rdir.name}
 
     cand = ppa(find_run(args.design, args.run))
     base = ppa(find_run(args.design, args.baseline))
-    if cand["_period"] and base["_period"] and \
-            abs(float(cand["_period"]) - float(base["_period"])) > 1e-9:
-        warn(f"clock periods differ ({base['_period']} vs {cand['_period']} ns) "
-             f"— the normalised score compares two different problems")
+
+    # Compare EVERY clock, not just the primary. Checking one period lets a run
+    # whose secondary domains were retimed pass as comparable, and the score
+    # then silently compares two different problems -- the failure the single
+    # warning below was written to prevent, reintroduced by multi-clock.
+    for name, was, now in _clock_deltas(base["_clocks"], cand["_clocks"]):
+        warn(f"clock {name}: {was} vs {now} — the normalised score compares "
+             f"two different problems")
 
     weights = dict(scoring.DEFAULT_WEIGHTS)
     for k in ("alpha", "beta", "gamma"):
         v = getattr(args, k, None)
         if v is not None:
             weights[k] = v
-    period = float(cand["_period"] or 1.0)
+
+    # Cycle-normalised where the per-group data exists, because TNS in
+    # nanoseconds sums across domains of different worth. See score.py.
+    cs = cand["_clocks"]
+    cand_s, base_s = scoring.with_cycles(cand, cs), scoring.with_cycles(base, cs)
+    if scoring.cycles_available(cand_s, base_s):
+        cand, base, period = cand_s, base_s, 1.0
+    else:
+        period = float(cand["_period"] or 1.0)
     detail = scoring.score(cand, base, weights, period)
 
     if args.json:
@@ -682,6 +816,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("design")
     sp.add_argument("--run", default="latest")
     sp.add_argument("--top-k", type=int, default=3)
+    sp.add_argument("--stage", choices=("sta", "pnr"), default="sta",
+                    help="which timing report to read")
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(func=cmd_localise)
 
@@ -707,6 +843,45 @@ def build_parser() -> argparse.ArgumentParser:
                                     "(see: astra opt -h)")
     sp.add_argument("rest", nargs=argparse.REMAINDER)
     sp.set_defaults(func=cmd_opt)
+
+    # --- path-portfolio addon ----------------------------------------------
+    sp = sub.add_parser("paths", help="distinct critical-path targets "
+                                      "worth an agent call")
+    sp.add_argument("design")
+    sp.add_argument("--run", default="latest")
+    sp.add_argument("-k", "--top-k", type=int, default=3,
+                    help="maximum targets to select (a ceiling, not a quota)")
+    sp.add_argument("--stage", choices=("sta", "pnr"), default="sta")
+    sp.add_argument("--mmr-lambda", type=float, default=0.5,
+                    help="diversity weight in the selection")
+    sp.add_argument("--cluster-at", type=float, default=0.65,
+                    help="similarity at which two paths are one bottleneck")
+    sp.add_argument("--delay-sigma", type=float, default=0.05,
+                    help="delay uncertainty as a fraction of the clock period; "
+                         "0 gives the deterministic answer")
+    sp.add_argument("--cone-rho", type=float, default=0.7,
+                    help="share of that uncertainty common to a whole cone")
+    sp.add_argument("--no-skills", action="store_true",
+                    help="do not consult the skill library for tractability")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_paths)
+
+    sp = sub.add_parser("scan", help="structural smells in the RTL, "
+                                     "before any tool runs")
+    sp.add_argument("design")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_scan)
+
+    sp = sub.add_parser("skilldoc", help="build the RTL timing-optimisation "
+                                         "skill document")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_skilldoc)
+
+    sp = sub.add_parser("portfolio", help="path-portfolio loop: k scoped "
+                                          "specialists, then a merge "
+                                          "(see: astra portfolio -h)")
+    sp.add_argument("rest", nargs=argparse.REMAINDER)
+    sp.set_defaults(func=cmd_portfolio)
     return p
 
 

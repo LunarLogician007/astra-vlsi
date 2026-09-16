@@ -1,8 +1,14 @@
-# Flow outputs — regenerate with `astra run <design>`, never commit.
+# Flow outputs -- regenerate with `astra run <design>`, never commit.
+# Runs worth keeping are copied, trimmed, into results/ (see results/README.md).
 runs/
+runs.zip
 astra-image.tar.gz
 
 *.log
 __pycache__/
 *.pyc
 .DS_Store
+
+# graphify code knowledge graph -- derived from the source, rebuild locally
+# with `graphify update .`
+graphify-out/

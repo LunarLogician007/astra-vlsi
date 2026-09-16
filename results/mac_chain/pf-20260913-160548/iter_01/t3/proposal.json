@@ -1,0 +1,14 @@
+{
+  "id": "t3",
+  "target_id": "T3",
+  "target_kind": "segment",
+  "target_value": 0.5901304430265999,
+  "pattern": "Carry propagation in accumulator tree",
+  "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+  "rationale": "Current balanced tree synthesizes three serial 40-bit ripples (52 AOI/OAI cells total, ~66 gate stages). Carry-save represents intermediate sums as (sum, carry) pairs via constant-depth 3:2 compression: sum = a XOR b XOR c, carry = majority(a,b,c), computed bit-wise in parallel with no carry chain. Two compressions plus one final ripple replaces three ripples, reducing depth to ~24 stages.",
+  "target": "mac_chain.v lines 61-63 (s1, s2, s3 redefined via carry-save)",
+  "expected_slack_recovery_ns": 0.45,
+  "area_cost": "small (XOR and majority logic replacing ripple stages; gate count similar or slightly lower)",
+  "equivalence_argument": "Carry-save is exact in fixed-width two's complement: a + b + c = (a XOR b XOR c) + (majority(a,b,c) << 1). After first 3:2 compression: s0 + p1_ext + p2_ext = cs0_sum + (cs0_carry << 1). After second compression: cs0_sum + cs0_carry + p3_ext = cs1_sum + (cs1_carry << 1). Therefore s0 + p1_ext + p2_ext + p3_ext = cs1_sum + (cs1_carry << 1) = s3 exactly. Reset: all signals 0 \u2192 s3 = 0, matching original. Latency and interface unchanged\u2014all operations remain combinational.",
+  "declared_changed": true
+}

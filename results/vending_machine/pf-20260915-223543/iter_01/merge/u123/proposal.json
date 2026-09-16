@@ -1,0 +1,17 @@
+{
+  "id": "u123",
+  "kind": "union",
+  "union_source": "mechanical",
+  "union_members": [
+    "t1",
+    "t2",
+    "t3"
+  ],
+  "applied": [
+    "t3"
+  ],
+  "dropped_hunks": 2,
+  "pattern": "combined fixes from several targets",
+  "strategy": "mechanical union of t1, t2, t3",
+  "rationale": "assembled by splicing non-conflicting text; no model was involved"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "clean0",
+  "directive_index": 0,
+  "directive": "",
+  "pattern": "Serial accumulator chain and priority mux cascade",
+  "strategy": "Rebalance into tree for fast domain; flatten priority select to 5-level encoder tree",
+  "rationale": "Reduces combinational depth from 7 to 3 levels in fast accumulator (3-level reduction); converts 24-stage priority mux to ~5 stages via balanced tree\u2014eliminates ripple dependencies on critical path",
+  "target": "acc[0..7] summation at lines 106-110; sel_chain cascade at lines 129-136",
+  "expected_slack_recovery_ns": 2.1,
+  "area_cost": "small \u2014 rebalancing uses same gate count, priority tree adds ~10 mux cells for parallelism",
+  "equivalence_argument": "Fast domain: tree computes (term[0]+term[1])+(term[2]+term[3])+...+(term[6]+term[7]) in parallel at level 0, then pairs of those at level 1, then final sum at level 2\u2014addition is associative, so result matches sum[TAPS-1] bit-for-bit across all widths. Reset preserves zero state because all intermediate wires reset to 0. Slow domain: first_set[i] identifies the first set s_req bit using prefix-OR; balanced mux tree then selects its index. Only one first_set[i] can be high, so sel_chain[SEL] converges to that index's value. any_chain[SEL] = OR(all s_req bits) is unchanged. Reset clears all registers to 0; priority encoder returns 0 if no requests."
+}

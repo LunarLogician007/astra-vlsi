@@ -1,0 +1,42 @@
+
+22. Printing statistics.
+
+=== soc_bench ===
+
+   Number of wires:              54157
+   Number of wire bits:          54157
+   Number of public wires:       54157
+   Number of public wire bits:   54157
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:              49935
+     AND2_X1                      1564
+     AND3_X1                       684
+     AND4_X1                      1701
+     AOI211_X1                      45
+     AOI21_X1                     3510
+     AOI221_X1                     195
+     AOI22_X1                     1939
+     DFFR_X1                      2803
+     DFFS_X1                        32
+     INV_X1                       4437
+     MUX2_X1                       274
+     NAND2_X1                     6060
+     NAND3_X1                      922
+     NAND4_X1                      183
+     NOR2_X1                      5786
+     NOR3_X1                      1483
+     NOR4_X1                       179
+     OAI211_X1                     169
+     OAI21_X1                     2839
+     OAI221_X1                     251
+     OAI22_X1                      210
+     OR2_X1                       1587
+     OR3_X1                        929
+     OR4_X1                          3
+     XNOR2_X1                     7953
+     XOR2_X1                      4197
+
+   Chip area for module '\soc_bench': 68665.240000
+

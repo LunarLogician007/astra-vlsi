@@ -1,0 +1,14 @@
+{
+  "id": "t1",
+  "target_id": "T1",
+  "target_kind": "segment",
+  "target_value": 0.5394442361964628,
+  "pattern": "Ripple XOR chain in 512-bit parity reduction",
+  "strategy": "Balanced tree reduction instead of serial cascade",
+  "rationale": "Serial XOR depth scales linearly (512 stages); a balanced tree reduces it to log\u2082(512)=9 levels. The measured segment (stages 0\u20138, 5.2 ns) represents the beginning of a chain where 4 gates at depth 4 take 1.3 ns each\u2014each stage depends on all prior stages. A tree decouples this: all bits pair in parallel at level 0 (depth 1), then pairs of pairs (depth 2), etc. The final output remains identical\u2014XOR of all inputs\u2014but arrives 50\u00d7 deeper in the logic instead of 500\u00d7, so the first few stages now run at ~0.5\u20130.6 ns each rather than ~1.3 ns.",
+  "target": "Lines 322\u2013329 (par_chain ripple generate loop and par_chain_out assignment)",
+  "expected_slack_recovery_ns": 4.2,
+  "area_cost": "small: a balanced tree uses the same total number of XOR gates (511 gates for 512 inputs, one fewer than the ripple chain, actually), just reorganized in width instead of depth.",
+  "equivalence_argument": "The ripple chain computes par_chain[XW] = xd_q[0] \u2295 xd_q[1] \u2295 \u2026 \u2295 xd_q[XW-1]. The balanced tree pairs all inputs, then recursively XORs the results, computing the same final XOR. Reset is identical: xfrm_par_par_chain_out enters a flop clocked on clk_xfrm_div2 with standard asynchronous reset, unchanged. Intermediate widths are all single-bit signals; the tree output is a single bit matching par_chain[XW]. No sign extension or truncation.",
+  "declared_changed": true
+}

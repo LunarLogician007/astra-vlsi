@@ -1,0 +1,18 @@
+{
+  "id": "umerge",
+  "kind": "union",
+  "union_source": "agent",
+  "pattern": "combined fixes from several targets",
+  "strategy": "union of independently verified rewrites",
+  "included": [
+    "t2"
+  ],
+  "excluded": [
+    "t1",
+    "t3"
+  ],
+  "rationale": "All three candidates measure identically (WNS -4.8352, TNS -303.7124, area 120706.0120, score -0.3615 \u2014 a -0.3615 improvement over the parent), so the choice is based on code clarity and maintainability. t2 is selected because: (1) it preserves the crucial explanatory comment block ('Same reason as crc_next above...') that documents why par_chain_out must be a named wire to keep the protected cdc_xfrm_from_look line unedited; (2) it provides the clearest level-by-level inline comments describing each reduction stage; (3) it uses conventional naming (par_l1 through par_l8) and separates wire declaration from assignment, maintaining consistency with the original par_chain_out pattern; (4) t1 is more compact but lacks the explanatory comment context; (5) t3 adds an unnecessary explicit passthrough (par_l0 = xd_q[511:0]) and loses the protective comment. Since functional equivalence and timing are identical across all three, code maintainability and clarity determine the best choice.",
+  "conflicts_resolved": "All four contested regions (301-302, 319-320, 322-323, 327-331) are identical in substance across all three candidates \u2014 each replaces the serial par_chain with the same 9-level balanced binary tree topology. The differences are purely stylistic (naming convention, comment placement, and inline vs. separate assignment). t2's approach is selected for the superior comment structure that explains the architecture constraint.",
+  "expected_vs_mechanical": "No mechanical union was possible due to universal overlap. t2 provides not only the tree implementation but also preserves the critical architectural explanation: why par_chain_out is a wire rather than a direct assignment, which is enforced by the protection of the cdc_xfrm_from_look line. This context prevents future maintainers from 'optimizing' the code back into an unusable form.",
+  "equivalence_argument": "The balanced binary tree computes the XOR of all 512 bits of xd_q over log\u2082(512) = 9 stages instead of 512. Each stage combines pairs with XOR: par_l1[i] = xd_q[2i] \u2295 xd_q[2i+1], then par_l2[i] = par_l1[2i] \u2295 par_l1[2i+1], etc. The final result par_l8[0] \u2295 par_l8[1] is the XOR of all 512 bits, identical to the original par_chain[512] which accumulated the same result serially. XOR is associative and commutative, so any binary tree computing all-bits-XOR is functionally equivalent. No reset logic is affected (all wires are combinational), and there is no width-extension concern (XOR preserves 1-bit width at each stage). Equivalence holds cycle-for-cycle."
+}

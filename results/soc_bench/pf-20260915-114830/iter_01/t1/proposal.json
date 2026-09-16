@@ -1,0 +1,14 @@
+{
+  "id": "t1",
+  "target_id": "T1",
+  "target_kind": "segment",
+  "target_value": 0.59667865257752,
+  "pattern": "High-fanout operand registers feeding multiplier array",
+  "strategy": "Replicate operand pipelines to split fanout",
+  "rationale": "The sys_a_q and sys_b_q registers each drive 12 multipliers (fanout 34). Splitting into two identical copies reduces per-register fanout from 12 to 6, lowering driver capacitance and slew delay on the launch path. Synthesis will map each copy to a faster driver, and the reduced load directly shortens the path.",
+  "target": "sys_a_q, sys_b_q pipeline registers, lines 102-123; multiplier generation, lines 132-137",
+  "expected_slack_recovery_ns": 0.45,
+  "area_cost": "small \u2014 two duplicate register sets, but operands are 16 bits \u00d7 12 taps each, and synthesis will optimize identical pipelines into shared structure if beneficial",
+  "equivalence_argument": "The two operand pipelines (sys_a_q + sys_a_q_dup, sys_b_q + sys_b_q_dup) are identically initialized (both to zero) and updated with identical inputs on every cycle. Both reset to zero synchronously. The first 6 products use (sys_a_q, sys_b_q), the last 6 use (sys_a_q_dup, sys_b_q_dup); since the operand pairs are always identical, the products are identical bit-for-bit. The products feed the same addition tree, producing identical sys_s[i] values and identical final sys_acc_p and sys_sat_p outputs. Reset timing is identical (both pipelines reset on the same edge), and all intermediate widths (16 bits) are preserved. Equivalence is trivial: the design now computes 12 products from two duplicate source pipes instead of one, but the results are identical.",
+  "declared_changed": true
+}

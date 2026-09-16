@@ -1,0 +1,52 @@
+{
+  "conflicts": [
+    {
+      "file": "dual_clock.v",
+      "candidates": [
+        "t1",
+        "t2"
+      ],
+      "parent_lines": [
+        103,
+        109
+      ],
+      "hunks": 2
+    },
+    {
+      "file": "dual_clock.v",
+      "candidates": [
+        "t1",
+        "t2"
+      ],
+      "parent_lines": [
+        114,
+        114
+      ],
+      "hunks": 2
+    }
+  ],
+  "clean": [
+    {
+      "file": "dual_clock.v",
+      "candidates": [
+        "t1"
+      ],
+      "parent_lines": [
+        91,
+        93
+      ],
+      "hunks": 1
+    }
+  ],
+  "conflicted_candidates": [
+    "t1",
+    "t2"
+  ],
+  "excluded": {},
+  "applied_candidates": [
+    "t1"
+  ],
+  "applied_hunks": 1,
+  "dropped_hunks": 4,
+  "changed": true
+}

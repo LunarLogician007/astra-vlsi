@@ -1,0 +1,2035 @@
+{
+  "targets": [
+    {
+      "id": "T1",
+      "kind": "segment",
+      "rank": 1,
+      "slack_ns": -2.3404,
+      "value": 0.560377863079403,
+      "value_terms": {
+        "impact": 0.29595144176375277,
+        "severity": 0.73404,
+        "tractability": 0.8514285714285714
+      },
+      "p_critical": 0.9999999999999996,
+      "tns_share": 0.13668870355403184,
+      "tns_share_truncated": true,
+      "mass_ns": 28.270376737608206,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "sel",
+        "startpoint_info": "input port clocked by clk",
+        "endpoint": "total_discount[1023]",
+        "endpoint_info": "output port clocked by clk",
+        "path_group": "clk",
+        "path_type": "max",
+        "slack_ns": -2.3404,
+        "status": "VIOLATED",
+        "arrival_ns": 6.5404,
+        "required_ns": 4.2,
+        "logic_depth": 290
+      },
+      "member_count": 60,
+      "members": [
+        {
+          "slack_ns": -2.3404,
+          "endpoint": "total_discount[1023]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.3031,
+          "endpoint": "total_discount[1022]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2831,
+          "endpoint": "total_discount[1021]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2349,
+          "endpoint": "total_discount[1020]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2077,
+          "endpoint": "total_discount[1019]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1837,
+          "endpoint": "total_discount[1018]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1391,
+          "endpoint": "total_discount[1017]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1187,
+          "endpoint": "total_discount[1016]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0859,
+          "endpoint": "total_discount[1015]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0628,
+          "endpoint": "total_discount[1014]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0299,
+          "endpoint": "total_discount[1013]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0068,
+          "endpoint": "total_discount[1012]",
+          "startpoint": "sel"
+        }
+      ],
+      "stage_span": [
+        0,
+        70
+      ],
+      "delay_ns": 1.9357,
+      "delay_share": 0.296,
+      "cell_families": {
+        "aoi_oai": 62,
+        "mux": 2,
+        "xor": 2
+      },
+      "cell_walk": [
+        "MUX2_X1",
+        "MUX2_X1",
+        "XOR2_X1",
+        "XOR2_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1"
+      ],
+      "max_fanout": 2047,
+      "fanout_pins": [
+        "sel (in)"
+      ],
+      "regions": [
+        {
+          "file": "vending_machine.v",
+          "line": 52,
+          "end_line": 52,
+          "via": "driver via cone origin",
+          "stages": 62,
+          "delay_ns": 1.0563,
+          "source": [
+            "   52 |         total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);"
+          ]
+        },
+        {
+          "file": "vending_machine.v",
+          "line": 32,
+          "end_line": 32,
+          "via": "declaration via cone origin",
+          "stages": 4,
+          "delay_ns": 0.1294,
+          "source": [
+            "   32 |     input wire [K*DATA_WIDTH-1:0] discountA, discountB, discountC, discountD;"
+          ]
+        }
+      ],
+      "signals": [
+        "discountD",
+        "total_discount"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "66 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 66,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 2 XOR, 62 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 2,
+            "aoi_oai": 62
+          }
+        },
+        {
+          "pattern": "high fanout on the critical path",
+          "evidence": "fanout 2047 at sel (in) (1 stage(s) at or above 8)",
+          "metric": {
+            "max_fanout": 2047,
+            "threshold": 8,
+            "pins": [
+              "sel (in)"
+            ]
+          }
+        },
+        {
+          "pattern": "delay concentrated in a few stages",
+          "evidence": "50% of the path delay sits in 5 of 70 stages -- a local fix can recover most of it",
+          "metric": {
+            "top5_fraction": 0.501
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "high-fanout-signal-on-the-critical-path::replicate-the-driver-so-each-load-group-has-its-",
+          "pattern": "high-fanout signal on the critical path",
+          "strategy": "replicate the driver so each load group has its own copy",
+          "rationale": "A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.",
+          "example": "reg sel_a, sel_b;  // two copies of one condition\nalways @(posedge clk) begin sel_a <= cond; sel_b <= cond; end",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.8
+        },
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 6,
+            "sec_pass": 5,
+            "sec_fail": 1,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 6
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-13T10:40:15+00:00"
+          },
+          "confidence": 0.0329,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-13T10:40:15+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        }
+      ],
+      "allowed_lines": {
+        "vending_machine.v": [
+          [
+            29,
+            35
+          ],
+          [
+            49,
+            55
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk",
+      "period_ns": 5.0,
+      "brief": "## Target T1 -- segment, 14% of reported TNS\n\nrepresentative  sel -> total_discount[1023]\nslack           -2.3404 ns (47% short of a 5 ns cycle)\nclock           clk, 5 ns period\nsegment         stages 0-70 of 295 on the worst path\n                1.9357 ns, 30% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.560  (impact 0.30, severity 0.73, tractability 0.85)\n\ncell mix        62x aoi_oai, 2x mux, 2x xor\nfanout peak     2047 at sel (in)\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 66 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 2 XOR, 62 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - high fanout on the critical path: fanout 2047 at sel (in) (1 stage(s) at or above 8)\n  - delay concentrated in a few stages: 50% of the path delay sits in 5 of 70 stages -- a local fix can recover most of it\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  MUX2_X1 -> MUX2_X1 -> XOR2_X1 -> XOR2_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1  ... 26 more ...  OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1\n\nRTL this target resolves to:\n  vending_machine.v:52  62 stage(s), 1.0563 ns via driver via cone origin\n       52 |         total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);\n  vending_machine.v:32  4 stage(s), 0.1294 ns via declaration via cone origin\n       32 |     input wire [K*DATA_WIDTH-1:0] discountA, discountB, discountC, discountD;\n  signals: discountD, total_discount\n\nskills the library offers for this pattern:\n- [UNTESTED] high-fanout signal on the critical path  ->  replicate the driver so each load group has its own copy\n    why: A net driving many loads needs a big driver or a buffer tree; both cost delay on the launching path. Duplicating the logic that produces it splits the load without changing the value.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 6 decided use(s), SEC pass 5/6, confidence 0.03, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain"
+    },
+    {
+      "id": "T2",
+      "kind": "segment",
+      "rank": 2,
+      "slack_ns": -2.3404,
+      "value": 0.5929928001100817,
+      "value_terms": {
+        "impact": 0.36906400024462593,
+        "severity": 0.73404,
+        "tractability": 0.8500000000000001
+      },
+      "p_critical": 0.9999999999999996,
+      "tns_share": 0.17045661079148489,
+      "tns_share_truncated": true,
+      "mass_ns": 35.2543588401676,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "sel",
+        "startpoint_info": "input port clocked by clk",
+        "endpoint": "total_discount[1023]",
+        "endpoint_info": "output port clocked by clk",
+        "path_group": "clk",
+        "path_type": "max",
+        "slack_ns": -2.3404,
+        "status": "VIOLATED",
+        "arrival_ns": 6.5404,
+        "required_ns": 4.2,
+        "logic_depth": 290
+      },
+      "member_count": 60,
+      "members": [
+        {
+          "slack_ns": -2.3404,
+          "endpoint": "total_discount[1023]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.3031,
+          "endpoint": "total_discount[1022]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2831,
+          "endpoint": "total_discount[1021]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2349,
+          "endpoint": "total_discount[1020]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2077,
+          "endpoint": "total_discount[1019]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1837,
+          "endpoint": "total_discount[1018]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1391,
+          "endpoint": "total_discount[1017]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1187,
+          "endpoint": "total_discount[1016]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0859,
+          "endpoint": "total_discount[1015]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0628,
+          "endpoint": "total_discount[1014]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0299,
+          "endpoint": "total_discount[1013]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0068,
+          "endpoint": "total_discount[1012]",
+          "startpoint": "sel"
+        }
+      ],
+      "stage_span": [
+        70,
+        174
+      ],
+      "delay_ns": 2.4139,
+      "delay_share": 0.3691,
+      "cell_families": {
+        "aoi_oai": 76,
+        "nand_nor": 16,
+        "and_or": 12
+      },
+      "cell_walk": [
+        "NOR4_X1",
+        "NOR4_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "OR4_X1",
+        "OR4_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "NAND3_X1",
+        "NAND3_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "NOR2_X1",
+        "NOR2_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "OR4_X1",
+        "OR4_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "NAND4_X1",
+        "NAND4_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "OR4_X1",
+        "OR4_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "NAND3_X1",
+        "NAND3_X1"
+      ],
+      "max_fanout": 6,
+      "fanout_pins": [],
+      "regions": [
+        {
+          "file": "vending_machine.v",
+          "line": 52,
+          "end_line": 52,
+          "via": "driver via cone origin",
+          "stages": 68,
+          "delay_ns": 1.6956,
+          "source": [
+            "   52 |         total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);"
+          ]
+        },
+        {
+          "file": "vending_machine.v",
+          "line": 32,
+          "end_line": 32,
+          "via": "declaration via cone origin",
+          "stages": 36,
+          "delay_ns": 0.7183,
+          "source": [
+            "   32 |     input wire [K*DATA_WIDTH-1:0] discountA, discountB, discountC, discountD;"
+          ]
+        }
+      ],
+      "signals": [
+        "total_discount",
+        "discountC",
+        "discountD"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "104 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 104,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 0 XOR, 76 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 0,
+            "aoi_oai": 76
+          }
+        },
+        {
+          "pattern": "delay spread evenly along the path",
+          "evidence": "the 5 worst of 104 stages hold only 17% of the delay -- no single hot cell; the depth itself is the problem",
+          "metric": {
+            "top5_fraction": 0.173
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 6,
+            "sec_pass": 5,
+            "sec_fail": 1,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 6
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-13T10:40:15+00:00"
+          },
+          "confidence": 0.0329,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-13T10:40:15+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "output-multiplexer-selecting-wide-arithmetic-res::move-mux-before-computation-into-single-path",
+          "pattern": "Output multiplexer selecting wide arithmetic results",
+          "strategy": "Move mux before computation into single path",
+          "rationale": "Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.",
+          "example": "// Before: two carries + output selection\nwire [N-1:0] sum_a = a + b;\nwire [N-1:0] sum_b = c + d;\nassign result = select ? sum_a : sum_b;\n\n// After: input mux + one carry\nwire [N-1:0] a_sel = select ? a : c;\nwire [N-1:0] b_sel = select ? b : d;\nassign result = a_sel + b_sel;",
+          "source": "learned",
+          "created_at": "2026-09-15T15:29:32+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865476,
+            "advantage_n": 1,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [
+              "vending_machine"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "vending_machine",
+            "iteration": 1,
+            "at": "2026-09-15T15:29:32+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865476,
+          "status": "candidate",
+          "updated_at": "2026-09-15T15:29:32+00:00",
+          "match_score": 0.25
+        }
+      ],
+      "allowed_lines": {
+        "vending_machine.v": [
+          [
+            29,
+            35
+          ],
+          [
+            49,
+            55
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk",
+      "period_ns": 5.0,
+      "brief": "## Target T2 -- segment, 17% of reported TNS\n\nrepresentative  sel -> total_discount[1023]\nslack           -2.3404 ns (47% short of a 5 ns cycle)\nclock           clk, 5 ns period\nsegment         stages 70-174 of 295 on the worst path\n                2.4139 ns, 37% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.593  (impact 0.37, severity 0.73, tractability 0.85)\n\ncell mix        76x aoi_oai, 16x nand_nor, 12x and_or\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 104 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 0 XOR, 76 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 104 stages hold only 17% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  NOR4_X1 -> NOR4_X1 -> OAI211_X1 -> OAI211_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> AOI211_X1 -> AOI211_X1 -> NAND2_X1 -> NAND2_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1  ... 64 more ...  AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> AND2_X1 -> AND2_X1 -> OR4_X1 -> OR4_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> OAI21_X1 -> OAI21_X1 -> NAND3_X1 -> NAND3_X1\n\nRTL this target resolves to:\n  vending_machine.v:52  68 stage(s), 1.6956 ns via driver via cone origin\n       52 |         total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);\n  vending_machine.v:32  36 stage(s), 0.7183 ns via declaration via cone origin\n       32 |     input wire [K*DATA_WIDTH-1:0] discountA, discountB, discountC, discountD;\n  signals: total_discount, discountC, discountD\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 6 decided use(s), SEC pass 5/6, confidence 0.03, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [PROVISIONAL] Output multiplexer selecting wide arithmetic results  ->  Move mux before computation into single path\n    why: Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on vending_machine"
+    },
+    {
+      "id": "T3",
+      "kind": "segment",
+      "rank": 3,
+      "slack_ns": -2.3404,
+      "value": 0.5768306048152381,
+      "value_terms": {
+        "impact": 0.3349845579916217,
+        "severity": 0.73404,
+        "tractability": 0.8458677685950413
+      },
+      "p_critical": 0.9999999999999996,
+      "tns_share": 0.15471661387967334,
+      "tns_share_truncated": true,
+      "mass_ns": 31.998964422224294,
+      "similarity_to_selected": 0.0,
+      "representative": {
+        "startpoint": "sel",
+        "startpoint_info": "input port clocked by clk",
+        "endpoint": "total_discount[1023]",
+        "endpoint_info": "output port clocked by clk",
+        "path_group": "clk",
+        "path_type": "max",
+        "slack_ns": -2.3404,
+        "status": "VIOLATED",
+        "arrival_ns": 6.5404,
+        "required_ns": 4.2,
+        "logic_depth": 290
+      },
+      "member_count": 60,
+      "members": [
+        {
+          "slack_ns": -2.3404,
+          "endpoint": "total_discount[1023]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.3031,
+          "endpoint": "total_discount[1022]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2831,
+          "endpoint": "total_discount[1021]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2349,
+          "endpoint": "total_discount[1020]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.2077,
+          "endpoint": "total_discount[1019]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1837,
+          "endpoint": "total_discount[1018]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1391,
+          "endpoint": "total_discount[1017]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.1187,
+          "endpoint": "total_discount[1016]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0859,
+          "endpoint": "total_discount[1015]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0628,
+          "endpoint": "total_discount[1014]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0299,
+          "endpoint": "total_discount[1013]",
+          "startpoint": "sel"
+        },
+        {
+          "slack_ns": -2.0068,
+          "endpoint": "total_discount[1012]",
+          "startpoint": "sel"
+        }
+      ],
+      "stage_span": [
+        174,
+        295
+      ],
+      "delay_ns": 2.191,
+      "delay_share": 0.335,
+      "cell_families": {
+        "aoi_oai": 106,
+        "nand_nor": 8,
+        "and_or": 4,
+        "xor": 2
+      },
+      "cell_walk": [
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "NAND2_X1",
+        "NAND2_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "NAND3_X1",
+        "NAND3_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AND2_X1",
+        "AND2_X1",
+        "OR4_X1",
+        "OR4_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "NAND3_X1",
+        "NAND3_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "NOR4_X1",
+        "NOR4_X1",
+        "OAI211_X1",
+        "OAI211_X1",
+        "AOI211_X1",
+        "AOI211_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "AOI21_X1",
+        "AOI21_X1",
+        "OAI21_X1",
+        "OAI21_X1",
+        "XNOR2_X1",
+        "XNOR2_X1"
+      ],
+      "max_fanout": 4,
+      "fanout_pins": [],
+      "regions": [
+        {
+          "file": "vending_machine.v",
+          "line": 52,
+          "end_line": 52,
+          "via": "driver via cone origin",
+          "stages": 106,
+          "delay_ns": 1.9402,
+          "source": [
+            "   52 |         total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);"
+          ]
+        },
+        {
+          "file": "vending_machine.v",
+          "line": 32,
+          "end_line": 32,
+          "via": "declaration via cone origin",
+          "stages": 14,
+          "delay_ns": 0.2508,
+          "source": [
+            "   32 |     input wire [K*DATA_WIDTH-1:0] discountA, discountB, discountC, discountD;"
+          ]
+        }
+      ],
+      "signals": [
+        "discountD",
+        "total_discount",
+        "discountC"
+      ],
+      "findings": [
+        {
+          "pattern": "deep combinational logic",
+          "evidence": "120 combinational cells between the launch and capture flops",
+          "metric": {
+            "logic_depth": 120,
+            "threshold": 15
+          }
+        },
+        {
+          "pattern": "wide arithmetic / carry propagation",
+          "evidence": "0 adder cells, 2 XOR, 106 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree",
+          "metric": {
+            "adder": 0,
+            "xor": 2,
+            "aoi_oai": 106
+          }
+        },
+        {
+          "pattern": "delay spread evenly along the path",
+          "evidence": "the 5 worst of 121 stages hold only 16% of the delay -- no single hot cell; the depth itself is the problem",
+          "metric": {
+            "top5_fraction": 0.157
+          }
+        }
+      ],
+      "skills": [
+        {
+          "id": "carry-propagation-across-a-wide-accumulator::accumulate-in-carry-save-form-and-resolve-with-a",
+          "pattern": "carry propagation across a wide accumulator",
+          "strategy": "accumulate in carry-save form and resolve with a single carry-propagate adder",
+          "rationale": "Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.",
+          "example": "// keep {s, c} redundant through the chain, resolve once at the end\nwire [W:0] total = s + c;",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.5
+        },
+        {
+          "id": "deep-fsm-or-decode-logic::pre-decode-the-next-state-one-cycle-early-and-re",
+          "pattern": "deep FSM or decode logic",
+          "strategy": "pre-decode the next state one cycle early and register the decoded form",
+          "rationale": "Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.",
+          "example": "// binary state, decoded late\nassign en = (state == RUN);\n// one-hot, decoded early\nalways @(posedge clk) en_q <= (next_state == RUN);",
+          "source": "seed",
+          "created_at": "2026-08-31T18:17:28+00:00",
+          "stats": {
+            "occurrences": 0,
+            "sec_pass": 0,
+            "sec_fail": 0,
+            "advantage_sum": 0.0,
+            "advantage_n": 0,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [],
+            "iterations": 0,
+            "inconclusive": 0
+          },
+          "confidence": 0.0,
+          "mean_advantage": null,
+          "status": "candidate",
+          "match_score": 0.4
+        },
+        {
+          "id": "carry-propagation-in-accumulator-tree::replace-multi-level-add-tree-with-carry-save-3-2",
+          "pattern": "Carry propagation in accumulator tree",
+          "strategy": "Replace multi-level add tree with carry-save 3:2 compression",
+          "rationale": "Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.",
+          "example": "// Tree: (s0+s1, s2+s3) then their sum\nsum_01 = s0 + s1;\nsum_23 = s2 + s3;\nresult = sum_01 + sum_23; // depth 2\n\n// Carry-save attempt:\ncompressor_3to2(s0, s1, s2, s3, sum, carry);\nresult = sum + carry; // still high latency from final add",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 6,
+            "sec_pass": 5,
+            "sec_fail": 1,
+            "inconclusive": 0,
+            "advantage_sum": 2.766699071489424,
+            "advantage_n": 2,
+            "score_delta_sum": 0.009092027113597176,
+            "score_delta_n": 2,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 6
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-13T10:40:15+00:00"
+          },
+          "confidence": 0.0329,
+          "mean_advantage": 1.383349535744712,
+          "status": "candidate",
+          "updated_at": "2026-09-13T10:40:15+00:00",
+          "match_score": 0.333
+        },
+        {
+          "id": "carry-propagation-in-sequential-40-bit-additions::unable-to-reduce-depth-safely-while-maintaining-",
+          "pattern": "carry propagation in sequential 40-bit additions",
+          "strategy": "unable to reduce depth safely while maintaining equivalence",
+          "rationale": "Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:13:35+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.8904758344281221,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 1,
+            "at": "2026-09-09T02:13:35+00:00"
+          },
+          "confidence": 0.214,
+          "mean_advantage": -0.8904758344281221,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:13:35+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "carry-propagation-in-40-bit-final-accumulate::no-equivalent-optimization-available",
+          "pattern": "Carry propagation in 40-bit final accumulate",
+          "strategy": "No equivalent optimization available",
+          "rationale": "Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.",
+          "example": "",
+          "source": "learned",
+          "created_at": "2026-09-09T02:20:02+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865541,
+            "advantage_n": 1,
+            "score_delta_sum": -0.46583656261221806,
+            "score_delta_n": 1,
+            "designs": [
+              "mac_chain"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "mac_chain",
+            "iteration": 2,
+            "at": "2026-09-09T02:20:02+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865541,
+          "status": "candidate",
+          "updated_at": "2026-09-09T02:20:02+00:00",
+          "match_score": 0.286
+        },
+        {
+          "id": "output-multiplexer-selecting-wide-arithmetic-res::move-mux-before-computation-into-single-path",
+          "pattern": "Output multiplexer selecting wide arithmetic results",
+          "strategy": "Move mux before computation into single path",
+          "rationale": "Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.",
+          "example": "// Before: two carries + output selection\nwire [N-1:0] sum_a = a + b;\nwire [N-1:0] sum_b = c + d;\nassign result = select ? sum_a : sum_b;\n\n// After: input mux + one carry\nwire [N-1:0] a_sel = select ? a : c;\nwire [N-1:0] b_sel = select ? b : d;\nassign result = a_sel + b_sel;",
+          "source": "learned",
+          "created_at": "2026-09-15T15:29:32+00:00",
+          "stats": {
+            "occurrences": 1,
+            "sec_pass": 1,
+            "sec_fail": 0,
+            "inconclusive": 0,
+            "advantage_sum": -0.7071067811865476,
+            "advantage_n": 1,
+            "score_delta_sum": 0.0,
+            "score_delta_n": 0,
+            "designs": [
+              "vending_machine"
+            ],
+            "iterations": 1
+          },
+          "last_seen": {
+            "design": "vending_machine",
+            "iteration": 1,
+            "at": "2026-09-15T15:29:32+00:00"
+          },
+          "confidence": 0.2011,
+          "mean_advantage": -0.7071067811865476,
+          "status": "candidate",
+          "updated_at": "2026-09-15T15:29:32+00:00",
+          "match_score": 0.25
+        }
+      ],
+      "allowed_lines": {
+        "vending_machine.v": [
+          [
+            29,
+            35
+          ],
+          [
+            49,
+            55
+          ]
+        ]
+      },
+      "scope_enforceable": true,
+      "clock_group": "clk",
+      "period_ns": 5.0,
+      "brief": "## Target T3 -- segment, 15% of reported TNS\n\nrepresentative  sel -> total_discount[1023]\nslack           -2.3404 ns (47% short of a 5 ns cycle)\nclock           clk, 5 ns period\nsegment         stages 174-295 of 295 on the worst path\n                2.1910 ns, 34% of the path's delay\ncriticality     the path this segment sits on limits the clock 100% of the time under the delay-uncertainty model\nvalue           0.577  (impact 0.33, severity 0.73, tractability 0.85)\n\ncell mix        106x aoi_oai, 8x nand_nor, 4x and_or, 2x xor\n\nroot causes (mechanical, from the STA report):\n  - deep combinational logic: 120 combinational cells between the launch and capture flops\n  - wide arithmetic / carry propagation: 0 adder cells, 2 XOR, 106 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree\n  - delay spread evenly along the path: the 5 worst of 121 stages hold only 16% of the delay -- no single hot cell; the depth itself is the problem\n\ncell walk in path order (this is the topology -- a run of\nAOI/OAI/XOR is carry propagation, a run of AND/OR feeding a\nwide reduction is comparison or selection logic):\n  AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> AOI211_X1 -> AOI211_X1 -> NAND2_X1 -> NAND2_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> AOI211_X1 -> AOI211_X1 -> OAI211_X1 -> OAI211_X1 -> OAI21_X1 -> OAI21_X1 -> NAND3_X1 -> NAND3_X1  ... 80 more ...  AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> AOI21_X1 -> AOI21_X1 -> OAI21_X1 -> OAI21_X1 -> XNOR2_X1 -> XNOR2_X1\n\nRTL this target resolves to:\n  vending_machine.v:52  106 stage(s), 1.9402 ns via driver via cone origin\n       52 |         total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);\n  vending_machine.v:32  14 stage(s), 0.2508 ns via declaration via cone origin\n       32 |     input wire [K*DATA_WIDTH-1:0] discountA, discountB, discountC, discountD;\n  signals: discountD, total_discount, discountC\n\nskills the library offers for this pattern:\n- [UNTESTED] carry propagation across a wide accumulator  ->  accumulate in carry-save form and resolve with a single carry-propagate adder\n    why: Each full-width add resolves a carry chain. Keeping the running total as a redundant (sum, carry) pair makes every intermediate add a constant-depth 3:2 compression, and only the last step pays for a carry chain.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [UNTESTED] deep FSM or decode logic  ->  pre-decode the next state one cycle early and register the decoded form\n    why: Decoding a binary state register into control signals puts a decoder in series with everything it controls. Registering the decoded (one-hot) form moves the decode off the consuming path without adding latency, because the decode of the *next* state is computable this cycle.\n    record: 0 decided use(s), SEC pass 0/0, confidence 0.00\n- [PROVISIONAL] Carry propagation in accumulator tree  ->  Replace multi-level add tree with carry-save 3:2 compression\n    why: Current balanced tree synthesizes to serial carry-propagation: two 40-bit adds (s01, s23) feed a third. Carry-save reduces three adds (depth 2x single-add) to one: a constant-depth 3:2 compressor producing (sum, carry) pair, followed by one final carry-propagate add. Depth halves.\n    record: 6 decided use(s), SEC pass 5/6, confidence 0.03, mean advantage +1.383, seen on mac_chain\n- [ATTEMPTED] carry propagation in sequential 40-bit additions\n    a previous run tried this and recorded: unable to reduce depth safely while maintaining equivalence\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Three 40-bit additions (s0+s1, s2+s3, then those two) form 22-stage carry chains. Parallel prefix or carry-save approaches either require hand-coded complex adders (no synthesis guarantee) or change overflow truncation behavior, breaking bit-exact equivalence. Reordering violates the 2-cycle latency constraint.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.21, mean advantage -0.890, seen on mac_chain\n- [ATTEMPTED] Carry propagation in 40-bit final accumulate\n    a previous run tried this and recorded: No equivalent optimization available\n    NOTE: that is an outcome, not a transformation. It does not mean the pattern is unfixable -- read the record below and decide for yourself.\n    why: Carry-save 3:2 compression was attempted in iteration 1, SEC-passed but synthesized to slower hardware. The balanced tree structure is already standard practice. Ripple carry depth is inherent to the 4-term 40-bit sum without algorithmic restructuring.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on mac_chain\n- [PROVISIONAL] Output multiplexer selecting wide arithmetic results  ->  Move mux before computation into single path\n    why: Eliminates duplicate carry chains. Input multiplexers have shallower propagation delay than output selection after two wide adders. Synthesis can then optimize a single arithmetic datapath, reducing critical-path depth and area.\n    record: 1 decided use(s), SEC pass 1/1, confidence 0.20, mean advantage -0.707, seen on vending_machine"
+    }
+  ],
+  "k_requested": 3,
+  "k_effective": 3,
+  "collapsed": true,
+  "clusters": [
+    {
+      "members": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "value": 0.8812139999999998,
+      "terms": {
+        "impact": 0.9999999999999996,
+        "severity": 0.73404,
+        "tractability": 0.8714999999999999
+      },
+      "tns_share": 0.4618619282251897,
+      "p_critical": 0.9999999999999996
+    }
+  ],
+  "cluster_count": 1,
+  "distribution": [
+    {
+      "rank": 1,
+      "p_critical": 0.31325,
+      "slack_ns": -2.3404,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1023]",
+      "cone": 0
+    },
+    {
+      "rank": 2,
+      "p_critical": 0.2128,
+      "slack_ns": -2.3031,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1022]",
+      "cone": 0
+    },
+    {
+      "rank": 3,
+      "p_critical": 0.1759,
+      "slack_ns": -2.2831,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1021]",
+      "cone": 0
+    },
+    {
+      "rank": 4,
+      "p_critical": 0.1001,
+      "slack_ns": -2.2349,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1020]",
+      "cone": 0
+    },
+    {
+      "rank": 5,
+      "p_critical": 0.07115,
+      "slack_ns": -2.2077,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1019]",
+      "cone": 0
+    },
+    {
+      "rank": 6,
+      "p_critical": 0.0516,
+      "slack_ns": -2.1837,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1018]",
+      "cone": 0
+    },
+    {
+      "rank": 7,
+      "p_critical": 0.0267,
+      "slack_ns": -2.1391,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1017]",
+      "cone": 0
+    },
+    {
+      "rank": 8,
+      "p_critical": 0.0195,
+      "slack_ns": -2.1187,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1016]",
+      "cone": 0
+    },
+    {
+      "rank": 9,
+      "p_critical": 0.01225,
+      "slack_ns": -2.0859,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1015]",
+      "cone": 0
+    },
+    {
+      "rank": 10,
+      "p_critical": 0.00755,
+      "slack_ns": -2.0628,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1014]",
+      "cone": 0
+    },
+    {
+      "rank": 11,
+      "p_critical": 0.0039,
+      "slack_ns": -2.0299,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1013]",
+      "cone": 0
+    },
+    {
+      "rank": 12,
+      "p_critical": 0.0025,
+      "slack_ns": -2.0068,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1012]",
+      "cone": 0
+    },
+    {
+      "rank": 13,
+      "p_critical": 0.0012,
+      "slack_ns": -1.974,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1011]",
+      "cone": 0
+    },
+    {
+      "rank": 14,
+      "p_critical": 0.00075,
+      "slack_ns": -1.9509,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1010]",
+      "cone": 0
+    },
+    {
+      "rank": 15,
+      "p_critical": 0.00035,
+      "slack_ns": -1.918,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1009]",
+      "cone": 0
+    },
+    {
+      "rank": 17,
+      "p_critical": 0.0002,
+      "slack_ns": -1.867,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1007]",
+      "cone": 0
+    },
+    {
+      "rank": 16,
+      "p_critical": 0.00015,
+      "slack_ns": -1.8949,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1008]",
+      "cone": 0
+    },
+    {
+      "rank": 18,
+      "p_critical": 0.00015,
+      "slack_ns": -1.839,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1006]",
+      "cone": 0
+    },
+    {
+      "rank": 19,
+      "p_critical": 0.0,
+      "slack_ns": -1.811,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1005]",
+      "cone": 0
+    },
+    {
+      "rank": 20,
+      "p_critical": 0.0,
+      "slack_ns": -1.783,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1004]",
+      "cone": 0
+    },
+    {
+      "rank": 21,
+      "p_critical": 0.0,
+      "slack_ns": -1.7551,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1003]",
+      "cone": 0
+    },
+    {
+      "rank": 22,
+      "p_critical": 0.0,
+      "slack_ns": -1.7271,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1002]",
+      "cone": 0
+    },
+    {
+      "rank": 23,
+      "p_critical": 0.0,
+      "slack_ns": -1.6991,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1001]",
+      "cone": 0
+    },
+    {
+      "rank": 24,
+      "p_critical": 0.0,
+      "slack_ns": -1.6711,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[1000]",
+      "cone": 0
+    },
+    {
+      "rank": 25,
+      "p_critical": 0.0,
+      "slack_ns": -1.6432,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[999]",
+      "cone": 0
+    },
+    {
+      "rank": 26,
+      "p_critical": 0.0,
+      "slack_ns": -1.6152,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[998]",
+      "cone": 0
+    },
+    {
+      "rank": 27,
+      "p_critical": 0.0,
+      "slack_ns": -1.5873,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[997]",
+      "cone": 0
+    },
+    {
+      "rank": 28,
+      "p_critical": 0.0,
+      "slack_ns": -1.5592,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[996]",
+      "cone": 0
+    },
+    {
+      "rank": 29,
+      "p_critical": 0.0,
+      "slack_ns": -1.5386,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[995]",
+      "cone": 0
+    },
+    {
+      "rank": 30,
+      "p_critical": 0.0,
+      "slack_ns": -1.5009,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[994]",
+      "cone": 0
+    },
+    {
+      "rank": 31,
+      "p_critical": 0.0,
+      "slack_ns": -1.4713,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[993]",
+      "cone": 0
+    },
+    {
+      "rank": 32,
+      "p_critical": 0.0,
+      "slack_ns": -1.4494,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[991]",
+      "cone": 0
+    },
+    {
+      "rank": 33,
+      "p_critical": 0.0,
+      "slack_ns": -1.444,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[992]",
+      "cone": 0
+    },
+    {
+      "rank": 34,
+      "p_critical": 0.0,
+      "slack_ns": -1.4386,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[987]",
+      "cone": 0
+    },
+    {
+      "rank": 35,
+      "p_critical": 0.0,
+      "slack_ns": -1.4304,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[990]",
+      "cone": 0
+    },
+    {
+      "rank": 36,
+      "p_critical": 0.0,
+      "slack_ns": -1.4261,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[989]",
+      "cone": 0
+    },
+    {
+      "rank": 37,
+      "p_critical": 0.0,
+      "slack_ns": -1.4011,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[986]",
+      "cone": 0
+    },
+    {
+      "rank": 38,
+      "p_critical": 0.0,
+      "slack_ns": -1.3999,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[988]",
+      "cone": 0
+    },
+    {
+      "rank": 39,
+      "p_critical": 0.0,
+      "slack_ns": -1.3877,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[985]",
+      "cone": 0
+    },
+    {
+      "rank": 40,
+      "p_critical": 0.0,
+      "slack_ns": -1.363,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[984]",
+      "cone": 0
+    },
+    {
+      "rank": 41,
+      "p_critical": 0.0,
+      "slack_ns": -1.3391,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[983]",
+      "cone": 0
+    },
+    {
+      "rank": 42,
+      "p_critical": 0.0,
+      "slack_ns": -1.3015,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[982]",
+      "cone": 0
+    },
+    {
+      "rank": 43,
+      "p_critical": 0.0,
+      "slack_ns": -1.3002,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[981]",
+      "cone": 0
+    },
+    {
+      "rank": 44,
+      "p_critical": 0.0,
+      "slack_ns": -1.2838,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[979]",
+      "cone": 0
+    },
+    {
+      "rank": 45,
+      "p_critical": 0.0,
+      "slack_ns": -1.2634,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[980]",
+      "cone": 0
+    },
+    {
+      "rank": 46,
+      "p_critical": 0.0,
+      "slack_ns": -1.2468,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[978]",
+      "cone": 0
+    },
+    {
+      "rank": 47,
+      "p_critical": 0.0,
+      "slack_ns": -1.2376,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[975]",
+      "cone": 0
+    },
+    {
+      "rank": 48,
+      "p_critical": 0.0,
+      "slack_ns": -1.2242,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[977]",
+      "cone": 0
+    },
+    {
+      "rank": 49,
+      "p_critical": 0.0,
+      "slack_ns": -1.2128,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[974]",
+      "cone": 0
+    },
+    {
+      "rank": 50,
+      "p_critical": 0.0,
+      "slack_ns": -1.2092,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[973]",
+      "cone": 0
+    },
+    {
+      "rank": 51,
+      "p_critical": 0.0,
+      "slack_ns": -1.1959,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[976]",
+      "cone": 0
+    },
+    {
+      "rank": 52,
+      "p_critical": 0.0,
+      "slack_ns": -1.1792,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[972]",
+      "cone": 0
+    },
+    {
+      "rank": 53,
+      "p_critical": 0.0,
+      "slack_ns": -1.1782,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[971]",
+      "cone": 0
+    },
+    {
+      "rank": 54,
+      "p_critical": 0.0,
+      "slack_ns": -1.1458,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[969]",
+      "cone": 0
+    },
+    {
+      "rank": 55,
+      "p_critical": 0.0,
+      "slack_ns": -1.1406,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[970]",
+      "cone": 0
+    },
+    {
+      "rank": 56,
+      "p_critical": 0.0,
+      "slack_ns": -1.1217,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[965]",
+      "cone": 0
+    },
+    {
+      "rank": 57,
+      "p_critical": 0.0,
+      "slack_ns": -1.1196,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[968]",
+      "cone": 0
+    },
+    {
+      "rank": 58,
+      "p_critical": 0.0,
+      "slack_ns": -1.1182,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[967]",
+      "cone": 0
+    },
+    {
+      "rank": 59,
+      "p_critical": 0.0,
+      "slack_ns": -1.0827,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[963]",
+      "cone": 0
+    },
+    {
+      "rank": 60,
+      "p_critical": 0.0,
+      "slack_ns": -1.081,
+      "status": "VIOLATED",
+      "startpoint": "sel",
+      "endpoint": "total_discount[966]",
+      "cone": 0
+    }
+  ],
+  "cone_distribution": [
+    {
+      "cone": 0,
+      "p_critical": 0.9999999999999996,
+      "paths": 60,
+      "worst_slack_ns": -2.3404
+    }
+  ],
+  "sigma": 0.05,
+  "rho": 0.7,
+  "clocks": {
+    "groups": {
+      "clk": {
+        "paths": 60,
+        "period_ns": 5.0,
+        "resolved": true
+      }
+    },
+    "unresolved": [],
+    "all_resolved": true
+  },
+  "pool": {
+    "paths": 60,
+    "violating": 60,
+    "tns_ns": -206.8230658609852,
+    "truncated": true
+  }
+}

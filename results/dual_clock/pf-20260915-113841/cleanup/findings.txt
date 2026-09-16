@@ -1,0 +1,41 @@
+pre-synthesis scan of dual_clock.v
+29 assignment(s), 24 declaration(s)
+
+findings, worst first (each is a hypothesis with its evidence, not a measurement):
+
+  [high  ] serial chain elaborated by a generate loop
+    at dual_clock.v:82-84
+    `fa_q` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at dual_clock.v:84-85
+    `fb_q` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at dual_clock.v:106-107
+    `acc` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at dual_clock.v:129-132
+    `any_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [high  ] serial chain elaborated by a generate loop
+    at dual_clock.v:132-134
+    `sel_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8
+
+  [medium] wide arithmetic in one expression
+    at dual_clock.v:95
+    1 add/subtract at 28 bits on `term` -- 6 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at dual_clock.v:106
+    1 add/subtract at 28 bits on `acc` -- 6 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at dual_clock.v:119
+    1 add/subtract at 28 bits on `f_acc` -- 6 levels of carry each
+
+  [low   ] hand-written sign extension repeated across the datapath
+    at dual_clock.v:95-119
+    2 replicated-bit extensions (term, f_acc) -- widening by hand before each operation, rather than once at the boundary
+

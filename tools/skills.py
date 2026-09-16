@@ -41,6 +41,11 @@ _SUPPORT_K = 3.0
 # as a full unit of evidence when squashing it into [0, 1].
 _ADV_SCALE = 0.5
 
+# Two entries merge only if their strategies agree at least this much, however
+# well their patterns match: one bottleneck with two genuinely different fixes
+# is two skills, not one.
+STRATEGY_FLOOR = 0.35
+
 EFFECTIVE_AT = 0.55      # confidence at or above which an entry is promoted
 INVALID_SEC_RATE = 0.5   # SEC pass rate below which an entry is condemned
 MIN_TRIALS_TO_CONDEMN = 3
@@ -63,6 +68,38 @@ def _tokens(text: str) -> set[str]:
             if t not in _STOP and len(t) > 2}
 
 
+def _same_word(a: str, b: str) -> bool:
+    """Two tokens naming the same thing: `register`/`registers`,
+    `replicate`/`replication`, `propagate`/`propagation`.
+
+    Matching on a shared prefix rather than by stripping suffixes. A suffix
+    table looks simpler and is not: stripping `-ers` from `registers` yields
+    `regist`, which no longer matches `register`, so the rule invents the very
+    mismatch it was added to remove.
+    """
+    if a == b:
+        return True
+    n = 0
+    for x, y in zip(a, b):
+        if x != y:
+            break
+        n += 1
+    return n >= max(4, min(len(a), len(b)) - 3)
+
+
+def _shared(ta: set[str], tb: set[str]) -> int:
+    """How many tokens of `ta` have a counterpart in `tb`, each used once."""
+    used: set[str] = set()
+    count = 0
+    for x in sorted(ta):
+        for y in sorted(tb):
+            if y not in used and _same_word(x, y):
+                used.add(y)
+                count += 1
+                break
+    return count
+
+
 def similarity(a: str, b: str) -> float:
     """Jaccard overlap of content words. Cheap, deterministic, no deps.
 
@@ -73,7 +110,42 @@ def similarity(a: str, b: str) -> float:
     ta, tb = _tokens(a), _tokens(b)
     if not ta or not tb:
         return 0.0
-    return len(ta & tb) / len(ta | tb)
+    n = _shared(ta, tb)
+    return n / (len(ta) + len(tb) - n)
+
+
+def overlap(a: str, b: str) -> float:
+    """Containment: shared words over the *shorter* phrase's length.
+
+    Jaccard punishes verbosity, and these phrases are written by a model that
+    is inconsistently verbose about the same idea. "High-fanout operand
+    driving multiplier with 38+ loads" and "High-fanout multiplier operand
+    from single register" describe one bottleneck; Jaccard scores them 0.5
+    because one carries extra words, which is not evidence that they differ.
+    """
+    ta, tb = _tokens(a), _tokens(b)
+    if not ta or not tb:
+        return 0.0
+    return _shared(ta, tb) / min(len(ta), len(tb))
+
+
+# Phrases that mark a "strategy" as a conclusion about a past attempt rather
+# than a transformation. The optimisation agent occasionally writes one of
+# these into the strategy field, and the result is a library key that reads to
+# the next agent as an instruction not to try -- which is how a transformation
+# whose own recorded advantage was favourable came to be declined.
+_VERDICT_MARKERS = (
+    "already attempted", "already tried", "previously attempted",
+    "insufficient", "no equivalent", "not applicable", "unable to",
+    "cannot be", "no further", "no improvement", "not viable",
+    "no safe", "exhausted", "no remaining",
+)
+
+
+def is_verdict(strategy: str) -> bool:
+    """True when a strategy field holds a verdict instead of a transformation."""
+    low = (strategy or "").lower()
+    return any(m in low for m in _VERDICT_MARKERS)
 
 
 def make_id(pattern: str, strategy: str) -> str:
@@ -215,6 +287,14 @@ class SkillLibrary:
         statistics too thin to ever clear the support term.
         """
         entry = self._find_similar(pattern, strategy)
+        if entry is None and is_verdict(strategy):
+            # A verdict is not a transformation, and seeding one as a library
+            # key hands the next agent a reason not to try dressed as a
+            # strategy. It can still accumulate against an entry it matches --
+            # the outcome is real evidence -- but it may not found one.
+            return {"id": None, "skipped": "strategy is a verdict, not a "
+                                           "transformation",
+                    "pattern": pattern, "strategy": strategy}
         if entry is None:
             entry = {
                 "id": make_id(pattern, strategy),
@@ -269,6 +349,31 @@ class SkillLibrary:
         entry["updated_at"] = _now()
         return entry
 
+    def merge_score(self, pattern: str, strategy: str,
+                    entry: dict[str, Any]) -> float:
+        """How much one observation looks like an existing entry.
+
+        Pattern-dominant, and forgiving of phrasing. The pattern names the
+        bottleneck, which is the thing being counted; the strategy names the
+        fix, which the model rewords freely from run to run. Weighting them
+        equally, over plain Jaccard, forked one concept into four entries of
+        one or two trials each on a real run -- none of which could ever clear
+        the support term, which is the whole point of accumulating them.
+
+        But the strategy still has to agree. Two different fixes for one
+        bottleneck -- replicate the driver, or pipeline in front of it -- are
+        two skills, and collapsing them would pool the evidence for one into
+        the record of the other. So a floor on strategy agreement gates the
+        blend, rather than the pattern being allowed to carry a merge alone.
+        """
+        p = max(similarity(pattern, entry.get("pattern", "")),
+                overlap(pattern, entry.get("pattern", "")))
+        s = max(similarity(strategy, entry.get("strategy", "")),
+                overlap(strategy, entry.get("strategy", "")))
+        if s < STRATEGY_FLOOR:
+            return 0.0
+        return 0.55 * p + 0.45 * s
+
     def _find_similar(self, pattern: str, strategy: str,
                       threshold: float = 0.6) -> dict[str, Any] | None:
         exact = self.entries.get(make_id(pattern, strategy))
@@ -276,11 +381,54 @@ class SkillLibrary:
             return exact
         best, best_score = None, threshold
         for e in self.entries.values():
-            s = 0.5 * similarity(pattern, e.get("pattern", "")) \
-                + 0.5 * similarity(strategy, e.get("strategy", ""))
+            s = self.merge_score(pattern, strategy, e)
             if s > best_score:
                 best, best_score = e, s
         return best
+
+    def consolidate(self) -> list[tuple[str, str]]:
+        """Fold near-duplicate entries into one another, statistics included.
+
+        Repairs a library that fragmented under an older, stricter merge rule.
+        The survivor is the entry with the most decided trials, so the merged
+        record is anchored on whichever phrasing the loop saw most often; ties
+        go to the entry that is not a verdict, then to the older one.
+        """
+        merged: list[tuple[str, str]] = []
+        order = sorted(
+            self.entries.values(),
+            key=lambda e: (-(e.get("stats") or {}).get("occurrences", 0),
+                           is_verdict(e.get("strategy", "")),
+                           e.get("created_at", ""), e["id"]))
+        kept: list[dict[str, Any]] = []
+        for e in order:
+            host = next((k for k in kept
+                         if self.merge_score(e.get("pattern", ""),
+                                             e.get("strategy", ""), k) > 0.6),
+                        None)
+            if host is None:
+                kept.append(e)
+                continue
+            hs, es = host["stats"], e.get("stats") or {}
+            for key in ("occurrences", "sec_pass", "sec_fail", "inconclusive",
+                        "advantage_n", "score_delta_n", "iterations"):
+                hs[key] = hs.get(key, 0) + es.get(key, 0)
+            for key in ("advantage_sum", "score_delta_sum"):
+                hs[key] = float(hs.get(key, 0.0)) + float(es.get(key, 0.0))
+            for d in es.get("designs", []):
+                if d not in hs.setdefault("designs", []):
+                    hs["designs"].append(d)
+            if not host.get("example") and e.get("example"):
+                host["example"] = e["example"]
+            if e.get("source") == "seed" and host.get("source") == "learned":
+                host["source"] = "seed+learned"
+            host["confidence"] = confidence(hs)
+            host["mean_advantage"] = mean_advantage(hs)
+            host["status"] = classify(hs, host["confidence"])
+            host["updated_at"] = _now()
+            merged.append((host["id"], e["id"]))
+        self.entries = {e["id"]: e for e in kept}
+        return merged
 
     def add_seed(self, pattern: str, strategy: str, rationale: str = "",
                  example: str = "") -> dict[str, Any]:
@@ -320,14 +468,26 @@ def render(entries: list[dict[str, Any]], with_examples: bool = True) -> str:
         tag = {"effective": "PROVEN", "invalid": "KNOWN BAD",
                "candidate": "UNTESTED" if not n else "PROVISIONAL"}.get(
                    e.get("status", "candidate"), "?")
-        lines.append(f"- [{tag}] {e['pattern']}  ->  {e['strategy']}")
+        # An entry whose strategy field holds a conclusion rather than a
+        # transformation is history, not advice, and must not be presented as
+        # something to apply -- one such entry talked an agent out of a
+        # transformation whose own recorded advantage was favourable.
+        if is_verdict(e.get("strategy", "")):
+            lines.append(f"- [ATTEMPTED] {e['pattern']}")
+            lines.append(f"    a previous run tried this and recorded: "
+                         f"{e['strategy']}")
+            lines.append("    NOTE: that is an outcome, not a transformation. "
+                         "It does not mean the pattern is unfixable -- read "
+                         "the record below and decide for yourself.")
+        else:
+            lines.append(f"- [{tag}] {e['pattern']}  ->  {e['strategy']}")
         if e.get("rationale"):
             lines.append(f"    why: {e['rationale']}")
         stat = (f"    record: {n} decided use(s), SEC pass "
                 f"{st.get('sec_pass', 0)}/{n or 0}, "
                 f"confidence {e.get('confidence', 0.0):.2f}")
         if st.get("inconclusive"):
-            stat += f", {st['inconclusive']} undecided (solver timeout)"
+            stat += f", {st['inconclusive']} undecided (timeout, tool error or unproven)"
         if adv is not None:
             stat += f", mean advantage {adv:+.3f}"
         if st.get("designs"):
@@ -354,14 +514,23 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="astra-skills",
                                  description="Inspect the skill library.")
     ap.add_argument("action", nargs="?", default="list",
-                    choices=("list", "json", "match", "stats"))
+                    choices=("list", "json", "match", "stats", "consolidate"))
     ap.add_argument("query", nargs="*", help="pattern text, for `match`")
     ap.add_argument("--path", type=Path, default=None)
     ap.add_argument("--all", action="store_true", help="include invalid entries")
     args = ap.parse_args(argv[1:])
 
     lib = SkillLibrary(args.path)
-    if args.action == "json":
+    if args.action == "consolidate":
+        merged = lib.consolidate()
+        if not merged:
+            print(f"{lib.path}: nothing to merge, {len(lib)} entries")
+            return 0
+        for keep, gone in merged:
+            print(f"  merged {gone}\n      into {keep}")
+        lib.save()
+        print(f"{lib.path}: {len(merged)} merge(s), {len(lib)} entries remain")
+    elif args.action == "json":
         print(json.dumps({"meta": lib.meta, "skills": lib.all(True)}, indent=2))
     elif args.action == "match":
         print(render(lib.match([" ".join(args.query)])))

@@ -1,0 +1,63 @@
+### Critical path 1  slack -0.3573 ns (VIOLATED)
+    b1[0]_AND2_X1_A2_ZN_DFF_X1_D -> acc_out[33]_DFF_X1_Q
+    logic depth 86, 91 stages, 2.278 ns of stage delay
+    localised 89/91 stages (98%) onto RTL
+
+    root causes:
+      - deep combinational logic: 86 combinational cells between the launch and capture flops
+      - wide arithmetic / carry propagation: 0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree
+      - high fanout on the critical path: fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)
+      - slack gap: 0.3573 ns short of a 2 ns period (18% of the cycle)
+
+    RTL regions on this path, in path order:
+      mac_chain.v:28  [startpoint/path]  2 stage(s), 0.2293 ns  via declaration via cone origin
+          signals: b1
+          cells:   2xDFF_X1
+           28 |     input  wire signed [W-1:0] b0, b1, b2, b3,
+      mac_chain.v:81  [endpoint/path]  87 stage(s), 2.0487 ns  via driver via cone origin
+          signals: acc_out
+          cells:   24xOAI21_X1, 24xAOI21_X1, 12xOR3_X1, 10xXOR2_X1
+           81 |             acc_out   <= sat_val;
+
+### Critical path 2  slack -0.3573 ns (VIOLATED)
+    b1[0]_AND2_X1_A2_ZN_DFF_X1_D -> acc_out[34]_DFF_X1_Q
+    logic depth 86, 91 stages, 2.278 ns of stage delay
+    localised 89/91 stages (98%) onto RTL
+
+    root causes:
+      - deep combinational logic: 86 combinational cells between the launch and capture flops
+      - wide arithmetic / carry propagation: 0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree
+      - high fanout on the critical path: fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)
+      - slack gap: 0.3573 ns short of a 2 ns period (18% of the cycle)
+
+    RTL regions on this path, in path order:
+      mac_chain.v:28  [startpoint/path]  2 stage(s), 0.2293 ns  via declaration via cone origin
+          signals: b1
+          cells:   2xDFF_X1
+           28 |     input  wire signed [W-1:0] b0, b1, b2, b3,
+      mac_chain.v:81  [endpoint/path]  87 stage(s), 2.0487 ns  via driver via cone origin
+          signals: acc_out
+          cells:   24xOAI21_X1, 24xAOI21_X1, 12xOR3_X1, 10xXOR2_X1
+           81 |             acc_out   <= sat_val;
+
+### Critical path 3  slack -0.3573 ns (VIOLATED)
+    b1[0]_AND2_X1_A2_ZN_DFF_X1_D -> acc_out[35]_DFF_X1_Q
+    logic depth 86, 91 stages, 2.278 ns of stage delay
+    localised 89/91 stages (98%) onto RTL
+
+    root causes:
+      - deep combinational logic: 86 combinational cells between the launch and capture flops
+      - wide arithmetic / carry propagation: 0 adder cells, 12 XOR, 52 AOI/OAI on one path -- a ripple or serially-chained datapath rather than a balanced tree
+      - high fanout on the critical path: fanout 42 at b1[0]_AND2_X1_A2_ZN_DFF_X1_D/Q (1 stage(s) at or above 8)
+      - slack gap: 0.3573 ns short of a 2 ns period (18% of the cycle)
+
+    RTL regions on this path, in path order:
+      mac_chain.v:28  [startpoint/path]  2 stage(s), 0.2293 ns  via declaration via cone origin
+          signals: b1
+          cells:   2xDFF_X1
+           28 |     input  wire signed [W-1:0] b0, b1, b2, b3,
+      mac_chain.v:81  [endpoint/path]  87 stage(s), 2.0487 ns  via driver via cone origin
+          signals: acc_out
+          cells:   24xOAI21_X1, 24xAOI21_X1, 12xOR3_X1, 10xXOR2_X1
+           81 |             acc_out   <= sat_val;
+

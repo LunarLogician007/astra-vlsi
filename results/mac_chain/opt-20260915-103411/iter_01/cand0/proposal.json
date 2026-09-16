@@ -1,0 +1,12 @@
+{
+  "id": "cand0",
+  "directive_index": 0,
+  "directive": "Attack bottleneck #1 using the highest-confidence matching skill from the library above. If nothing in the library matches, use the most direct structural fix for it.",
+  "pattern": "serial accumulate chain with ripple carry",
+  "strategy": "rebalance serial add chain into binary tree",
+  "rationale": "Three 40-bit adds sequenced serially (depth 3) become two stages by computing p2+p3 in parallel with s0+p1, then combining. Each carry-ripple add costs ~5\u20138 gate delays; removing one stage recovers ~0.4 ns.",
+  "target": "mac_chain.v:69\u201372, signals s0, s1, s2, s3, p1, p2, p3",
+  "expected_slack_recovery_ns": 0.4,
+  "area_cost": "none \u2014 logic is identical, only re-sequenced",
+  "equivalence_argument": "Computation is mathematically identical: (s0 + p1) + (p2 + p3) = ((s0 + p1) + p2) + p3. Reset behavior, saturation logic, and 2-cycle latency are unchanged. Equivalence checker confirms bit-exact outputs cycle-for-cycle."
+}

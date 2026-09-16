@@ -1,0 +1,12 @@
+{
+  "id": "cand2",
+  "directive_index": 2,
+  "directive": "Attack bottleneck #2 (or the next-ranked one if #2 is minor). Leave bottleneck #1 alone entirely, so that the group can tell the two fixes apart.",
+  "pattern": "wide comparison at end of datapath",
+  "strategy": "replace full comparators with high-bit saturation detection",
+  "rationale": "A 40-bit comparator adds ~20 logic levels after the accumulation chain completes. For LIMIT = 2^37-1, saturation is decided by the top 3 bits (sign and two magnitude bits) \u2014 checking these directly via 2-3 gates instead of full magnitude comparison recovers ~200ps of critical-path delay. Synthesis will flatten the bit checks into lower fanout gates than ripple comparison.",
+  "target": "mac_chain.v:75-78, signals over and under",
+  "expected_slack_recovery_ns": 0.2,
+  "area_cost": "none, logic is simpler than the original comparators",
+  "equivalence_argument": "The saturation conditions are mathematically identical at all representable values. For s3 > LIMIT (2^37-1): iff s3 is positive AND contains a 1 in positions [38:37]. For s3 < -LIMIT (-(2^37-1)): iff s3 is negative AND is not in the narrow range [-2^37+1, -1] that keeps bits [38:37]=11. The ternary mux then selects the same output in both implementations, bit for bit, regardless of input."
+}

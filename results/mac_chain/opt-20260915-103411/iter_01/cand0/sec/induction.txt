@@ -1,0 +1,37 @@
+
+8. Executing SAT pass (solving SAT problems in the circuit).
+
+Setting up time step 1:
+Final constraint equation: { } = { }
+Imported 48 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$136 when 1'1.
+
+** Trying induction with length 1 **
+
+Setting up time step 1:
+Final constraint equation: { } = { }
+Imported 48 cells to SAT database.
+Final init constraint equation: { \gold.sat_flag \gate.valid_q \gate.valid_out \gate.sat_flag \gate.b1_q \gate.b2_q \gate.b3_q \gold.acc_out \gate.a1_q \gate.a2_q \gate.a3_q \gate.acc_out \gate.a0_q \gate.b0_q } = 212'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$136 when 1'1.
+
+[base case 1] Solving problem with 47147 variables and 139984 clauses..
+Base case for induction length 1 proven.
+
+Setting up time step 2:
+Final constraint equation: { } = { }
+Imported 48 cells to SAT database.
+Import proof for assert: $auto$miter.cc:269:create_miter_equiv$136 when 1'1.
+
+[induction step 1] Solving problem with 94755 variables and 280760 clauses..
+Induction step proven: SUCCESS!
+
+                  /$$$$$$      /$$$$$$$$     /$$$$$$$    
+                 /$$__  $$    | $$_____/    | $$__  $$   
+                | $$  \ $$    | $$          | $$  \ $$   
+                | $$  | $$    | $$$$$       | $$  | $$   
+                | $$  | $$    | $$__/       | $$  | $$   
+                | $$/$$ $$    | $$          | $$  | $$   
+                |  $$$$$$/ /$$| $$$$$$$$ /$$| $$$$$$$//$$
+                 \____ $$$|__/|________/|__/|_______/|__/
+                       \__/                              
+

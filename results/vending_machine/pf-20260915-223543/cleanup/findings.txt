@@ -1,0 +1,13 @@
+pre-synthesis scan of vending_machine.v
+31 assignment(s), 14 declaration(s)
+
+findings, worst first (each is a hypothesis with its evidence, not a measurement):
+
+  [medium] wide arithmetic in one expression
+    at vending_machine.v:46
+    1 add/subtract at 1024 bits on `total_discount` -- 11 levels of carry each
+
+  [medium] wide arithmetic in one expression
+    at vending_machine.v:53
+    1 add/subtract at 1024 bits on `total_discount` -- 11 levels of carry each
+

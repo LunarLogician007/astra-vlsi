@@ -1,0 +1,40 @@
+{
+  "conflicts": [
+    {
+      "file": "vending_machine.v",
+      "candidates": [
+        "t1",
+        "t3"
+      ],
+      "parent_lines": [
+        50,
+        50
+      ],
+      "hunks": 2
+    }
+  ],
+  "clean": [
+    {
+      "file": "vending_machine.v",
+      "candidates": [
+        "t3"
+      ],
+      "parent_lines": [
+        38,
+        38
+      ],
+      "hunks": 1
+    }
+  ],
+  "conflicted_candidates": [
+    "t1",
+    "t3"
+  ],
+  "excluded": {},
+  "applied_candidates": [
+    "t3"
+  ],
+  "applied_hunks": 1,
+  "dropped_hunks": 2,
+  "changed": true
+}

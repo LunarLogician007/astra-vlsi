@@ -1,0 +1,14 @@
+{
+  "id": "t2",
+  "target_id": "T2",
+  "target_kind": "segment",
+  "target_value": 0.6842500570154323,
+  "pattern": "Serial accumulate chain in 12-term MAC",
+  "strategy": "Rebalance serial add chain into balanced binary tree",
+  "rationale": "Breaking 11-level serial dependency into 4-level tree allows synthesis to parallelize carry chains across independent branches. Each 40-bit add still has ripple carry, but now they overlap; serial-path depth drops from 11\u00d7carry_depth to 4\u00d7carry_depth.",
+  "target": "sys domain: sys_s[0..11] generation loop (lines 273-281)",
+  "expected_slack_recovery_ns": 0.35,
+  "area_cost": "none \u2014 same number of adders, same register count, tree wires are temporary",
+  "equivalence_argument": "All 12 sign-extended products are summed to identical 40-bit precision. Saturation is applied to the final sum via comparison against SYS_LIMIT. Reordering additions in a binary tree produces the same final sys_acc_p and sys_sat_p because the saturator operates on the same numerical result; fixed-width overflow in intermediate nodes is absorbed by the final comparison and mux, not used downstream.",
+  "declared_changed": true
+}

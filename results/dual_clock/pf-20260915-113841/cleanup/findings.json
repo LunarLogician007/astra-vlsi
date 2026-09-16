@@ -1,0 +1,136 @@
+{
+  "files": [
+    "dual_clock.v"
+  ],
+  "findings": [
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`fa_q` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "fa_q",
+        "width": 12
+      },
+      "file": "dual_clock.v",
+      "line": 82,
+      "end_line": 84,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`fb_q` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "fb_q",
+        "width": 12
+      },
+      "file": "dual_clock.v",
+      "line": 84,
+      "end_line": 85,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`acc` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "acc",
+        "width": 28
+      },
+      "file": "dual_clock.v",
+      "line": 106,
+      "end_line": 107,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`any_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "any_chain",
+        "width": 1
+      },
+      "file": "dual_clock.v",
+      "line": 129,
+      "end_line": 132,
+      "severity": "high"
+    },
+    {
+      "pattern": "serial chain elaborated by a generate loop",
+      "evidence": "`sel_chain` is defined in terms of itself across 8 loop iterations -- 8 levels in series, where a balanced tree over the same terms is 3. The lexical source shows one assignment; synthesis produces 8",
+      "metric": {
+        "trips": 8,
+        "tree_depth": 3,
+        "signal": "sel_chain",
+        "width": 5
+      },
+      "file": "dual_clock.v",
+      "line": 132,
+      "end_line": 134,
+      "severity": "high"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 28 bits on `term` -- 6 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 28,
+        "levels_each": 6
+      },
+      "file": "dual_clock.v",
+      "line": 95,
+      "end_line": 95,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 28 bits on `acc` -- 6 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 28,
+        "levels_each": 6
+      },
+      "file": "dual_clock.v",
+      "line": 106,
+      "end_line": 106,
+      "severity": "medium"
+    },
+    {
+      "pattern": "wide arithmetic in one expression",
+      "evidence": "1 add/subtract at 28 bits on `f_acc` -- 6 levels of carry each",
+      "metric": {
+        "ops": 1,
+        "width": 28,
+        "levels_each": 6
+      },
+      "file": "dual_clock.v",
+      "line": 119,
+      "end_line": 119,
+      "severity": "medium"
+    },
+    {
+      "pattern": "hand-written sign extension repeated across the datapath",
+      "evidence": "2 replicated-bit extensions (term, f_acc) -- widening by hand before each operation, rather than once at the boundary",
+      "metric": {
+        "count": 2,
+        "signals": [
+          "term",
+          "f_acc"
+        ]
+      },
+      "file": "dual_clock.v",
+      "line": 95,
+      "end_line": 119,
+      "severity": "low"
+    }
+  ],
+  "counts": {
+    "declarations": 24,
+    "assignments": 29,
+    "parameters": 3
+  }
+}

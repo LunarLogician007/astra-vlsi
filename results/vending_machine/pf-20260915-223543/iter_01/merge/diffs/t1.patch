@@ -1,0 +1,11 @@
+--- vending_machine.v (parent)
++++ vending_machine.v (t1)
+@@ -47,7 +47,7 @@
+     end
+ 
+     always @(*) begin
+-        total_discount = (sel ? discountA : discountC) + (sel ? discountB : discountD);
++        total_discount = sel ? (discountA + discountB) : (discountC + discountD);
+     end
+ 
+     // Combinatorial logic for next state and output

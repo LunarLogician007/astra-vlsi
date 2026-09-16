@@ -1,0 +1,81 @@
+{
+  "conflicts": [
+    {
+      "file": "netproc.v",
+      "candidates": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "parent_lines": [
+        301,
+        302
+      ],
+      "hunks": 3
+    },
+    {
+      "file": "netproc.v",
+      "candidates": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "parent_lines": [
+        319,
+        320
+      ],
+      "hunks": 3
+    },
+    {
+      "file": "netproc.v",
+      "candidates": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "parent_lines": [
+        322,
+        323
+      ],
+      "hunks": 3
+    },
+    {
+      "file": "netproc.v",
+      "candidates": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "parent_lines": [
+        327,
+        331
+      ],
+      "hunks": 3
+    }
+  ],
+  "clean": [
+    {
+      "file": "netproc.v",
+      "candidates": [
+        "t2"
+      ],
+      "parent_lines": [
+        326,
+        325
+      ],
+      "hunks": 1
+    }
+  ],
+  "conflicted_candidates": [
+    "t1",
+    "t2",
+    "t3"
+  ],
+  "excluded": {},
+  "applied_candidates": [
+    "t2"
+  ],
+  "applied_hunks": 1,
+  "dropped_hunks": 12,
+  "changed": true
+}

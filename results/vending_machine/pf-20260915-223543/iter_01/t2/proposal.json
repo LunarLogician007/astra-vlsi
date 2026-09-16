@@ -1,0 +1,14 @@
+{
+  "id": "t2",
+  "target_id": "T2",
+  "target_kind": "segment",
+  "target_value": 0.5929928001100817,
+  "pattern": "1024-bit carry propagation after dual input mux",
+  "strategy": "no equivalent transformation available",
+  "rationale": "The current expression minimizes the carry-chain to a single 1024-bit adder with input muxes. Prior optimization (parallel adders + output mux) was SEC-verified but degraded slack by -0.707ns on this design. Carry-save form breaks 0-cycle combinational latency. The bottleneck is the carry depth itself, not redundant logic.",
+  "target": "total_discount assignment, line 52",
+  "expected_slack_recovery_ns": 0,
+  "area_cost": "none",
+  "equivalence_argument": "No changes made.",
+  "declared_changed": false
+}

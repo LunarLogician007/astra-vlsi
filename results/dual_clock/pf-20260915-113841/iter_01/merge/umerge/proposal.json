@@ -1,0 +1,18 @@
+{
+  "id": "umerge",
+  "kind": "union",
+  "union_source": "agent",
+  "pattern": "combined fixes from several targets",
+  "strategy": "union of independently verified rewrites",
+  "included": [
+    "t2"
+  ],
+  "excluded": [
+    "t1",
+    "t3"
+  ],
+  "rationale": "t3 fails equivalence check. t1 and t2 both solve the serial-chain bottleneck with a balanced tree, but use incompatible strategies: t1 adds tree logic while preserving the old serial chain (redundant), t2 replaces it cleanly. t2 scores -3.8139 vs t1's -3.8079. The mechanical union (u12) regresses to 0.0000 (parent baseline), indicating that attempting to combine both approaches (both trees + both chains) creates conflicts that destroy the timing improvement. t2's complete replacement strategy is functionally correct per SEC and delivers the best score.",
+  "conflicts_resolved": "The contested regions (acc[] array at 103\u2013109, f_acc_p assignment at 114) represent a fundamental incompatibility: t1's additive approach vs t2's replacement. Resolved by selecting t2's replacement entirely\u2014it's functionally complete, simpler, and measured better.",
+  "expected_vs_mechanical": "t2 is strictly better than u12: t2 scores -3.8139, u12 scores 0.0000 (no improvement). The mechanical union's failure to improve timing indicates that t1's retained serial chain interferes with t2's tree structure in the combined netlist, preventing the optimization from taking effect. t2 avoids this problem entirely.",
+  "equivalence_argument": "t2 is bit-identical to the original cycle-for-cycle: (1) Reset: both the tree and the old serial chain reset to zero on !rst_n, so replacement has identical reset behavior. (2) Functional equivalence: the tree computes the same 8-term sum as the serial chain, just with log\u2082(8)=3 depth instead of 8 depth. All widths are preserved: 2*W+3 bits for intermediate wires, matched exactly. No overflow/truncation issues\u2014the tree uses the same term[] inputs and accumulates into the same 2*W+3 width, verified by SEC pass. (3) Latency: combinational logic only; no registers added or removed, so clk_fast\u2192f_acc_p timing is unchanged in depth, only shorter critical path."
+}

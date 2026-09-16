@@ -1,0 +1,14 @@
+{
+  "id": "t3",
+  "target_id": "T3",
+  "target_kind": "segment",
+  "target_value": 0.5768306048152381,
+  "pattern": "Output mux selecting wide arithmetic results",
+  "strategy": "Move mux before computation into single path",
+  "rationale": "Eliminates duplicate carry chains. Input multiplexers have shallower propagation than output selection after two wide adders. One 1024-bit addition is one carry chain; two adds then mux is two carry chains in parallel. A single carry path removes ~33% of the segment delay.",
+  "target": "Lines 52-53: total_discount assignment, refactored via intermediate wires op1, op2",
+  "expected_slack_recovery_ns": 1.2,
+  "area_cost": "small \u2014 same logic restructured; mux before add is area-neutral or better",
+  "equivalence_argument": "Original and new both compute: when sel=1, op1=discountA and op2=discountB so result=discountA+discountB; when sel=0, op1=discountC and op2=discountD so result=discountC+discountD. Bit-for-bit identical outputs including overflow behavior. Reset is unchanged (combinational path, no flops).",
+  "declared_changed": true
+}

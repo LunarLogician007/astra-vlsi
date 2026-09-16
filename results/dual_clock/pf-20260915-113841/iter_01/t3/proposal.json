@@ -1,0 +1,14 @@
+{
+  "id": "t3",
+  "target_id": "T3",
+  "target_kind": "segment",
+  "target_value": 0.6233175098793016,
+  "pattern": "serial accumulation chain in fast domain",
+  "strategy": "restructure 8-term sum as balanced binary tree",
+  "rationale": "Seven serial 28-bit additions create seven ripple carry chains. A balanced tree computes all additions in parallel at each level, reducing depth from 7 stages to 3, cutting carry propagation time by ~60%. Wider (64-bit) intermediates ensure no truncation during summation, so reordered additions remain bit-exact equivalent up to the final 28-bit truncation.",
+  "target": "lines 103-112: the g_add generate loop and acc[TAPS-1] assignment",
+  "expected_slack_recovery_ns": 0.52,
+  "area_cost": "small: no new operators, just rebalanced tree structure; synthesis will use existing term multiplication",
+  "equivalence_argument": "All intermediate sums are widened to 64 bits, so no overflow truncation occurs during the tree computation. At each level, the additions are purely associative in unbounded arithmetic. The final result is truncated to 28 bits (same as original acc[TAPS-1] assignment), which matches the original serial chain's final truncation. The shift-register pipeline (fa_q, fb_q, f_valid_q) and all downstream logic remain unchanged. Output f_acc_p captures the same bit-exact 28-bit value in the same cycle.",
+  "declared_changed": true
+}

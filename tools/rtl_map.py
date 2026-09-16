@@ -490,16 +490,32 @@ def analyse(timing: dict[str, Any], nl: dict[str, Any], rtl: RtlIndex,
 
     out = []
     for rank, p in enumerate(ranked, start=1):
+        own = _period_of(period_ns, p.get("path_group"))
         out.append({
             "rank": rank,
             "startpoint": p.get("startpoint"),
             "endpoint": p.get("endpoint"),
             "slack_ns": p.get("slack_ns"),
             "status": p.get("status"),
+            "clock_group": p.get("path_group"),
+            "period_ns": own,
             "mapping": map_path(p, nl, rtl),
-            "diagnosis": diagnose(p, period_ns),
+            "diagnosis": diagnose(p, own),
         })
     return {"top_k": len(out), "paths": out}
+
+
+def _period_of(period_ns: Any, group: str | None) -> float | None:
+    """Resolve one path's period.
+
+    ``period_ns`` is either a ``clocks.ClockSet`` -- in which case the path's
+    own capture clock decides -- or a bare float, which every single-clock
+    caller passes and which applies to every path. Duck-typed so this module
+    keeps its current import surface.
+    """
+    if hasattr(period_ns, "resolve_period"):
+        return period_ns.resolve_period(group)[0]
+    return period_ns
 
 
 def render(analysis: dict[str, Any]) -> str:
@@ -546,10 +562,25 @@ def render(analysis: dict[str, Any]) -> str:
 # ---------------------------------------------------------------------------
 
 
+_STAGE_DIRS = {"sta": "02_sta", "pnr": "03_pnr"}
+
+
 def from_run(rdir: Path, design_dir: Path | None = None,
-             period_ns: float | None = None, top_k: int = 3) -> dict[str, Any]:
-    """Build the analysis from a finished run directory."""
-    timing = json.loads((rdir / "02_sta" / "timing.json").read_text())
+             period_ns: float | None = None, top_k: int = 3,
+             stage: str = "sta") -> dict[str, Any]:
+    """Build the analysis from a finished run directory.
+
+    ``stage`` picks which timing report to read. Both stages parse into the
+    same shape -- ``astra.do_pnr`` runs the parsed output of the same Tcl
+    reporting procs -- so everything downstream is indifferent. The netlist
+    index stays at ``01_synth`` for both, because that JSON is the only
+    structural source there is; post-PnR the localisation is correspondingly
+    weaker, which the coverage fraction reports.
+    """
+    if stage not in _STAGE_DIRS:
+        raise ValueError(f"unknown stage {stage!r}; expected one of "
+                         f"{', '.join(sorted(_STAGE_DIRS))}")
+    timing = json.loads((rdir / _STAGE_DIRS[stage] / "timing.json").read_text())
     nl = load_netlist_index(rdir / "01_synth" / "netlist.json")
     srcs = sorted((rdir / "00_inputs").glob("*.v")) + \
         sorted((rdir / "00_inputs").glob("*.sv"))
@@ -558,7 +589,10 @@ def from_run(rdir: Path, design_dir: Path | None = None,
     if period_ns is None:
         m = rdir / "metrics.json"
         if m.is_file():
-            period_ns = (json.loads(m.read_text()).get("clock") or {}).get("period_ns")
+            metrics = json.loads(m.read_text())
+            import clocks
+            period_ns = clocks.from_metrics(metrics) \
+                or (metrics.get("clock") or {}).get("period_ns")
     return analyse(timing, nl, RtlIndex(srcs), period_ns, top_k)
 
 

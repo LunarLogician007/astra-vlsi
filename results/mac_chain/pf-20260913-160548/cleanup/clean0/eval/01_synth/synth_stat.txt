@@ -1,0 +1,38 @@
+
+22. Printing statistics.
+
+=== mac_chain ===
+
+   Number of wires:               7635
+   Number of wire bits:           7635
+   Number of public wires:        7635
+   Number of public wire bits:    7635
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               7333
+     AND2_X1                       396
+     AND3_X1                       189
+     AND4_X1                       289
+     AOI21_X1                      602
+     AOI22_X1                      298
+     DFF_X1                        170
+     INV_X1                        448
+     MUX2_X1                         8
+     NAND2_X1                      804
+     NAND3_X1                      132
+     NAND4_X1                       45
+     NOR2_X1                       942
+     NOR3_X1                       239
+     NOR4_X1                         5
+     OAI211_X1                       4
+     OAI21_X1                      607
+     OAI22_X1                       13
+     OR2_X1                        217
+     OR3_X1                        258
+     OR4_X1                         13
+     XNOR2_X1                     1101
+     XOR2_X1                       553
+
+   Chip area for module '\mac_chain': 8950.368000
+

@@ -75,6 +75,99 @@ def norm_timing(value: float, baseline: float, period_ns: float = 1.0) -> float:
     return -(value - baseline) / denom
 
 
+def critical_period(clock_groups: dict[str, Any] | None,
+                    clock_set: Any = None, default: float = 1.0) -> float:
+    """The period that scales the timing normalisation, on any number of clocks.
+
+    WNS and TNS are design-wide scalars, so the zero-band floor needs one
+    period -- but on a multi-clock design "the period" is not a thing. The
+    period of the group that owns the worst slack is the right one: that group
+    is what the reported WNS came from, so it is the cycle the number is
+    already relative to.
+
+    Falls back to the tightest clock when no group owns a slack (nothing
+    violates, or the STA build emitted no groups). Tightest rather than
+    primary because it produces the smallest floor, so the zero band never
+    swallows a real change in a fast domain.
+    """
+    groups = (clock_groups or {}).get("groups") or {}
+    worst_name, worst = None, None
+    for name, g in groups.items():
+        wns = (g or {}).get("wns_ns")
+        if wns is None:
+            continue
+        if worst is None or wns < worst:
+            worst_name, worst = name, wns
+    if clock_set is None:
+        return default
+    if worst_name is not None:
+        clk = clock_set.by_name(worst_name)
+        if clk is not None:
+            return clk.period_ns
+    return clock_set.tightest.period_ns
+
+
+def timing_in_cycles(metrics: dict[str, Any] | None,
+                     clock_set: Any = None) -> tuple[float, float] | None:
+    """WNS and TNS measured in cycles of each group's OWN clock.
+
+    WNS and TNS arrive from OpenSTA as design-wide nanosecond scalars, and on a
+    multi-clock design that quietly mixes units of different value. TNS is a
+    *sum*: a nanosecond of violation in a 2 ns domain and a nanosecond in a
+    32 ns domain contribute equally to it, when the first consumes half a cycle
+    and the second a thirty-second of one. Optimising against that sum lets a
+    candidate trade a real regression in a fast domain for a meaningless gain
+    in a slow one and score neutral.
+
+    Dividing each group's numbers by its own period fixes the unit. WNS becomes
+    the worst *fractional* slack over the groups; TNS becomes total violation
+    in cycles.
+
+    Returns None when there is no per-group data to work from -- an older run,
+    or an STA build that could not emit groups -- so the caller keeps the
+    nanosecond path rather than inventing numbers.
+    """
+    groups = ((metrics or {}).get("clock_groups") or {}).get("groups") or {}
+    if not groups or clock_set is None:
+        return None
+    wns: float | None = None
+    tns = 0.0
+    for name, g in groups.items():
+        clk = clock_set.by_name(name)
+        if clk is None or not clk.period_ns:
+            continue
+        w, t = (g or {}).get("wns_ns"), (g or {}).get("tns_ns")
+        if w is not None:
+            frac = float(w) / clk.period_ns
+            wns = frac if wns is None else min(wns, frac)
+        if t is not None:
+            tns += float(t) / clk.period_ns
+    return None if wns is None else (wns, tns)
+
+
+def with_cycles(metrics: dict[str, Any] | None,
+                clock_set: Any = None) -> dict[str, Any]:
+    """``metrics`` plus ``wns_cycles``/``tns_cycles`` when they can be derived.
+
+    Returned unchanged when they cannot, so every caller can apply this
+    unconditionally and the nanosecond path stays the fallback.
+    """
+    out = dict(metrics or {})
+    got = timing_in_cycles(out, clock_set)
+    if got is not None:
+        out["wns_cycles"], out["tns_cycles"] = got
+    return out
+
+
+def cycles_available(*sides: dict[str, Any]) -> bool:
+    """True when every side carries cycle metrics, so Eq. 3 can use them.
+
+    Both sides must, or the candidate and the baseline would be measured in
+    different units and the comparison would be meaningless.
+    """
+    return all("wns_cycles" in (s or {}) for s in sides)
+
+
 def norm_area(value: float, baseline: float) -> float:
     """Normalised area delta. Positive = the candidate got bigger."""
     if baseline is None or abs(baseline) < 1e-12:
@@ -96,10 +189,14 @@ def normalize(metrics: dict[str, Any], baseline: dict[str, Any],
                 return float(v)
         return None
 
+    # Cycle-normalised values win where present: on a multi-clock design the
+    # nanosecond scalars sum across domains of different worth. See
+    # `timing_in_cycles`. Both sides carry them or neither does -- `score_group`
+    # checks that with `cycles_available` before passing period_ns=1.0.
     out: dict[str, float] = {}
     for key, names, fn in (
-        ("wns", ("wns_ns", "wns"), norm_timing),
-        ("tns", ("tns_ns", "tns"), norm_timing),
+        ("wns", ("wns_cycles", "wns_ns", "wns"), norm_timing),
+        ("tns", ("tns_cycles", "tns_ns", "tns"), norm_timing),
     ):
         v, b = pick(metrics, *names), pick(baseline, *names)
         out[key] = 0.0 if v is None or b is None else fn(v, b, period_ns)
@@ -170,18 +267,23 @@ def sec_passed(cand: dict[str, Any]) -> bool:
 def sec_decided(cand: dict[str, Any]) -> bool:
     """Did the equivalence check actually reach a verdict?
 
-    A timeout or a crashed tool did not. That distinction does not matter for
-    Eq. 4 -- an undecided candidate still cannot be promoted -- but it matters
-    enormously for skill learning: recording "this transformation breaks
-    equivalence" because the SAT solver ran out of time would condemn a
-    perfectly good strategy on evidence that does not exist.
+    A timeout or a crashed tool did not. Neither did a check the engine
+    declined to run because it could not have meant anything -- see the
+    multi-clock case in docs/equivalence-contract.md. That distinction does
+    not matter for Eq. 4 -- an undecided candidate still cannot be promoted --
+    but it matters enormously for skill learning: recording "this
+    transformation breaks equivalence" because the SAT solver ran out of time
+    would condemn a perfectly good strategy on evidence that does not exist.
     """
     sec = cand.get("sec")
     if not isinstance(sec, dict):
         return sec is not None
     if sec.get("equivalent") is True:
         return True
-    return sec.get("method") not in ("error", "skipped", None)
+    # `regcorr-unproven`: register correspondence could not finish the proof.
+    # It never refutes -- an unproven cone may just be a renamed register.
+    return sec.get("method") not in ("error", "skipped", "unsupported",
+                                     "regcorr-unproven", None)
 
 
 def select_best(candidates: Iterable[dict[str, Any]]) -> dict[str, Any] | None:
@@ -238,6 +340,50 @@ def advantages(candidates: list[dict[str, Any]],
             continue
         c["advantage"] = 0.0 if sigma < 1e-12 else (float(c["score"]) - mu) / sigma
     return candidates
+
+
+def sec_tally(candidates: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """SEC outcomes, keeping "not generated" apart from "not equivalent".
+
+    A candidate the model never produced -- a CLI failure, a reply with no
+    Verilog in it -- has said nothing about whether the transformation is
+    sound, and a timed-out solver has said nothing either. Folding those in
+    with refutations understates the pass rate by however unreliable the
+    harness happened to be that day, which is a fact about the harness
+    reported as a fact about the method. On one real run it turned three of
+    three candidates passing into a reported 33%, because six of nine model
+    calls had died before writing anything.
+
+    The distinction already exists in `sec_decided`; this is the reporting
+    that uses it.
+    """
+    cands = list(candidates)
+    generated = [c for c in cands if not c.get("error")]
+    decided = [c for c in generated if sec_decided(c)]
+    passed = [c for c in decided if sec_passed(c)]
+    return {
+        "total": len(cands),
+        "not_generated": len(cands) - len(generated),
+        "undecided": len(generated) - len(decided),
+        "decided": len(decided),
+        "passed": len(passed),
+        "rate": (len(passed) / len(decided)) if decided else None,
+    }
+
+
+def render_sec_tally(t: dict[str, Any]) -> str:
+    """One line, with the caveats inline rather than in a footnote."""
+    if not t["decided"]:
+        return f"SEC: no candidate reached a verdict ({t['total']} attempted)"
+    out = f"SEC pass rate {t['passed']}/{t['decided']} ({t['rate']:.0%} of decided)"
+    extra = []
+    if t["not_generated"]:
+        extra.append(f"{t['not_generated']} never generated")
+    if t["undecided"]:
+        extra.append(f"{t['undecided']} undecided (timeout, tool error or unproven)")
+    if extra:
+        out += " -- " + ", ".join(extra) + ", excluded"
+    return out
 
 
 def group_stats(candidates: list[dict[str, Any]]) -> dict[str, Any]:

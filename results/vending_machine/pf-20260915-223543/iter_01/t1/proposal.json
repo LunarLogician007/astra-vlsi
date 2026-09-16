@@ -1,0 +1,14 @@
+{
+  "id": "t1",
+  "target_id": "T1",
+  "target_kind": "segment",
+  "target_value": 0.560377863079403,
+  "pattern": "Input mux in series with wide adder carry chain",
+  "strategy": "Move mux from adder inputs to output",
+  "rationale": "Feeding muxed operands into a 1024-bit ripple adder serializes the mux delay with the carry propagation. Computing both possible sums in parallel and selecting the complete result moves the selection out of the carry path, since the output mux receives already-resolved values instead of feeding into a long chain.",
+  "target": "line 52, total_discount combinational assignment",
+  "expected_slack_recovery_ns": 0.6,
+  "area_cost": "moderate \u2014 requires two 1024-bit adders instead of one, but reduces fanout on sel significantly (from 2047 to 1024 on the output mux, plus 1024 on each adder input)",
+  "equivalence_argument": "Both formulations are mathematically identical. Original: termA = sel ? A : C; termB = sel ? B : D; result = termA + termB. Transformed: result = sel ? (A+B) : (C+D). For sel=1: both compute A+B. For sel=0: both compute C+D. Reset is unchanged (combinational only). Widths: both perform 1024+1024 addition with fixed-width truncation to 1024 bits.",
+  "declared_changed": true
+}

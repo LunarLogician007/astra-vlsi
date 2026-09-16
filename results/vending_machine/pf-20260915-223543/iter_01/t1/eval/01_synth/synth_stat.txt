@@ -1,0 +1,43 @@
+
+22. Printing statistics.
+
+=== vending_machine ===
+
+   Number of wires:              18198
+   Number of wire bits:          18198
+   Number of public wires:       18198
+   Number of public wire bits:   18198
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:              14093
+     AND2_X1                       470
+     AND3_X1                        76
+     AND4_X1                         2
+     AOI211_X1                     127
+     AOI21_X1                     1197
+     AOI221_X1                     155
+     AOI222_X1                       2
+     AOI22_X1                       43
+     DFFR_X1                         3
+     INV_X1                        835
+     MUX2_X1                       715
+     NAND2_X1                     2829
+     NAND3_X1                      200
+     NAND4_X1                       60
+     NOR2_X1                      1310
+     NOR3_X1                        98
+     NOR4_X1                        55
+     OAI211_X1                     177
+     OAI21_X1                     1325
+     OAI221_X1                      53
+     OAI222_X1                       7
+     OAI22_X1                      131
+     OR2_X1                        456
+     OR3_X1                        101
+     OR4_X1                          8
+     XNOR2_X1                     2393
+     XOR2_X1                      1265
+
+   Chip area for module '\vending_machine': 16309.524000
+
